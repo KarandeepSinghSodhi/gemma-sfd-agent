@@ -1,0 +1,7 @@
+name: sfd_sequential_agent
+agent_class: SequentialAgent
+description: State-Filtered Deliberation (SFD) hierarchical agent executing triage, surgical patching, and verification without context bloat.
+sub_agents:
+  - config_path: sub_agents/triage_agent.yaml
+  - config_path: sub_agents/patch_agent.yaml
+  - config_path: sub_agents/verifier_agent.yaml

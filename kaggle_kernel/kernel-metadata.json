@@ -1,0 +1,15 @@
+{
+  "id": "karandeepsinghsodhi/sfd-gemma-4-developer-agent",
+  "title": "SFD: State-Filtered Deliberation Agent (Gemma-4)",
+  "code_file": "sfd_developer_agent.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": false,
+  "enable_internet": false,
+  "dataset_sources": [],
+  "competition_sources": [
+    "gemma-4-developer-agent"
+  ],
+  "kernel_sources": []
+}
