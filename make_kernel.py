@@ -65,9 +65,9 @@ cells = [
             "# State-Filtered Deliberation (SFD) Developer Agent\n",
             "### Official Submission for The Gemma 4 Developer Agent Competition\n",
             "**Author:** Karandeep Singh Sodhi (karandeep.sodhi2504a@gmail.com)\n",
-            "**Paper Writeup:** *State-Filtered Deliberation: Eliminating Trajectory Entropy for Small Gemma-4 Developer Agents*\n",
+            "**Paper Writeup:** *State-Filtered Deliberation: Mitigating Context Bloat for Small Open-Weight Developer Agents*\n",
             "\n",
-            "This notebook packages the complete, zero-dependency declarative `submission.zip` archive implementing **State-Filtered Deliberation (SFD)** with **Markovian Context Folding (MCF)**.\n"
+            "This notebook packages the complete, zero-dependency declarative `submission.zip` archive implementing **State-Filtered Deliberation (SFD)**.\n"
         ]
     },
     {
