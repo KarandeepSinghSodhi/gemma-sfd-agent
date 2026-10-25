@@ -1,0 +1,36 @@
+{
+  "flat_react": {
+    "n_tasks": 3,
+    "resolved": 0,
+    "pass_rate": 0.0,
+    "pass_rate_pct": 0.0,
+    "wilson_ci_low_pct": 0.0,
+    "wilson_ci_high_pct": 56.15,
+    "overflow_count": 0,
+    "overflow_rate_pct": 0.0,
+    "cap_trigger_count": 3,
+    "cap_trigger_rate_pct": 100.0,
+    "mean_peak_prompt_tokens": 1066.3,
+    "max_peak_prompt_tokens": 1173,
+    "mean_cumulative_tokens": 1416.7,
+    "mean_duration_seconds": 0.0,
+    "errors": {}
+  },
+  "sfd_pipeline": {
+    "n_tasks": 3,
+    "resolved": 3,
+    "pass_rate": 1.0,
+    "pass_rate_pct": 100.0,
+    "wilson_ci_low_pct": 43.85,
+    "wilson_ci_high_pct": 100.0,
+    "overflow_count": 0,
+    "overflow_rate_pct": 0.0,
+    "cap_trigger_count": 0,
+    "cap_trigger_rate_pct": 0.0,
+    "mean_peak_prompt_tokens": 579.3,
+    "max_peak_prompt_tokens": 686,
+    "mean_cumulative_tokens": 1554.7,
+    "mean_duration_seconds": 0.0,
+    "errors": {}
+  }
+}

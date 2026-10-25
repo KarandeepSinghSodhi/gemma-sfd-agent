@@ -1,0 +1,52 @@
+{
+  "task_id": "fastapi_15589",
+  "repo": "fastapi/fastapi",
+  "config_name": "sfd_pipeline",
+  "model": "gemma-4-e4b",
+  "seed": 42,
+  "duration_seconds": 0.0,
+  "total_turns": 3,
+  "peak_prompt_tokens": 544,
+  "cumulative_tokens": 1484,
+  "resolved": true,
+  "test_exit_code": 0,
+  "context_overflow": false,
+  "errors": [],
+  "cap_triggers": [],
+  "patch_length_chars": 115,
+  "turns": [
+    {
+      "stage": "triage",
+      "turn_index": 1,
+      "prompt_tokens": 544,
+      "completion_tokens": 19,
+      "tool_name": "search_similar_code",
+      "observation_tokens": 29,
+      "cap_triggered": false,
+      "cap_reason": null,
+      "wall_clock_seconds": 0.0004
+    },
+    {
+      "stage": "patcher",
+      "turn_index": 1,
+      "prompt_tokens": 538,
+      "completion_tokens": 35,
+      "tool_name": "read_file",
+      "observation_tokens": 17,
+      "cap_triggered": false,
+      "cap_reason": null,
+      "wall_clock_seconds": 0.0003
+    },
+    {
+      "stage": "verifier",
+      "turn_index": 1,
+      "prompt_tokens": 328,
+      "completion_tokens": 20,
+      "tool_name": "run_command",
+      "observation_tokens": 9,
+      "cap_triggered": false,
+      "cap_reason": null,
+      "wall_clock_seconds": 0.0002
+    }
+  ]
+}

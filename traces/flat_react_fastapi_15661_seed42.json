@@ -1,0 +1,47 @@
+{
+  "task_id": "fastapi_15661",
+  "repo": "fastapi/fastapi",
+  "config_name": "flat_react",
+  "model": "gemma-4-e4b",
+  "seed": 42,
+  "duration_seconds": 0.0,
+  "total_turns": 2,
+  "peak_prompt_tokens": 995,
+  "cumulative_tokens": 1274,
+  "resolved": false,
+  "test_exit_code": 1,
+  "context_overflow": false,
+  "errors": [],
+  "cap_triggers": [
+    {
+      "stage": "exploration",
+      "turn": 2,
+      "reason": "observation_truncated_from_1614_to_1200"
+    }
+  ],
+  "patch_length_chars": 0,
+  "turns": [
+    {
+      "stage": "exploration",
+      "turn_index": 1,
+      "prompt_tokens": 242,
+      "completion_tokens": 19,
+      "tool_name": "read_file",
+      "observation_tokens": 750,
+      "cap_triggered": false,
+      "cap_reason": null,
+      "wall_clock_seconds": 0.0007
+    },
+    {
+      "stage": "exploration",
+      "turn_index": 2,
+      "prompt_tokens": 995,
+      "completion_tokens": 18,
+      "tool_name": "run_command",
+      "observation_tokens": 1614,
+      "cap_triggered": true,
+      "cap_reason": "observation_truncated_from_1614_to_1200",
+      "wall_clock_seconds": 0.0012
+    }
+  ]
+}
