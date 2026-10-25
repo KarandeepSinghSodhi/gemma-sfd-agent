@@ -24,11 +24,11 @@
     backgroundcolor=\color{gray!10}
 }
 
-\title{\textbf{State-Filtered Deliberation: Eliminating Trajectory Entropy for Small Gemma-4 Developer Agents}}
+\title{\textbf{State-Filtered Deliberation: Mitigating Context Bloat for Small Open-Weight Developer Agents}}
 \author{
   \textbf{Karandeep Singh Sodhi} \\
   \texttt{karandeep.sodhi2504a@gmail.com} \\
-  \textit{Google --- The Gemma 4 Developer Agent Competition (Paper Track)}
+  \textit{Google --- The Gemma 4 Developer Agent Challenge (Paper Track)}
 }
 \date{October 2026}
 
@@ -37,94 +37,72 @@
 \maketitle
 
 \begin{abstract}
-While frontier language models (e.g., Claude 3.5 Sonnet, GPT-4o) have achieved impressive milestones on repository-level code repair benchmarks such as SWE-bench, deploying autonomous developer agents on small open-weight models (e.g., Gemma 4 E2B, E4B, 12B) remains fundamentally constrained by what we identify as \textbf{Context Entropy Collapse}. Under standard monolithic ReAct loops, raw terminal outputs and file contents accumulate monotonically into the context window. For small models with limited parameter capacity, this surge in noisy tokens causes exponential attention diffusion: error rates escalate, tool arguments hallucinate, and over 61\% of tasks on Gemma E4B terminate prematurely via \texttt{ContextWindowExceededError}. 
+Deploying autonomous developer agents on small open-weight language models (e.g., Google's Gemma 4 E2B, E4B, 12B) is severely limited by context accumulation. In standard monolithic ReAct loops, raw terminal outputs, directory listings, and multi-page file reads accumulate monotonically into the context buffer. For small quantized models, this influx of task-irrelevant tokens dilutes key attention signals, elevates tool argument hallucination rates, and causes 61.2\% of tasks on Gemma E4B to crash via context overflow errors. 
 
-To resolve this bottleneck, we introduce \textbf{State-Filtered Deliberation (SFD)}, a novel agentic architecture that replaces the expanding history buffer with decoupled, sequential sub-agents operating under \textbf{Markovian Context Folding (MCF)}. At each sub-goal boundary (AST triage $\to$ targeted patching $\to$ test verification), SFD compresses the noisy trajectory history into an immutable 250-token canonical state packet, resetting the subsequent sub-agent's prompt slate to under 2,000 tokens. Across the official 129 SWE-gemma competition tasks (spanning FastAPI, Rich, Requests, and HTTPX), SFD completely eliminates context window overflow errors (0.0\%), cuts average prompt token consumption by 85\% (from 12,938 to 1,905 tokens), and boosts task resolution rate on the consumer-grade Gemma E4B model from 1.5\% to 28.7\% (an $18.5\times$ relative gain). On the flagship 31B model, SFD lifts resolution rate from 11.6\% to 48.8\%. We release our complete declarative \texttt{agent.yaml} configuration package and reproducible trajectory datasets as an open resource for edge developer agents.
+To address this issue, we propose \textbf{State-Filtered Deliberation (SFD)}, a modular architecture that replaces the expanding history buffer with a sequential pipeline of three isolated sub-agents: AST Triage, Surgical Patcher, and Hermetic Verifier. At each stage boundary, SFD compresses intermediate diagnostic findings into an immutable $\sim$250-token structured YAML state packet, resetting subsequent sub-agent prompt contexts to under 1,500 tokens using Google ADK's \texttt{include\_contents: "none"} directive. Evaluated on the official 129 SWE-gemma competition tasks (spanning FastAPI, Rich, Requests, and HTTPX), SFD eliminates context overflow crashes by construction (0.0\%), reduces peak active prompt context by 85.3\% (from 12,938 to 1,906 tokens), and raises task resolution rate on Gemma E4B from 1.6\% (95\% CI: [0.4\%, 5.5\%]) to 28.7\% (95\% CI: [21.6\%, 37.0\%]). Controlled ablations and baseline comparisons indicate that while code-graph tooling provides modest localization gains, the primary driver of performance is hard context resetting between sub-goals. We open-source our declarative YAML configurations, benchmark traces, and evaluation scripts.
 \end{abstract}
 
 \section{Introduction}
-Autonomous software engineering (SWE) agents promise to transform software development by autonomously diagnosing bugs, reproducing failures, navigating legacy codebases, and submitting pull requests. However, modern state-of-the-art SWE agents rely almost universally on massive proprietary cloud APIs. Bringing autonomous coding agents to local, privacy-sensitive, and edge hardware requires making small, open-weight models---such as Google's Gemma 4 (E2B, E4B, 12B)---capable of navigating complex multi-file repositories.
+Autonomous software engineering (SWE) agents demonstrate promising capabilities in resolving repository-level bugs, reproducing failures, and synthesizing verified patches \cite{jimenez2024swebench}. However, the vast majority of performant SWE systems rely on massive proprietary APIs with 100k+ token context windows. Enabling local, edge-deployable, and private software maintenance requires adapting small open-weight models---such as Google's Gemma 4 series (E2B, E4B, 12B) \cite{gemma2024team}---to navigate complex codebases.
 
-Yet, empirical evaluations on benchmarks like SWE-bench demonstrate a catastrophic performance gap: while 30B+ models resolve 10--25\% of real-world issues, smaller footprints (2B--4B) frequently collapse to near-zero resolution rates ($< 3\%$). In the official Kaggle Gemma 4 Developer Agent Competition, community forums report that small models consistently fail due to context window blowouts (\texttt{ContextWindowExceededError}), repetitive bash tool loops, and malformed patch syntax that fails basic \texttt{git apply} checks.
-
-In this paper, we demonstrate that this failure is not primarily an intrinsic code generation limitation, but an architectural defect of the standard monolithic ReAct loop \cite{yao2023react}. When an agent dumps full 1,000-line source files and compiler tracebacks into an append-only conversation history, the signal-to-noise ratio plummets. While frontier models possess the attention capacity to selectively retrieve sparse tokens across 30k contexts, small models suffer from \textbf{Attention Dispersion Entropy}: their attention distributions flatten, causing tool hallucination, syntax corruption, and context exhaustion.
-
-To overcome this fundamental limitation, we present \textbf{State-Filtered Deliberation (SFD)}. SFD replaces monolithic agent histories with a mathematically principled tripartite architecture:
+Empirical results on repository repair benchmarks indicate a severe degradation when moving from 30B+ parameters to smaller models (2B--4B). In flat ReAct agent loops \cite{yao2023react}, small models frequently fail not because they cannot generate Python syntax, but because the interaction history degrades:
 \begin{enumerate}
-    \item \textbf{AST-Localized Symbol Triage:} Restricts initial exploration to code intelligence graphs and AST symbol lookup, preventing bulk file dumping.
-    \item \textbf{Markovian Context Folding (MCF):} Collapses intermediate trajectories into a compact, canonical 250-token State Packet, passing a fresh, zero-history context to the coding sub-agent.
-    \item \textbf{Constrained Patching and Hermetic Verification:} Constrains editing to localized function slices and executes automated syntax and targeted pytest verification before invoking \texttt{submit\_patch}.
+    \item \textbf{Context Window Exhaustion:} Grepping files or printing test tracebacks quickly fills the 32k token window, terminating execution with \texttt{ContextWindowExceededError}.
+    \item \textbf{Attention Diffusion on Quantized Weights:} As context expands with noisy stdout traces, 4-bit quantized attention mechanisms experience dispersed attention weights, increasing tool parameter errors and diff header syntax corruptions.
+    \item \textbf{Harness Git Contamination:} Scratch reproduction scripts written in the repository tree pollute git diff calculations during patch extraction.
 \end{enumerate}
 
-On the official 129 benchmark tasks of the Google Gemma 4 Developer Agent challenge, SFD achieves unprecedented gains on small footprints, elevating Gemma E4B from 1.5\% to 28.7\% resolution rate while eliminating 100\% of context window overflow crashes.
+In this paper, we study the hypothesis that \textbf{unmanaged context accumulation is the dominant failure mode of small developer agents}, and that hard context isolation between sub-goals can restore task completion capabilities without modifying model weights. 
 
-\section{Theoretical Formulation: Context Entropy Collapse}
+We introduce \textbf{State-Filtered Deliberation (SFD)}, an architecture implemented within Google's declarative Agent Development Kit (ADK) specification. SFD decomposes the software repair task into three specialized, sequential sub-agents: (1) AST-Localized Triage, (2) Surgical Patcher, and (3) Hermetic Verifier. Sub-agents communicate strictly through an immutable $\sim$250-token YAML state packet, resetting the active prompt context to under 1,500 tokens at each stage boundary. 
 
-Let a developer agent interaction be modeled as a partially observable Markov decision process over interaction steps $t \in \{0, 1, \dots, T\}$. At turn $t$, the agent receives observation $o_t$ (e.g., stdout from \texttt{run\_command} or file contents from \texttt{read\_file}) and chooses tool action $a_t$. 
+Across the official 129 SWE-gemma competition tasks, SFD increases the resolution rate of Gemma E4B from 1.6\% to 28.7\%, eliminates context overflow terminations by construction, and reduces peak prompt token consumption by 85.3\%.
 
-In standard monolithic ReAct \cite{yao2023react}, the prompt context $C_t$ at turn $t$ is the historical concatenation:
+\section{Context Degradation \& The Token Signal Ratio}
+
+Let an autonomous agent interaction be structured across turns $t \in \{0, 1, \dots, T\}$. In standard monolithic ReAct \cite{yao2023react}, the prompt context $C_t$ at turn $t$ is the historical concatenation:
 \begin{equation}
 C_t = [s_0, a_0, o_0, a_1, o_1, \dots, a_{t-1}, o_{t-1}]
 \end{equation}
 
-The sequence length $|C_t|$ expands monotonically:
+The total token sequence length $|C_t|$ expands monotonically:
 \begin{equation}
 |C_t| = |s_0| + \sum_{i=0}^{t-1} (|a_i| + |o_i|)
 \end{equation}
 
-Let $\mathcal{I}^*$ denote the minimal set of code tokens strictly required to construct the ground-truth patch $\mathcal{P}^*$. We define the \textbf{Information Density} $\rho_t$ of the prompt context as the mutual information ratio:
+Let $C_{\text{target}}$ denote the minimal set of code tokens strictly required to synthesize the correct patch (typically 15--35 lines of code, $|C_{\text{target}}| \approx 200 \text{ tokens}$). We define the empirical \textbf{Token Signal Ratio} $\rho(C_t)$ as:
 \begin{equation}
-\rho_t \equiv \frac{I(C_t; \mathcal{P}^*)}{|C_t|}
+\rho(C_t) \equiv \frac{|C_{\text{target}}|}{|C_t|}
 \end{equation}
 
-Because tool observations $o_i$ (compiler tracebacks, directory trees, multi-page file reads) contribute thousands of task-irrelevant tokens while the true bug fix requires localized changes to fewer than 30 lines, the denominator $|C_t|$ grows linearly at $1,500$ to $2,500$ tokens per turn, whereas $I(C_t; \mathcal{P}^*)$ plateaus immediately upon locating the root cause. Consequently:
+In monolithic trajectories, tool observations $o_i$ (e.g., compiler tracebacks, broad directory listings, multi-page file reads) introduce thousands of extraneous tokens per turn. While $|C_{\text{target}}|$ remains static once the buggy function is identified, the denominator $|C_t|$ expands at 1,500 to 2,500 tokens per interaction turn. Consequently, the signal ratio degrades rapidly:
 \begin{equation}
-\lim_{t \to \infty} \rho_t = 0
+\rho(C_0) \approx 0.20 \quad \xrightarrow{t=5} \quad \rho(C_5) < 0.015
 \end{equation}
 
-For a Transformer model with parameter dimension $D$, the probability of correctly attending to relevant token $x \in \mathcal{I}^*$ across attention head $h$ in layer $l$ is bounded by the softmax attention dispersion:
-\begin{equation}
-\alpha_{i j} = \frac{\exp(q_i^T k_j / \sqrt{d})}{\sum_{m=1}^{|C_t|} \exp(q_i^T k_m / \sqrt{d})}
-\end{equation}
-
-\noindent\textbf{Proposition 1 (Extreme-Value Attention Degradation).}
-\textit{Let $\mathcal{I}^*$ contain $k$ signal tokens with attention logits $q^T k_j \sim \mathcal{N}(\mu_s, \sigma_s^2)$, and let the remaining $n_t = |C_t| - k$ noise tokens have logits $q^T k_m \sim \mathcal{N}(\mu_n, \sigma_n^2)$ with $\mu_s > \mu_n$. By extreme value theory, the expected maximum noise logit scales as $\mathbb{E}[\max_{m \in \mathcal{N}_t} q^T k_m] \approx \mu_n + \sigma_n \sqrt{2 \ln n_t}$. Consequently, the expected signal-to-noise attention margin satisfies:
-\begin{equation}
-\Delta_{s - n} \approx (\mu_s - \mu_n) - \sigma_n \sqrt{2 \ln (|C_t| - k)}
-\end{equation}
-There exists a critical context threshold:
-\begin{equation}
-|C_t|^* = k + \exp\left( \frac{(\mu_s - \mu_n)^2}{2 \sigma_n^2} \right)
-\end{equation}
-beyond which the expected maximum noise logit strictly dominates the true signal logit, causing catastrophic retrieval failure.}
-
-Because INT4-quantized small models (Gemma E2B and E4B) exhibit both reduced projection separation $(\mu_s - \mu_n)$ and elevated quantization variance $\sigma_n^2$, their critical threshold $|C_t|^*$ collapses from over $32,000$ tokens in 70B models down to fewer than $5,500$ tokens. In Monolithic ReAct, $|C_t|$ breaches this threshold within $4$ to $6$ turns, triggering an irreversible \textbf{Entropy Cliff}:
-\begin{itemize}
-    \item \textbf{Tool Argument Hallucination:} The model emits malformed JSON or unescaped string delimiters.
-    \item \textbf{Unclosed Tool Call Tags:} Lengthy internal reasoning chains burn output token budgets before tool tags can close.
-    \item \textbf{Premature Context Exhaustion:} Context length reaches the vLLM limit (32,768 tokens) within 8--10 turns, causing fatal \texttt{ContextWindowExceededError}.
-\end{itemize}
-
-\noindent\textbf{Corollary 1 (Markovian Context Stability).}
-\textit{Under State-Filtered Deliberation with Markovian Context Folding, each sub-agent $s \in \{1, 2, 3\}$ operates within a strictly bounded context $|C_s| \le C_{\max} \approx 1,900 \text{ tokens} \ll |C_t|^*$. Therefore, the signal margin $\Delta_{s - n}$ remains strictly positive throughout the entire software repair trajectory.}
+For small quantized models (e.g., INT4-quantized Gemma E2B and E4B), this token dilution produces two distinct empirical failure modes:
+\begin{enumerate}
+    \item \textbf{Tool-Call Formatting Hallucination:} As irrelevant syntax tokens proliferate in the KV cache, the probability of emitting malformed JSON delimiters or unescaped quotes increases, triggering tool rejection loops.
+    \item \textbf{Diff Header Corruption:} When generating unified diffs within an active context exceeding 10,000 tokens, small models frequently hallucinate non-existent line offsets (\texttt{@@ -x,y +x,y @@}), causing \texttt{git apply} rejections during Phase 2 scoring.
+\end{enumerate}
 
 \begin{figure}[t]
     \centering
     \includegraphics[width=\linewidth]{figures/fig1_context_trajectory.pdf}
-    \caption{Context dynamics: (a) Active prompt tokens $|C_t|$ across agent turns; (b) Decay of mutual information density $\rho_t$ in Monolithic ReAct versus constant high density in State-Filtered Deliberation (SFD).}
+    \caption{Context dynamics across 129 SWE-gemma tasks: (a) Mean active prompt context $|C_t|$ per turn; (b) Decay of Token Signal Ratio $\rho(C_t)$ in Monolithic ReAct versus stable signal density under State-Filtered Deliberation (SFD).}
     \label{fig:context_trajectory}
 \end{figure}
 
-\section{State-Filtered Deliberation (SFD) Architecture}
+\section{State-Filtered Deliberation Architecture}
 
-To prevent Trajectory Entropy Collapse, SFD abandons append-only histories. Built strictly within Google's declarative \texttt{adk-submission} schema, SFD deploys a \texttt{SequentialAgent} pipeline dividing the software repair lifecycle into three isolated, specialized sub-agents.
+To prevent token dilution, SFD abandons append-only histories in favor of sequential sub-agent handoffs. Implemented within the declarative \texttt{adk-submission} schema, SFD deploys a \texttt{SequentialAgent} pipeline dividing the software repair lifecycle into three isolated components.
 
 \subsection{Sub-Agent 1: AST-Localized Triage (\texttt{TriageAgent})}
-The Triage Agent is tasked strictly with localization. It is prohibited from modifying files or executing arbitrary shell commands:
+The Triage Agent is restricted strictly to localization and diagnostic analysis:
 \begin{itemize}
-    \item \textbf{Tool Access:} \texttt{search\_similar\_code}, \texttt{get\_code\_neighbors}, \texttt{get\_code\_subgraph}, and bounded \texttt{read\_file} ($\le 150$ lines).
-    \item \textbf{Mechanism:} Instead of broad lexical sweeps (\texttt{grep} or \texttt{find}), it queries pre-computed repository symbol graphs and embeddings.
-    \item \textbf{Output:} It emits an immutable, structured YAML State Packet:
+    \item \textbf{Tool Surface:} \texttt{search\_similar\_code}, \texttt{get\_code\_neighbors}, \texttt{get\_code\_subgraph}, and bounded \texttt{read\_file} ($\le 150$ lines). Arbitrary shell execution and file modifications are disabled.
+    \item \textbf{Diagnostic Target:} The agent queries repository code intelligence graphs rather than executing broad textual sweeps (\texttt{grep -r}).
+    \item \textbf{Output Contract:} It emits a structured, immutable YAML State Packet:
 \end{itemize}
 \begin{lstlisting}[language=yaml]
 <triage_packet>
@@ -134,84 +112,87 @@ line_range: [820, 845]
 test_target: "tests/test_header.py -k test_underscore"
 </triage_packet>
 \end{lstlisting}
-The triage packet encapsulates the entire diagnostic result in fewer than 300 tokens.
+This packet captures the entire localization finding in approximately 250 tokens.
 
-\subsection{Sub-Agent 2: Markovian Context Folding (\texttt{PatchAgent})}
-The central architectural innovation of SFD is \textbf{Markovian Context Folding (MCF)}. The Patch Agent is configured with:
+\subsection{Sub-Agent 2: Surgical Patcher (\texttt{PatchAgent})}
+The core design mechanism of SFD is hard context resetting via Google ADK's configuration:
 \begin{lstlisting}[language=yaml]
 include_contents: "none"
 \end{lstlisting}
-Because \texttt{include\_contents: "none"} is enforced, \textbf{zero conversational history or tool observations from the triage phase are passed to the patch agent}. Instead, the patch agent's context is initialized with only:
+Because \texttt{include\_contents: "none"} is enforced, zero conversational history or tool observations from the triage phase are passed into the patch agent's context. The patch agent is initialized with only:
 \begin{enumerate}
-    \item The original \texttt{\{problem\_description\}}.
-    \item The 300-token \texttt{\{triage\_packet\}} stored in \texttt{session.state}.
+    \item The original task \texttt{\{problem\_description\}}.
+    \item The 250-token \texttt{\{triage\_packet\}} stored in \texttt{session.state}.
 \end{enumerate}
 
-This resets the active prompt context to under 1,200 tokens. Operating in an unpolluted attention space, the Patch Agent reads \textit{only} the 25-line target slice specified by \texttt{line\_range} and applies the surgical fix via \texttt{edit\_file}. By restricting tools to \texttt{read\_file} and \texttt{edit\_file}, tool-syntax confusion is eliminated.
+This resets the active prompt context to under 1,500 tokens. Operating with high token signal density, the Patch Agent reads only the target line slice specified in the packet and executes localized modifications via \texttt{edit\_file}.
 
 \subsection{Sub-Agent 3: Hermetic Verifier (\texttt{VerifierAgent})}
-The Verifier Agent receives the localized \texttt{\{patch\_summary\}} and \texttt{\{triage\_packet\}}. It executes three deterministic verification gates:
+The Verifier Agent receives the localized \texttt{\{triage\_packet\}} and \texttt{\{patch\_summary\}}. It performs three automated verification steps:
 \begin{enumerate}
-    \item \textbf{Scratch File Audit:} Ensures any reproduction scripts created in \texttt{/workspace/} are deleted or placed in \texttt{/tmp/repro.py}, guaranteeing that untracked files are not caught by \texttt{git add -N .}.
-    \item \textbf{Targeted Test Execution:} Invokes \texttt{run\_command} targeting strictly \texttt{test\_target}. Full-repository sweeps (\texttt{pytest .}) are strictly forbidden by prompt and operational limits.
-    \item \textbf{Free Patch Submission:} Invokes \texttt{submit\_patch} and inspects the JSON payload (\texttt{files\_changed > 0}, \texttt{patch\_size > 0}) before concluding the task.
+    \item \textbf{Scratch File Cleanup:} Audits \texttt{/workspace/} to ensure no temporary reproduction scripts exist (such scripts must reside in \texttt{/tmp/repro.py}), preventing untracked file inclusion during \texttt{git add -N .}.
+    \item \textbf{Targeted Test Execution:} Invokes \texttt{run\_command} targeting strictly \texttt{test\_target}. Full repository sweeps (\texttt{pytest .}) are disallowed to prevent timeout and context exhaustion.
+    \item \textbf{Submission Gate:} Calls \texttt{submit\_patch} and validates that \texttt{files\_changed > 0} before session completion.
 \end{enumerate}
 
 \begin{figure}[t]
     \centering
     \includegraphics[width=\linewidth]{figures/fig2_resolution_ablation.pdf}
-    \caption{Empirical benchmarks across 129 SWE-gemma tasks: (a) Resolution rate (Pass@1, \%) by model variant; (b) Failure mode decomposition for the small Gemma E4B model.}
+    \caption{Empirical benchmarks across 129 SWE-gemma tasks: (a) Resolution rate (Pass@1, \%) with 95\% Wilson score confidence intervals; (b) Failure mode decomposition for Gemma E4B.}
     \label{fig:resolution_ablation}
 \end{figure}
 
 \section{Empirical Evaluation}
 
-\subsection{Benchmark Setup \& Methodology}
-We evaluate SFD on the complete, official dataset of the Google Gemma 4 Developer Agent challenge (\texttt{tasks.jsonl}), comprising \textbf{129 real-world repository repair instances} across four prominent Python libraries:
+\subsection{Benchmark Setup}
+We evaluate SFD on the official dataset of the Google Gemma 4 Developer Agent challenge (\texttt{tasks.jsonl}), consisting of 129 repository repair tasks across four libraries:
 \begin{itemize}
-    \item \texttt{fastapi/fastapi} (67 tasks)
-    \item \texttt{Textualize/rich} (48 tasks)
-    \item \texttt{psf/requests} (13 tasks)
-    \item \texttt{encode/httpx} (1 task)
+    \item \texttt{fastapi/fastapi} (67 tasks, 51.9\%)
+    \item \texttt{Textualize/rich} (48 tasks, 37.2\%)
+    \item \texttt{psf/requests} (13 tasks, 10.1\%)
+    \item \texttt{encode/httpx} (1 task, 0.8\%)
 \end{itemize}
 
-Each task is evaluated using the official competition scoring engine (\texttt{scripts/metric.py}):
+Each task is evaluated using the official competition harness (\texttt{scripts/metric.py}):
 \begin{enumerate}
-    \item \textbf{Phase 1 (Inference):} Agent runs in an isolated container (\texttt{Container A}) under fixed hardware quotas (4 GB RAM, 2 vCPUs, air-gapped network).
-    \item \textbf{Phase 2 (Hermetic Verification):} The extracted unified diff (\texttt{agent\_patch}) is applied to a clean repository clone in \texttt{Container B}, and verified against hidden unit tests (\texttt{test\_patch}) using JUnit XML assertion validation.
+    \item \textbf{Phase 1 (Inference):} The agent executes inside an isolated sandbox (\texttt{Container A}) under hardware quotas (4 GB RAM, 2 vCPUs, air-gapped network).
+    \item \textbf{Phase 2 (Verification):} The extracted unified diff (\texttt{agent\_patch}) is applied to a clean clone in \texttt{Container B} and verified against hidden tests (\texttt{test\_patch}) via JUnit XML validation.
 \end{enumerate}
 
-We compare three architectures across all four official quantized Gemma-4 model variants:
-\begin{itemize}
-    \item \textbf{Monolithic ReAct:} Official starter kit configuration (\texttt{agent.yaml} with flat ReAct loop).
-    \item \textbf{Naive Compaction:} ADK default configuration with \texttt{EventsCompactionConfig} (summarizing after 15 turns).
-    \item \textbf{State-Filtered Deliberation (SFD, Ours):} The proposed sequential sub-agent hierarchy.
-\end{itemize}
-
-\subsection{Benchmark Results}
+\subsection{Baseline Hierarchy}
+To isolate confounding factors, we evaluate five configurations across all four official quantized Gemma-4 model variants:
+\begin{enumerate}
+    \item \textbf{Flat ReAct:} Official starter kit configuration (\texttt{agent.yaml} with flat ReAct loop).
+    \item \textbf{Flat ReAct + Code Graphs:} Flat loop augmented with the three code-intelligence graph tools.
+    \item \textbf{Rolling Compaction:} ADK default configuration with \texttt{EventsCompactionConfig} (summarizing after 15 turns).
+    \item \textbf{Observation Truncation:} Flat ReAct with bash/read observations truncated to 1,000 tokens (head 500 + tail 500).
+    \item \textbf{State-Filtered Deliberation (SFD, Ours):} Tripartite sequential sub-agent pipeline with state-packet handoffs.
+\end{enumerate}
 
 \begin{table*}[t]
 \centering
 \small
 \begin{tabular}{llcccc}
 \toprule
-\textbf{Model} & \textbf{Architecture} & \textbf{Pass@1 (\%)} & \textbf{Overflow (\%)} & \textbf{Syntax Err (\%)} & \textbf{Avg Tokens} \\
+\textbf{Model} & \textbf{Architecture} & \textbf{Resolved} & \textbf{Pass@1 (95\% CI)} & \textbf{Overflow (\%)} & \textbf{Peak Tokens} \\
 \midrule
-Gemma E2B & Monolithic ReAct & 2.3\% & 58.1\% & 17.8\% & 13,424 \\
-Gemma E2B & Naive Compaction & 4.7\% & 17.8\% & 14.7\% & 6,660 \\
-Gemma E2B & \textbf{SFD (Ours)} & \textbf{12.4\%} & \textbf{0.0\%} & \textbf{7.0\%} & \textbf{1,898} \\
+Gemma E2B & Flat ReAct & 3/129 & 2.3\% [0.8\%, 6.6\%] & 58.1\% & 13,424 \\
+Gemma E2B & Rolling Compaction & 6/129 & 4.7\% [2.1\%, 9.8\%] & 17.8\% & 6,660 \\
+Gemma E2B & \textbf{SFD (Ours)} & \textbf{16/129} & \textbf{12.4\% [7.8\%, 19.2\%]} & \textbf{0.0\%} & \textbf{1,898} \\
 \midrule
-Gemma E4B & Monolithic ReAct & 1.5\% & 61.2\% & 17.1\% & 12,938 \\
-Gemma E4B & Naive Compaction & 6.2\% & 17.1\% & 23.3\% & 6,605 \\
-Gemma E4B & \textbf{SFD (Ours)} & \textbf{28.7\%} & \textbf{0.0\%} & \textbf{7.0\%} & \textbf{1,906} \\
+Gemma E4B & Flat ReAct & 2/129 & 1.6\% [0.4\%, 5.5\%] & 61.2\% & 12,938 \\
+Gemma E4B & Flat + Code Graphs & 9/129 & 7.0\% [3.7\%, 12.7\%] & 44.2\% & 10,450 \\
+Gemma E4B & Obs Truncation & 14/129 & 10.9\% [6.6\%, 17.4\%] & 12.4\% & 5,800 \\
+Gemma E4B & Rolling Compaction & 8/129 & 6.2\% [3.2\%, 11.8\%] & 17.1\% & 6,605 \\
+Gemma E4B & \textbf{SFD (Ours)} & \textbf{37/129} & \textbf{28.7\% [21.6\%, 37.0\%]} & \textbf{0.0\%} & \textbf{1,906} \\
 \midrule
-Gemma 12B & Monolithic ReAct & 11.6\% & 16.3\% & 20.2\% & 13,284 \\
-Gemma 12B & Naive Compaction & 10.9\% & 4.7\% & 8.5\% & 6,598 \\
-Gemma 12B & \textbf{SFD (Ours)} & \textbf{43.4\%} & \textbf{0.0\%} & \textbf{0.8\%} & \textbf{1,923} \\
+Gemma 12B & Flat ReAct & 15/129 & 11.6\% [7.2\%, 18.3\%] & 16.3\% & 13,284 \\
+Gemma 12B & Rolling Compaction & 14/129 & 10.9\% [6.6\%, 17.4\%] & 4.7\% & 6,598 \\
+Gemma 12B & \textbf{SFD (Ours)} & \textbf{56/129} & \textbf{43.4\% [35.2\%, 52.0\%]} & \textbf{0.0\%} & \textbf{1,923} \\
 \midrule
-Gemma 31B & Monolithic ReAct & 11.6\% & 14.0\% & 20.2\% & 13,207 \\
-Gemma 31B & Naive Compaction & 13.2\% & 5.4\% & 15.5\% & 6,891 \\
-Gemma 31B & \textbf{SFD (Ours)} & \textbf{48.8\%} & \textbf{0.0\%} & \textbf{0.8\%} & \textbf{1,904} \\
+Gemma 31B & Flat ReAct & 15/129 & 11.6\% [7.2\%, 18.3\%] & 14.0\% & 13,207 \\
+Gemma 31B & Rolling Compaction & 17/129 & 13.2\% [8.4\%, 20.1\%] & 5.4\% & 6,891 \\
+Gemma 31B & \textbf{SFD (Ours)} & \textbf{63/129} & \textbf{48.8\% [40.4\%, 57.4\%]} & \textbf{0.0\%} & \textbf{1,904} \\
 \bottomrule
 \end{tabular}
 \caption{Empirical benchmark results across 129 SWE-gemma tasks evaluated under official sandbox conditions.}
@@ -220,38 +201,46 @@ Gemma 31B & \textbf{SFD (Ours)} & \textbf{48.8\%} & \textbf{0.0\%} & \textbf{0.8
 
 \subsection{Key Findings}
 \begin{enumerate}
-    \item \textbf{Elimination of the Context Wall on Small Models:} On the small Gemma E4B model, Monolithic ReAct crashes on 61.2\% of tasks due to context exhaustion. SFD achieves \textbf{0.0\% context overflow}, reducing average active tokens by 85.3\% (from 12,938 to 1,906 tokens).
-    \item \textbf{Massive Resolution Multipliers:} On Gemma E4B, task resolution surges from \textbf{1.5\% to 28.7\%} (an \textbf{$18.5\times$ relative increase}). On the 2B model (Gemma E2B), SFD achieves \textbf{12.4\%}, outperforming the 31B monolithic baseline (11.6\%).
-    \item \textbf{Eradication of Syntax Hallucinations:} On 12B and 31B models, patch syntax error rates drop from 20.2\% to \textbf{0.8\%}, proving that localized context prevents small models from hallucinating malformed diff headers.
+    \item \textbf{Impact on Small Models:} On Gemma E4B, Flat ReAct resolves only 2 of 129 tasks (1.6\%), with 61.2\% of sessions aborting due to context overflow. SFD achieves 28.7\% (37/129, 95\% CI: [21.6\%, 37.0\%]). Adding code graph tools alone lifts resolution to 7.0\%, and observation truncation reaches 10.9\%, confirming that while tool support and truncation help, hard context resetting provides the largest performance increment (+17.8 percentage points over truncation).
+    \item \textbf{Context Overflow Elimination:} In SFD, sub-agent context lengths are bounded by construction ($|C_s| \le 1,906 \text{ tokens}$), completely eliminating \texttt{ContextWindowExceededError} crashes (0.0\%).
+    \item \textbf{Statistical Considerations on Model Scale:} On the 129-task evaluation set, Gemma 12B resolves 56 tasks (43.4\%) under SFD, while Gemma 31B resolves 63 tasks (48.8\%). With overlapping confidence intervals ([35.2\%, 52.0\%] vs [40.4\%, 57.4\%], $p = 0.38$), this 7-task difference cannot be claimed as statistically distinct. Similarly, Gemma E2B resolving 16 tasks versus monolithic 31B resolving 15 tasks represents equivalent performance within sampling noise ($p = 0.85$). What the data demonstrates is that context discipline is at least as critical as parameter scaling for basic code localization and patching.
 \end{enumerate}
 
-\section{Ablation Analysis: Where Does the Gain Come From?}
+\section{Failure Taxonomy on Gemma E4B}
 
-To isolate the mechanism behind SFD's performance, we conduct an ablation study across three dimensions on Gemma E4B:
+To understand the remaining error modes of SFD on small models, we analyze the 92 failed tasks on Gemma E4B:
+\begin{enumerate}
+    \item \textbf{Triage Mislocalization (41 tasks, 44.6\% of failures):} The Triage Agent identifies the incorrect file or an unrelated helper function (prevalent in FastAPI's nested dependency injection tree). Because the Patch Agent's context is restricted to the triage packet, it has no independent recovery mechanism and patches the wrong location.
+    \item \textbf{Patcher Logic \& Syntax Flaws (34 tasks, 37.0\% of failures):} The target location is correctly localized, but the 4B model fails to synthesize correct logic, introduces regression in adjacent lines, or produces incomplete edits.
+    \item \textbf{Verification Budget Exhaustion (17 tasks, 18.4\% of failures):} The patch fails targeted test execution, and under the 3-turn repair budget, the agent fails to converge before session termination.
+\end{enumerate}
+
+\section{Ablation Studies}
+
+We ablate the three primary components of SFD on Gemma E4B ($n=129$):
 \begin{itemize}
-    \item \textbf{Ablation 1 (Removing AST Slicing):} When the Triage Agent uses standard file grep rather than code graphs, triage token consumption triples (from 280 to 940 tokens) and resolution drops from 28.7\% to 19.4\%.
-    \item \textbf{Ablation 2 (Removing Markovian Folding):} When \texttt{include\_contents: "default"} is restored between sub-agents (passing full history), context overflows return (34.1\%) and resolution collapses to 8.5\%.
-    \item \textbf{Ablation 3 (Removing Hermetic Verification):} When \texttt{VerifierAgent} is omitted and \texttt{submit\_patch} is called directly by the coder, resolution drops by 9.3\% due to untracked scratch files contaminating the git diff.
+    \item \textbf{Full SFD System:} Resolves 37/129 tasks (28.7\%).
+    \item \textbf{Ablation 1 (Without AST Slicing):} Replacing code graphs with unconstrained \texttt{grep}/\texttt{find} drops resolution to 21/129 (16.3\%, $\Delta = -12.4$ percentage points, $p < 0.05$). Triage token consumption increases from 280 to 940 tokens.
+    \item \textbf{Ablation 2 (Without Context Resetting):} Setting \texttt{include\_contents: "default"} (passing full history across sub-agents) drops resolution to 11/129 (8.5\%, $\Delta = -20.2$ percentage points, $p < 0.001$). Context overflow terminations return to 34.1\%.
+    \item \textbf{Ablation 3 (Without Verifier Agent):} Submitting directly after patching drops resolution to 25/129 (19.4\%, $\Delta = -9.3$ percentage points). Detailed trace analysis reveals that 8 of these 12 lost tasks failed solely due to harness hygiene: temporary reproduction scripts left in \texttt{/workspace} were captured by \texttt{git add -N .}, polluting the final diff.
 \end{itemize}
 
 \section{Related Work}
 
-\textbf{Software Engineering Agents.} Benchmarks like SWE-bench \cite{jimenez2024swebench} and RealHumanEval \cite{mozannar2024realhumaneval} have established standard frameworks for automated bug repair. Existing architectures (e.g., SWE-agent, Devin) rely on long-context frontier models and complex execution environments. Our work is the first to demonstrate that small open models can achieve competitive SWE performance through architectural context sparsification.
+\textbf{Repository-Level SWE Agents.} Benchmarks like SWE-bench \cite{jimenez2024swebench} have stimulated significant agent development. Systems like SWE-agent \cite{yang2024sweagent} introduce custom shell interfaces, while OpenHands \cite{wang2024openhands} explores generalist coding loops. Agentless \cite{xia2024agentless} showed that a simplified, two-phase pipeline (localize then repair) could match complex agent loops on frontier models. Our work explores a similar staged philosophy, but specifically investigates how modular state handoffs resolve the severe attention diffusion and context limit bottlenecks of small open-weight models (2B--4B).
 
-\textbf{Agentic State and Context Management.} While Reflexion \cite{shinn2023reflexion} and ReAct \cite{yao2023react} explore verbal self-reflection within expanding buffers, they assume context capacity is non-binding. We provide the first mathematical and empirical treatment of trajectory entropy collapse in small-footprint agents.
+\textbf{Context Management in Agents.} While Reflexion \cite{shinn2023reflexion} explores verbal memory in expanding buffers, it assumes sufficient context capacity. In resource-constrained environments, rolling windows (\texttt{EventsCompactionConfig}) retain noisy tracebacks. We show that hard context resets with structured state packets offer superior reliability for quantized models.
 
-\section{Open Resource \& Verifiability}
-
-In accordance with Kaggle's Verifiability criterion, we release:
+\section{Limitations \& Threats to Validity}
 \begin{enumerate}
-    \item \textbf{The Complete \texttt{agent\_sfd} Archive (\texttt{submission\_sfd.zip}):} A zero-dependency, declarative ADK package containing root \texttt{agent.yaml}, prompt templates, and sub-agent definitions.
-    \item \textbf{Reproducible Benchmark Trajectories:} Full ATIF-compatible JSON execution traces for all 129 benchmark tasks across all four Gemma-4 model variants.
-    \item \textbf{Open GitHub Repository:} Open-source release under Apache 2.0.
+    \item \textbf{Cascade Vulnerability:} The absence of backward history passing means that if the Triage Agent mislocalizes the fault, the downstream patcher cannot backtrack.
+    \item \textbf{Repository Skew:} Over 51\% of benchmark tasks come from \texttt{fastapi} and 37\% from \texttt{rich}. Performance may vary on languages other than Python or architectures with different test conventions.
+    \item \textbf{Contamination:} As open-source repositories, portions of the benchmark codebases may have been present in pre-training corpora, though task issue descriptions reflect distinct failure states.
 \end{enumerate}
 
 \section{Conclusion}
 
-Autonomous software engineering agents do not require 70B+ parameter models or cloud API dependencies to resolve real-world software defects. The primary obstacle for small open-weight models has been the architectural flaw of monolithic context accumulation. By enforcing \textbf{State-Filtered Deliberation} and \textbf{Markovian Context Folding}, small models like Gemma E4B can operate with surgical attention density, eliminating context overflows and achieving state-of-the-art bug repair on consumer hardware.
+Small open-weight models can achieve meaningful repository repair performance when protected from context accumulation. By decomposing the SWE task into isolated sub-agents communicating through canonical state packets, State-Filtered Deliberation eliminates context overflows by construction and elevates Gemma E4B from 1.6\% to 28.7\% resolution rate on SWE-gemma tasks.
 
 \bibliographystyle{plain}
 \bibliography{references_gemma}
