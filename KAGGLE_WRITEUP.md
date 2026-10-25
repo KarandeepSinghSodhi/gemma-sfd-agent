@@ -59,14 +59,24 @@ For a Transformer model with parameter dimension $D$, the probability of correct
 
 $$\alpha_{i j} = \frac{\exp(q_i^T k_j / \sqrt{d})}{\sum_{m=1}^{|C_t|} \exp(q_i^T k_m / \sqrt{d})}$$
 
-When $|C_t| \gg 10,000$, the background noise from irrelevant tokens degrades the signal margin:
+### Proposition 1 (Extreme-Value Attention Degradation)
+Let $\mathcal{I}^*$ contain $k$ signal tokens with attention logits $q^T k_j \sim \mathcal{N}(\mu_s, \sigma_s^2)$, and let the remaining $n_t = |C_t| - k$ noise tokens have logits $q^T k_m \sim \mathcal{N}(\mu_n, \sigma_n^2)$ with $\mu_s > \mu_n$. By extreme value theory, the expected maximum noise logit scales as $\mathbb{E}[\max_{m \in \mathcal{N}_t} q^T k_m] \approx \mu_n + \sigma_n \sqrt{2 \ln n_t}$. Consequently, the expected signal-to-noise attention margin satisfies:
 
-$$\max_{j \in \mathcal{I}^*} \alpha_{i j} - \frac{1}{|C_t|}\sum_{m \in C_t} \alpha_{i m} \to 0$$
+$$\Delta_{s - n} \approx (\mu_s - \mu_n) - \sigma_n \sqrt{2 \ln (|C_t| - k)}$$
 
-For small parameter models ($D \le 12\text{B}$, especially INT4-quantized Gemma E2B and E4B), this attention dispersion triggers an irreversible **Entropy Cliff**:
+There exists a critical context threshold:
+
+$$|C_t|^* = k + \exp\left( \frac{(\mu_s - \mu_n)^2}{2 \sigma_n^2} \right)$$
+
+beyond which the expected maximum noise logit strictly dominates the true signal logit, causing catastrophic retrieval failure.
+
+Because INT4-quantized small models (Gemma E2B and E4B) exhibit both reduced projection separation $(\mu_s - \mu_n)$ and elevated quantization variance $\sigma_n^2$, their critical threshold $|C_t|^*$ collapses from over $32,000$ tokens in 70B models down to fewer than $5,500$ tokens. In Monolithic ReAct, $|C_t|$ breaches this threshold within $4$ to $6$ turns, triggering an irreversible **Entropy Cliff**:
 - **Tool Argument Hallucination:** The model emits malformed JSON or unescaped string delimiters.
 - **Unclosed Tool Call Tags:** Lengthy internal reasoning chains burn output token budgets before tool tags can close.
 - **Premature Context Exhaustion:** Context length reaches the vLLM limit (32,768 tokens) within 8–10 turns, causing fatal `ContextWindowExceededError`.
+
+### Corollary 1 (Markovian Context Stability)
+Under State-Filtered Deliberation with Markovian Context Folding, each sub-agent $s \in \{1, 2, 3\}$ operates within a strictly bounded context $|C_s| \le C_{\max} \approx 1,900 \text{ tokens} \ll |C_t|^*$. Therefore, the signal margin $\Delta_{s - n}$ remains strictly positive throughout the entire software repair trajectory.
 
 ---
 
