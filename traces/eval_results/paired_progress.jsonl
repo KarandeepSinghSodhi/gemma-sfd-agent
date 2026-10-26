@@ -1,0 +1,24 @@
+{"instance_id": "fastapi_15661", "repo": "fastapi/fastapi", "config": "flat_starter", "resolved": false, "test_exit_code": 2, "patch_chars": 539, "tool_calls": 7, "duration_seconds": 50.97, "error": null}
+{"instance_id": "fastapi_15661", "repo": "fastapi/fastapi", "config": "flat_controlled", "resolved": false, "test_exit_code": 2, "patch_chars": 1961, "tool_calls": 10, "duration_seconds": 50.04, "error": null}
+{"instance_id": "fastapi_15661", "repo": "fastapi/fastapi", "config": "sfd", "resolved": false, "test_exit_code": 2, "patch_chars": 660, "tool_calls": 12, "duration_seconds": 97.76, "error": null}
+{"instance_id": "fastapi_15588", "repo": "fastapi/fastapi", "config": "flat_starter", "resolved": false, "test_exit_code": 1, "patch_chars": 1196, "tool_calls": 7, "duration_seconds": 45.1, "error": null}
+{"instance_id": "fastapi_15588", "repo": "fastapi/fastapi", "config": "flat_controlled", "resolved": false, "test_exit_code": 1, "patch_chars": 1970, "tool_calls": 9, "duration_seconds": 53.97, "error": null}
+{"instance_id": "fastapi_15588", "repo": "fastapi/fastapi", "config": "sfd", "resolved": false, "test_exit_code": 1, "patch_chars": 1008, "tool_calls": 10, "duration_seconds": 68.83, "error": null}
+{"instance_id": "fastapi_15589", "repo": "fastapi/fastapi", "config": "flat_starter", "resolved": false, "test_exit_code": 1, "patch_chars": 662, "tool_calls": 9, "duration_seconds": 79.77, "error": null}
+{"instance_id": "fastapi_15589", "repo": "fastapi/fastapi", "config": "flat_controlled", "resolved": false, "test_exit_code": 1, "patch_chars": 2955, "tool_calls": 15, "duration_seconds": 117.78, "error": null}
+{"instance_id": "fastapi_15589", "repo": "fastapi/fastapi", "config": "sfd", "resolved": false, "test_exit_code": -1, "patch_chars": 0, "tool_calls": 15, "duration_seconds": 98.18, "error": "Agent exceeded turns budget (20 turns)"}
+{"instance_id": "requests_7505", "repo": "psf/requests", "config": "flat_starter", "resolved": false, "test_exit_code": 1, "patch_chars": 943, "tool_calls": 10, "duration_seconds": 141.04, "error": null}
+{"instance_id": "requests_7505", "repo": "psf/requests", "config": "flat_controlled", "resolved": false, "test_exit_code": 1, "patch_chars": 608, "tool_calls": 11, "duration_seconds": 174.33, "error": null}
+{"instance_id": "requests_7505", "repo": "psf/requests", "config": "sfd", "resolved": false, "test_exit_code": 1, "patch_chars": 978, "tool_calls": 9, "duration_seconds": 124.14, "error": null}
+{"instance_id": "requests_7502", "repo": "psf/requests", "config": "flat_starter", "resolved": false, "test_exit_code": 1, "patch_chars": 653, "tool_calls": 10, "duration_seconds": 185.31, "error": null}
+{"instance_id": "requests_7502", "repo": "psf/requests", "config": "flat_controlled", "resolved": false, "test_exit_code": 1, "patch_chars": 523, "tool_calls": 5, "duration_seconds": 106.43, "error": null}
+{"instance_id": "requests_7502", "repo": "psf/requests", "config": "sfd", "resolved": false, "test_exit_code": 1, "patch_chars": 581, "tool_calls": 11, "duration_seconds": 149.55, "error": null}
+{"instance_id": "rich_4070", "repo": "Textualize/rich", "config": "flat_starter", "resolved": false, "test_exit_code": -1, "patch_chars": 0, "tool_calls": 3, "duration_seconds": 152.5, "error": "Agent exceeded session timeout (2.5 min)"}
+{"instance_id": "rich_4070", "repo": "Textualize/rich", "config": "flat_controlled", "resolved": false, "test_exit_code": 1, "patch_chars": 3063, "tool_calls": 15, "duration_seconds": 112.24, "error": null}
+{"instance_id": "rich_4070", "repo": "Textualize/rich", "config": "sfd", "resolved": false, "test_exit_code": 1, "patch_chars": 967, "tool_calls": 10, "duration_seconds": 67.54, "error": null}
+{"instance_id": "rich_4077", "repo": "Textualize/rich", "config": "flat_starter", "resolved": false, "test_exit_code": -1, "patch_chars": 0, "tool_calls": 15, "duration_seconds": 84.82, "error": "Agent exceeded tool call budget (15 calls)"}
+{"instance_id": "rich_4077", "repo": "Textualize/rich", "config": "flat_controlled", "resolved": false, "test_exit_code": 1, "patch_chars": 454, "tool_calls": 6, "duration_seconds": 34.07, "error": null}
+{"instance_id": "rich_4077", "repo": "Textualize/rich", "config": "sfd", "resolved": true, "test_exit_code": 0, "patch_chars": 323, "tool_calls": 5, "duration_seconds": 40.3, "error": null}
+{"instance_id": "httpx_3672", "repo": "encode/httpx", "config": "flat_starter", "resolved": false, "test_exit_code": 2, "patch_chars": 1764, "tool_calls": 10, "duration_seconds": 85.99, "error": null}
+{"instance_id": "httpx_3672", "repo": "encode/httpx", "config": "flat_controlled", "resolved": false, "test_exit_code": 2, "patch_chars": 1343, "tool_calls": 7, "duration_seconds": 62.76, "error": null}
+{"instance_id": "httpx_3672", "repo": "encode/httpx", "config": "sfd", "resolved": false, "test_exit_code": 2, "patch_chars": 630, "tool_calls": 15, "duration_seconds": 95.55, "error": null}

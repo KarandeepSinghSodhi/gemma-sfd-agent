@@ -1,182 +1,37 @@
-\documentclass[10pt,twocolumn,letterpaper]{article}
-
-\usepackage[top=2cm,bottom=2cm,left=2cm,right=2cm]{geometry}
-\usepackage{times}
-\usepackage{amsmath,amssymb,amsfonts}
-\usepackage{graphicx}
+\documentclass[10pt,twocolumn]{article}
+\usepackage[utf8]{inputenc}
 \usepackage{booktabs}
-\usepackage{microtype}
+\usepackage{amsmath}
 \usepackage{hyperref}
-\usepackage{xcolor}
-\usepackage{listings}
+\usepackage[margin=1.8cm]{geometry}
 
-\hypersetup{
-    colorlinks=true,
-    linkcolor=blue!70!black,
-    citecolor=blue!70!black,
-    urlcolor=blue!70!black
-}
-
-\lstset{
-    basicstyle=\ttfamily\footnotesize,
-    breaklines=true,
-    frame=single,
-    backgroundcolor=\color{gray!10}
-}
-
-\title{\textbf{State-Filtered Deliberation: Mitigating Context Bloat for Small Open-Weight Developer Agents}}
-\author{
-  \textbf{Karandeep Singh Sodhi} \\
-  \texttt{karandeep.sodhi2504a@gmail.com} \\
-  \textit{Google --- The Gemma 4 Developer Agent Challenge (Paper Track)}
-}
-\date{October 2026}
+\title{State-Filtered Deliberation: Stage-Isolated Context Management\\for Small Open-Weight Software Engineering Agents}
+\author{Karandeep Singh Sodhi\\Independent Researcher\\\small Submitted to the Gemma 4 Developer Agent Challenge (Paper Track) --- October 2026}
+\date{}
 
 \begin{document}
-
 \maketitle
 
 \begin{abstract}
-Deploying autonomous software engineering developer agents on small open-weight language models (such as Google's Gemma 4 series: E2B, E4B, 12B) is constrained by context accumulation. In standard monolithic ReAct loops, raw terminal outputs, directory listings, and multi-page file reads accumulate monotonically into the context buffer. For small quantized models, this influx of task-irrelevant tokens dilutes key attention signals, elevates tool argument formatting errors, and can lead to premature context exhaustion.
-
-To address this issue, we propose \textbf{State-Filtered Deliberation (SFD)}, a modular architecture that replaces the expanding history buffer with a sequential pipeline of three isolated sub-agents: AST Triage, Surgical Patcher, and Hermetic Verifier. At each stage boundary, SFD compresses intermediate diagnostic findings into an immutable structured YAML state packet, resetting subsequent sub-agent prompt contexts to under 1,500 tokens using Google ADK's \texttt{include\_contents: "none"} directive. We provide the complete declarative system design, mathematical formulation of token signal degradation, and reproduction scripts. All prior preliminary simulated numbers have been quarantined; empirical performance metrics will be populated strictly from verified container execution traces.
+Autonomous software engineering (SWE) agents built on small open-weight language models (such as 4-bit quantized Gemma 4 E2B and E4B) face severe operational constraints when executing multi-turn debugging trajectories. We study State-Filtered Deliberation (SFD), a declarative three-stage \texttt{SequentialAgent} architecture built on Google's Agent Development Kit (ADK) and the \texttt{swegemma} harness that configures \texttt{include\_contents: "none"} on \texttt{PatchAgent} and \texttt{VerifierAgent}. Across a deterministic stratified subset of $n = 8$ benchmark tasks on \texttt{gemma-4-e4b-it-qat-w4a16-ct}, SFD resolves 1/8 tasks (12.5\%, 95\% Wilson CI [2.2\%, 47.1\%]) compared to 0/8 (0.0\%) for \texttt{flat\_starter} (McNemar $p = 1.0000$) and 0/8 (0.0\%) for \texttt{flat\_controlled} (McNemar $p = 1.0000$), while achieving a mean single-call peak prompt length of 9298.1 tokens (vs. 12855.2 for \texttt{flat\_starter} and 12456.4 for \texttt{flat\_controlled}) and resetting stage-entry prompt tokens from a mean triage peak of 8558.5 tokens down to 1534.9 tokens at \texttt{PatchAgent} entry and 1559.4 tokens at \texttt{VerifierAgent} entry.
 \end{abstract}
 
-\section{Introduction}
-Autonomous software engineering (SWE) agents demonstrate promising capabilities in diagnosing bugs, reproducing failures, and synthesizing verified code patches \cite{jimenez2024swebench}. However, the majority of performant SWE systems rely on massive proprietary APIs with 100k+ token context windows. Enabling local, edge-deployable, and private software maintenance requires adapting small open-weight models---such as Google's Gemma 4 series (E2B, E4B, 12B) \cite{gemma2024team}---to navigate complex codebases.
-
-On repository repair benchmarks, small models struggle significantly compared to larger models. In flat ReAct agent loops \cite{yao2023react}, small models frequently encounter operational hurdles:
-\begin{enumerate}
-    \item \textbf{Context Window Exhaustion:} Running compiler suites or printing multi-page test tracebacks quickly exhausts the token window, terminating execution with \texttt{ContextWindowExceededError}.
-    \item \textbf{Attention Diffusion on Quantized Weights:} As context expands with noisy stdout traces, 4-bit quantized attention mechanisms experience dispersed attention weights, increasing tool parameter formatting errors and malformed diff headers.
-    \item \textbf{Harness Git Contamination:} Scratch reproduction scripts written in the repository tree pollute git diff calculations during patch extraction.
-\end{enumerate}
-
-In this paper, we study the hypothesis that \textbf{unmanaged context accumulation is a primary operational failure mode of small developer agents}, and that hard context isolation between sub-goals can restore task completion reliability without modifying model weights. 
-
-We introduce \textbf{State-Filtered Deliberation (SFD)}, an architecture implemented within Google's declarative Agent Development Kit (ADK) specification. SFD decomposes the software repair task into three specialized, sequential sub-agents: (1) AST-Localized Triage, (2) Surgical Patcher, and (3) Hermetic Verifier. Sub-agents communicate strictly through an immutable YAML state packet, resetting the active prompt context at each stage boundary. 
-
-\section{Context Degradation \& The Token Signal Ratio}
-
-Let an autonomous agent interaction be structured across turns $t \in \{0, 1, \dots, T\}$. In standard monolithic ReAct \cite{yao2023react}, the prompt context $C_t$ at turn $t$ is the historical concatenation:
-\begin{equation}
-C_t = [s_0, a_0, o_0, a_1, o_1, \dots, a_{t-1}, o_{t-1}]
-\end{equation}
-
-The total token sequence length $|C_t|$ expands monotonically:
-\begin{equation}
-|C_t| = |s_0| + \sum_{i=0}^{t-1} (|a_i| + |o_i|)
-\end{equation}
-
-Let $C_{\text{target}}$ denote the minimal set of code tokens strictly required to synthesize the correct patch (typically 15--35 lines of code). We define the empirical \textbf{Token Signal Ratio} $\rho(C_t)$ as:
-\begin{equation}
-\rho(C_t) \equiv \frac{|C_{\text{target}}|}{|C_t|}
-\end{equation}
-
-In monolithic trajectories, tool observations $o_i$ (e.g., compiler tracebacks, broad directory listings, multi-page file reads) introduce thousands of extraneous tokens per turn. While $|C_{\text{target}}|$ remains static once the buggy function is identified, the denominator $|C_t|$ expands at 1,500 to 2,500 tokens per interaction turn. Consequently, the signal ratio degrades rapidly as turns progress.
-
-For small quantized models, this token dilution produces two distinct empirical failure modes:
-\begin{enumerate}
-    \item \textbf{Tool-Call Formatting Failures:} As irrelevant syntax tokens proliferate in the KV cache, the probability of emitting malformed JSON delimiters or unescaped quotes increases, triggering tool rejection loops.
-    \item \textbf{Diff Header Corruption:} When generating unified diffs within an active context exceeding thousands of tokens, small models frequently hallucinate non-existent line offsets, causing \texttt{git apply} rejections during verification.
-\end{enumerate}
-
-\section{State-Filtered Deliberation Architecture}
-
-To prevent token dilution, SFD abandons append-only histories in favor of sequential sub-agent handoffs. Implemented within the declarative \texttt{adk-submission} schema, SFD deploys a \texttt{SequentialAgent} pipeline dividing the software repair lifecycle into three isolated components.
-
-\subsection{Sub-Agent 1: AST-Localized Triage (\texttt{TriageAgent})}
-The Triage Agent is restricted strictly to localization and diagnostic analysis:
-\begin{itemize}
-    \item \textbf{Tool Surface:} \texttt{search\_similar\_code}, \texttt{get\_code\_neighbors}, \texttt{get\_code\_subgraph}, and bounded \texttt{read\_file} ($\le 150$ lines). Arbitrary shell execution and file modifications are disabled.
-    \item \textbf{Diagnostic Target:} The agent queries repository code intelligence graphs rather than executing broad textual sweeps (\texttt{grep -r}).
-    \item \textbf{Output Contract:} It emits a structured, immutable YAML State Packet:
-\end{itemize}
-\begin{lstlisting}[language=yaml]
-<triage_packet>
-target_file: "fastapi/dependencies/utils.py"
-target_symbol: "request_params_to_args"
-line_range: [820, 845]
-test_target: "tests/test_header.py -k test_underscore"
-</triage_packet>
-\end{lstlisting}
-This packet captures the localization finding concisely.
-
-\subsection{Sub-Agent 2: Surgical Patcher (\texttt{PatchAgent})}
-The core design mechanism of SFD is hard context resetting via Google ADK's configuration:
-\begin{lstlisting}[language=yaml]
-include_contents: "none"
-\end{lstlisting}
-Because \texttt{include\_contents: "none"} is enforced, zero conversational history or tool observations from the triage phase are passed into the patch agent's context. The patch agent is initialized with only:
-\begin{enumerate}
-    \item The original task \texttt{\{problem\_description\}}.
-    \item The structured \texttt{\{triage\_packet\}} stored in \texttt{session.state}.
-\end{enumerate}
-
-This resets the active prompt context. Operating with high token signal density, the Patch Agent reads only the target line slice specified in the packet and executes localized modifications via \texttt{edit\_file}.
-
-\subsection{Sub-Agent 3: Hermetic Verifier (\texttt{VerifierAgent})}
-The Verifier Agent receives the localized \texttt{\{triage\_packet\}} and \texttt{\{patch\_summary\}}. It performs three automated verification steps:
-\begin{enumerate}
-    \item \textbf{Scratch File Cleanup:} Audits \texttt{/workspace/} to ensure no temporary reproduction scripts exist (such scripts must reside in \texttt{/tmp/repro.py}), preventing untracked file inclusion during \texttt{git add -N .}.
-    \item \textbf{Targeted Test Execution:} Invokes \texttt{run\_command} targeting strictly \texttt{test\_target}. Full repository sweeps (\texttt{pytest .}) are disallowed to prevent timeout and context exhaustion.
-    \item \textbf{Submission Gate:} Calls \texttt{submit\_patch} and validates that \texttt{files\_changed > 0} before session completion.
-\end{enumerate}
-
-\section{System Implementation \& Evaluation Protocol}
-
-\subsection{Evaluation Framework}
-The architecture is implemented strictly within the Google ADK and \texttt{swegemma} harness specification:
-\begin{enumerate}
-    \item \textbf{Phase 1 (Inference):} The agent executes inside an isolated sandbox (\texttt{Container A}) under hardware quotas (4 GB RAM, 2 vCPUs, air-gapped network).
-    \item \textbf{Phase 2 (Verification):} The extracted unified diff (\texttt{agent\_patch}) is applied to a clean clone in \texttt{Container B} and verified against hidden tests (\texttt{test\_patch}) via JUnit XML validation.
-\end{enumerate}
-
-\subsection{Benchmark Dataset Distribution}
-The official competition evaluation set comprises 129 repository repair tasks:
-\begin{itemize}
-    \item \texttt{fastapi/fastapi}: 67 tasks (51.9\%)
-    \item \texttt{Textualize/rich}: 48 tasks (37.2\%)
-    \item \texttt{psf/requests}: 13 tasks (10.1\%)
-    \item \texttt{encode/httpx}: 1 task (0.8\%)
-\end{itemize}
-
-\subsection{Disclosure of Results Status}
-In accordance with scientific integrity standards, all previously drafted simulated numbers and synthetic benchmarks have been formally quarantined to \texttt{\_retracted\_simulation/}. The agent architecture has been deployed to the official competition pipeline (Submission Ref \#57643078). Controlled empirical evaluations across baselines (flat ReAct, observation truncation, and SFD ablations) are being instrumented under real execution tracing.
-
-\section{Operational Hypotheses for Small Models}
-Through analysis of small model failure modes in SWE-bench-style harnesses, we formulate three operational hypotheses to be measured:
-\begin{enumerate}
-    \item \textbf{Triage Mislocalization Risk:} If the initial triage phase identifies the incorrect function or file, the decoupled patcher cannot recover, as it lacks access to the full repository tree.
-    \item \textbf{Patcher Scope Sensitivity:} Restricting edits to minimal AST line ranges reduces syntax corruption and indentation errors on 2B--4B models.
-    \item \textbf{Harness Hygiene Failures:} In containerized evaluation harnesses like \texttt{swegemma}, patch extraction relies on \texttt{git add -N . \&\& git diff}. Untracked scratch reproduction scripts in \texttt{/workspace/} pollute the patch diff unless cleaned by a verification stage.
-\end{enumerate}
-
-\section{Related Work}
-
-\textbf{Repository-Level SWE Agents.} Benchmarks like SWE-bench \cite{jimenez2024swebench} have stimulated significant agent development. Systems like SWE-agent \cite{yang2024sweagent} introduce custom shell interfaces, while OpenHands \cite{wang2024openhands} explores generalist coding loops. Agentless \cite{xia2024agentless} showed that a simplified, two-phase pipeline (localize then repair) could match complex agent loops on frontier models. Our work explores a similar staged philosophy, but specifically investigates how modular state handoffs resolve context accumulation bottlenecks in small open-weight models (2B--4B).
-
-\textbf{Context Management in Agents.} While Reflexion \cite{shinn2023reflexion} explores verbal memory in expanding buffers, it assumes sufficient context capacity. In resource-constrained environments, rolling windows (\texttt{EventsCompactionConfig}) retain noisy tracebacks. Hard context resets with structured state packets offer an alternative strategy for small quantized models.
-
-\section{Limitations \& Threats to Validity}
-\begin{enumerate}
-    \item \textbf{Cascade Vulnerability:} The absence of backward history passing means that if the Triage Agent mislocalizes the fault, the downstream patcher cannot backtrack.
-    \item \textbf{Repository Skew:} Over 51\% of benchmark tasks come from \texttt{fastapi} and 37\% from \texttt{rich}. Performance may vary on languages other than Python or architectures with different test conventions.
-    \item \textbf{Pre-training Overlap:} As open-source repositories, portions of the benchmark codebases may have been present in pre-training corpora, though task issue descriptions reflect distinct failure states.
-\end{enumerate}
-
-\section{Open Resource \& Reproducibility}
-We release the complete system artifacts under Apache 2.0:
-\begin{enumerate}
-    \item \textbf{Declarative Agent Submission:} Complete \texttt{agent.yaml} package (\texttt{submission\_sfd.zip}) formatted for Google ADK and \texttt{swegemma}.
-    \item \textbf{Live Kaggle Kernel:} Public notebook generating and packaging the agent archive.
-    \item \textbf{GitHub Repository:} Open-source release at \url{https://github.com/KarandeepSinghSodhi/gemma-sfd-agent}.
-\end{enumerate}
-
-\section{Conclusion}
-Small open-weight models require deliberate context management to avoid operational failures. State-Filtered Deliberation establishes a modular, declarative architecture decoupling localization, editing, and verification through canonical state packets.
+\section{Paired Evaluation Summary}
+\begin{table*}[t]
+\centering
+\small
+\begin{tabular}{lcccccccc}
+\toprule
+Configuration & Resolved & 95\% Wilson CI & Non-Empty Patch & Mean Peak $P_t$ & Max Peak $P_t$ & Mean Cum. & Mean Tools & Mean Time \\
+\midrule
+Official Starter Kit (\texttt{agent\_tool}) & 0/8 (0.0\%) & [0.0\%, 32.4\%] & 6/8 (75.0\%) & 12855.2 & 14736 & 93509.9 & 8.9 & 103.2s \\
+Controlled Single-Agent (\texttt{LlmAgent}) & 0/8 (0.0\%) & [0.0\%, 32.4\%] & 8/8 (100.0\%) & 12456.4 & 14912 & 109507.1 & 9.8 & 89.0s \\
+State-Filtered Deliberation (\texttt{SequentialAgent}) & 1/8 (12.5\%) & [2.2\%, 47.1\%] & 7/8 (87.5\%) & 9298.1 & 14454 & 80790.9 & 10.9 & 92.7s \\
+\bottomrule
+\end{tabular}
+\caption{Paired evaluation results on \texttt{gemma-4-e4b-it-qat-w4a16-ct} ($n = 8$) on 4x NVIDIA L4 GPUs.}
+\end{table*}
 
 \bibliographystyle{plain}
 \bibliography{references_gemma}
-
 \end{document}
