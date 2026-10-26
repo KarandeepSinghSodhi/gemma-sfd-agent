@@ -1,0 +1,7 @@
+agent_class: SequentialAgent
+name: sfd_sequential_pipeline
+description: State-Filtered Deliberation 3-stage pipeline (Triage -> Patch -> Verify)
+sub_agents:
+  - config_path: sub_agents/triage_agent.yaml
+  - config_path: sub_agents/patch_agent.yaml
+  - config_path: sub_agents/verifier_agent.yaml

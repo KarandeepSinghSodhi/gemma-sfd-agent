@@ -1,4 +1,4 @@
 config,model,n_tasks,resolved_k,resolved_pct,wilson_95_lo,wilson_95_hi,patches_generated_k,patches_generated_pct,mean_peak_prompt_tokens,median_peak_prompt_tokens,max_peak_prompt_tokens,mean_cumulative_prompt_tokens,mean_cumulative_total_tokens,mean_llm_calls,mean_tool_calls,mean_duration_sec,median_duration_sec,overflow_k,overflow_pct
-flat_controlled,gemma-4-e4b-it-qat-w4a16-ct,8,0,0.0,0.0,32.44,8,100.0,12456.4,12664.0,14912,104410.2,109507.1,12,9.75,88.95,84.59,0,0.0
-flat_starter,gemma-4-e4b-it-qat-w4a16-ct,8,0,0.0,0.0,32.44,6,75.0,12855.2,13190.5,14736,88019.4,93509.9,10.88,8.88,103.19,85.41,0,0.0
-sfd,gemma-4-e4b-it-qat-w4a16-ct,8,1,12.5,2.24,47.09,7,87.5,9298.1,8319.5,14454,74481.8,80790.9,15.12,10.88,92.73,96.66,0,0.0
+flat_controlled,gemma-4-e4b-it-qat-w4a16-ct,16,0,0.0,0.0,19.36,14,87.5,13550.8,14632.5,16154,113854.9,119664.4,12.69,10.5,92.19,93.31,0,0.0
+flat_starter,gemma-4-e4b-it-qat-w4a16-ct,16,1,6.25,1.11,28.33,13,81.25,13029.3,13937.5,15281,97449.5,103350.1,12.06,9.88,97.34,83.55,0,0.0
+sfd,gemma-4-e4b-it-qat-w4a16-ct,16,1,6.25,1.11,28.33,14,87.5,11291.9,12010.5,16146,82280.4,88909.5,15.44,11.19,89.37,85.34,0,0.0

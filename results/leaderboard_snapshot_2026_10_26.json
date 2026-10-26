@@ -1,0 +1,215 @@
+{
+  "retrieved_at_utc": "2026-10-26T10:41:04.370511+00:00",
+  "competition": "gemma-4-developer-agent",
+  "official_main_leaderboard_count": 20,
+  "official_main_leaderboard_top10": [
+    {
+      "teamId": 16948405,
+      "teamName": "\u0443\u0448\u0435\u043b \u0438\u0433\u0440\u0430\u0442\u044c \u0432 \u0446\u0443\u0441\u0438\u043c\u0443",
+      "submissionDate": "2026-10-18 20:45:12.206000",
+      "score": "0.24"
+    },
+    {
+      "teamId": 17019455,
+      "teamName": "Yike Xu",
+      "submissionDate": "2026-10-08 06:07:23.130000",
+      "score": "0.24"
+    },
+    {
+      "teamId": 16972967,
+      "teamName": "MUHAMMED IDRIS BIN YACOOB",
+      "submissionDate": "2026-10-24 05:23:27.423000",
+      "score": "0.24"
+    },
+    {
+      "teamId": 16981897,
+      "teamName": "SAVE",
+      "submissionDate": "2026-10-25 06:05:35.190000",
+      "score": "0.24"
+    },
+    {
+      "teamId": 17015790,
+      "teamName": "Francis Joseph",
+      "submissionDate": "2026-10-21 12:42:31.450000",
+      "score": "0.22"
+    },
+    {
+      "teamId": 16955167,
+      "teamName": "Deepest Mind",
+      "submissionDate": "2026-10-25 05:24:47.490000",
+      "score": "0.22"
+    },
+    {
+      "teamId": 16956138,
+      "teamName": "Ayush Barai",
+      "submissionDate": "2026-10-25 10:35:17.980000",
+      "score": "0.22"
+    },
+    {
+      "teamId": 17019135,
+      "teamName": "Lakshya Mewara0025",
+      "submissionDate": "2026-10-12 17:17:40.236000",
+      "score": "0.22"
+    },
+    {
+      "teamId": 16948844,
+      "teamName": "omallo",
+      "submissionDate": "2026-10-21 15:20:28.956000",
+      "score": "0.22"
+    },
+    {
+      "teamId": 17039226,
+      "teamName": "Vibhanshu Singh",
+      "submissionDate": "2026-10-24 15:25:21.240000",
+      "score": "0.22"
+    }
+  ],
+  "official_main_leaderboard_all": [
+    {
+      "teamId": 16948405,
+      "teamName": "\u0443\u0448\u0435\u043b \u0438\u0433\u0440\u0430\u0442\u044c \u0432 \u0446\u0443\u0441\u0438\u043c\u0443",
+      "submissionDate": "2026-10-18 20:45:12.206000",
+      "score": "0.24"
+    },
+    {
+      "teamId": 17019455,
+      "teamName": "Yike Xu",
+      "submissionDate": "2026-10-08 06:07:23.130000",
+      "score": "0.24"
+    },
+    {
+      "teamId": 16972967,
+      "teamName": "MUHAMMED IDRIS BIN YACOOB",
+      "submissionDate": "2026-10-24 05:23:27.423000",
+      "score": "0.24"
+    },
+    {
+      "teamId": 16981897,
+      "teamName": "SAVE",
+      "submissionDate": "2026-10-25 06:05:35.190000",
+      "score": "0.24"
+    },
+    {
+      "teamId": 17015790,
+      "teamName": "Francis Joseph",
+      "submissionDate": "2026-10-21 12:42:31.450000",
+      "score": "0.22"
+    },
+    {
+      "teamId": 16955167,
+      "teamName": "Deepest Mind",
+      "submissionDate": "2026-10-25 05:24:47.490000",
+      "score": "0.22"
+    },
+    {
+      "teamId": 16956138,
+      "teamName": "Ayush Barai",
+      "submissionDate": "2026-10-25 10:35:17.980000",
+      "score": "0.22"
+    },
+    {
+      "teamId": 17019135,
+      "teamName": "Lakshya Mewara0025",
+      "submissionDate": "2026-10-12 17:17:40.236000",
+      "score": "0.22"
+    },
+    {
+      "teamId": 16948844,
+      "teamName": "omallo",
+      "submissionDate": "2026-10-21 15:20:28.956000",
+      "score": "0.22"
+    },
+    {
+      "teamId": 17039226,
+      "teamName": "Vibhanshu Singh",
+      "submissionDate": "2026-10-24 15:25:21.240000",
+      "score": "0.22"
+    },
+    {
+      "teamId": 16959074,
+      "teamName": "ABHIRUP DAS",
+      "submissionDate": "2026-10-24 14:46:56.730000",
+      "score": "0.22"
+    },
+    {
+      "teamId": 17040816,
+      "teamName": "Thomas T\u01b0Nh\u00e2n",
+      "submissionDate": "2026-10-25 06:07:26.920000",
+      "score": "0.22"
+    },
+    {
+      "teamId": 17070461,
+      "teamName": "BLocTuat",
+      "submissionDate": "2026-10-25 06:07:28.593000",
+      "score": "0.22"
+    },
+    {
+      "teamId": 16955985,
+      "teamName": "DoRA",
+      "submissionDate": "2026-10-25 05:05:00.473000",
+      "score": "0.22"
+    },
+    {
+      "teamId": 16989632,
+      "teamName": "Panagiotis Anagnostou",
+      "submissionDate": "2026-10-20 09:44:11.290000",
+      "score": "0.22"
+    },
+    {
+      "teamId": 17041678,
+      "teamName": "havid aqoma",
+      "submissionDate": "2026-10-25 00:15:38.326000",
+      "score": "0.22"
+    },
+    {
+      "teamId": 17053409,
+      "teamName": "Daewoo Myoung",
+      "submissionDate": "2026-10-24 00:30:34.906000",
+      "score": "0.22"
+    },
+    {
+      "teamId": 16957585,
+      "teamName": "DVS",
+      "submissionDate": "2026-10-21 01:21:34.700000",
+      "score": "0.22"
+    },
+    {
+      "teamId": 16967594,
+      "teamName": "Igor Zharov",
+      "submissionDate": "2026-10-25 10:54:30.853000",
+      "score": "0.22"
+    },
+    {
+      "teamId": 16983938,
+      "teamName": "Minghao Xia",
+      "submissionDate": "2026-10-24 15:51:03.883000",
+      "score": "0.22"
+    }
+  ],
+  "author_submissions": [
+    {
+      "ref": 57643078,
+      "date": "2026-10-25 21:22:35.327000",
+      "description": "SFD Agent v1.0 (State-Filtered Deliberation)",
+      "file_name": "submission.zip",
+      "status": "SubmissionStatus.PENDING",
+      "public_score": null,
+      "private_score": null,
+      "url": "/code/karandeepsinghsodhi/sfd-state-filtered-deliberation-agent-gemma-4?scriptVersionId=362267635"
+    }
+  ],
+  "small_model_prize_leaderboard_source": "https://www.kaggle.com/code/ryanholbrook/gemma-4-developer-agent-small-model-leaderboard",
+  "small_model_leaderboard": {
+    "source_kernel": "ryanholbrook/gemma-4-developer-agent-small-model-leaderboard",
+    "last_updated_utc": "2026-10-24 23:58 UTC",
+    "csv_file": "results/small_model_leaderboard_2026_10_24.csv",
+    "n_teams": 197,
+    "min_score": 0.0,
+    "max_score": 0.1,
+    "median_score": 0.05,
+    "mean_score": 0.0423,
+    "teams_at_or_below_0_06": 183,
+    "teams_at_0_10": 2,
+    "teams_at_0_08": 12
+  }
+}

@@ -1,69 +1,69 @@
 {
-  "generated_at": "2026-10-26T04:48:32.332759+00:00",
+  "generated_at": "2026-10-26T11:37:18.544357+00:00",
   "summary_rows": [
     {
       "config": "flat_controlled",
       "model": "gemma-4-e4b-it-qat-w4a16-ct",
-      "n_tasks": 8,
+      "n_tasks": 16,
       "resolved_k": 0,
       "resolved_pct": 0.0,
       "wilson_95_lo": 0.0,
-      "wilson_95_hi": 32.44,
-      "patches_generated_k": 8,
-      "patches_generated_pct": 100.0,
-      "mean_peak_prompt_tokens": 12456.4,
-      "median_peak_prompt_tokens": 12664.0,
-      "max_peak_prompt_tokens": 14912,
-      "mean_cumulative_prompt_tokens": 104410.2,
-      "mean_cumulative_total_tokens": 109507.1,
-      "mean_llm_calls": 12,
-      "mean_tool_calls": 9.75,
-      "mean_duration_sec": 88.95,
-      "median_duration_sec": 84.59,
+      "wilson_95_hi": 19.36,
+      "patches_generated_k": 14,
+      "patches_generated_pct": 87.5,
+      "mean_peak_prompt_tokens": 13550.8,
+      "median_peak_prompt_tokens": 14632.5,
+      "max_peak_prompt_tokens": 16154,
+      "mean_cumulative_prompt_tokens": 113854.9,
+      "mean_cumulative_total_tokens": 119664.4,
+      "mean_llm_calls": 12.69,
+      "mean_tool_calls": 10.5,
+      "mean_duration_sec": 92.19,
+      "median_duration_sec": 93.31,
       "overflow_k": 0,
       "overflow_pct": 0.0
     },
     {
       "config": "flat_starter",
       "model": "gemma-4-e4b-it-qat-w4a16-ct",
-      "n_tasks": 8,
-      "resolved_k": 0,
-      "resolved_pct": 0.0,
-      "wilson_95_lo": 0.0,
-      "wilson_95_hi": 32.44,
-      "patches_generated_k": 6,
-      "patches_generated_pct": 75.0,
-      "mean_peak_prompt_tokens": 12855.2,
-      "median_peak_prompt_tokens": 13190.5,
-      "max_peak_prompt_tokens": 14736,
-      "mean_cumulative_prompt_tokens": 88019.4,
-      "mean_cumulative_total_tokens": 93509.9,
-      "mean_llm_calls": 10.88,
-      "mean_tool_calls": 8.88,
-      "mean_duration_sec": 103.19,
-      "median_duration_sec": 85.41,
+      "n_tasks": 16,
+      "resolved_k": 1,
+      "resolved_pct": 6.25,
+      "wilson_95_lo": 1.11,
+      "wilson_95_hi": 28.33,
+      "patches_generated_k": 13,
+      "patches_generated_pct": 81.25,
+      "mean_peak_prompt_tokens": 13029.3,
+      "median_peak_prompt_tokens": 13937.5,
+      "max_peak_prompt_tokens": 15281,
+      "mean_cumulative_prompt_tokens": 97449.5,
+      "mean_cumulative_total_tokens": 103350.1,
+      "mean_llm_calls": 12.06,
+      "mean_tool_calls": 9.88,
+      "mean_duration_sec": 97.34,
+      "median_duration_sec": 83.55,
       "overflow_k": 0,
       "overflow_pct": 0.0
     },
     {
       "config": "sfd",
       "model": "gemma-4-e4b-it-qat-w4a16-ct",
-      "n_tasks": 8,
+      "n_tasks": 16,
       "resolved_k": 1,
-      "resolved_pct": 12.5,
-      "wilson_95_lo": 2.24,
-      "wilson_95_hi": 47.09,
-      "patches_generated_k": 7,
+      "resolved_pct": 6.25,
+      "wilson_95_lo": 1.11,
+      "wilson_95_hi": 28.33,
+      "patches_generated_k": 14,
       "patches_generated_pct": 87.5,
-      "mean_peak_prompt_tokens": 9298.1,
-      "median_peak_prompt_tokens": 8319.5,
-      "max_peak_prompt_tokens": 14454,
-      "mean_cumulative_prompt_tokens": 74481.8,
-      "mean_cumulative_total_tokens": 80790.9,
-      "mean_llm_calls": 15.12,
-      "mean_tool_calls": 10.88,
-      "mean_duration_sec": 92.73,
-      "median_duration_sec": 96.66,
+      "mean_peak_prompt_tokens": 11291.9,
+      "median_peak_prompt_tokens": 12010.5,
+      "max_peak_prompt_tokens": 16146,
+      "mean_cumulative_prompt_tokens": 82280.4,
+      "mean_cumulative_total_tokens": 88909.5,
+      "mean_llm_calls": 15.44,
+      "mean_tool_calls": 11.19,
+      "mean_duration_sec": 89.37,
+      "median_duration_sec": 85.34,
       "overflow_k": 0,
       "overflow_pct": 0.0
     }
@@ -71,7 +71,67 @@
   "paired_tests": [
     {
       "config_a": "flat_controlled",
+      "config_b": "flat_controlled_rerun",
+      "n_paired": 8,
+      "a_only_resolved_b": 0,
+      "b_only_resolved_c": 1,
+      "mcnemar_p_value": 1.0,
+      "diff_pct": -12.5,
+      "bootstrap_95_lo_pct": -37.5,
+      "bootstrap_95_hi_pct": 0.0,
+      "mean_peak_prompt_diff": -101.1
+    },
+    {
+      "config_a": "flat_controlled",
       "config_b": "flat_starter",
+      "n_paired": 16,
+      "a_only_resolved_b": 0,
+      "b_only_resolved_c": 1,
+      "mcnemar_p_value": 1.0,
+      "diff_pct": -6.25,
+      "bootstrap_95_lo_pct": -18.75,
+      "bootstrap_95_hi_pct": 0.0,
+      "mean_peak_prompt_diff": 521.4
+    },
+    {
+      "config_a": "flat_controlled",
+      "config_b": "sfd",
+      "n_paired": 16,
+      "a_only_resolved_b": 0,
+      "b_only_resolved_c": 1,
+      "mcnemar_p_value": 1.0,
+      "diff_pct": -6.25,
+      "bootstrap_95_lo_pct": -18.75,
+      "bootstrap_95_hi_pct": 0.0,
+      "mean_peak_prompt_diff": 2258.8
+    },
+    {
+      "config_a": "flat_controlled",
+      "config_b": "sfd_rerun",
+      "n_paired": 8,
+      "a_only_resolved_b": 0,
+      "b_only_resolved_c": 1,
+      "mcnemar_p_value": 1.0,
+      "diff_pct": -12.5,
+      "bootstrap_95_lo_pct": -37.5,
+      "bootstrap_95_hi_pct": 0.0,
+      "mean_peak_prompt_diff": 3150
+    },
+    {
+      "config_a": "flat_controlled_rerun",
+      "config_b": "flat_starter",
+      "n_paired": 8,
+      "a_only_resolved_b": 1,
+      "b_only_resolved_c": 0,
+      "mcnemar_p_value": 1.0,
+      "diff_pct": 12.5,
+      "bootstrap_95_lo_pct": 0.0,
+      "bootstrap_95_hi_pct": 37.5,
+      "mean_peak_prompt_diff": -297.8
+    },
+    {
+      "config_a": "flat_controlled_rerun",
+      "config_b": "sfd",
       "n_paired": 8,
       "a_only_resolved_b": 0,
       "b_only_resolved_c": 0,
@@ -79,23 +139,35 @@
       "diff_pct": 0.0,
       "bootstrap_95_lo_pct": 0.0,
       "bootstrap_95_hi_pct": 0.0,
-      "mean_peak_prompt_diff": -398.9
+      "mean_peak_prompt_diff": 3259.4
     },
     {
-      "config_a": "flat_controlled",
-      "config_b": "sfd",
+      "config_a": "flat_controlled_rerun",
+      "config_b": "sfd_rerun",
       "n_paired": 8,
       "a_only_resolved_b": 0,
-      "b_only_resolved_c": 1,
+      "b_only_resolved_c": 0,
       "mcnemar_p_value": 1.0,
-      "diff_pct": -12.5,
-      "bootstrap_95_lo_pct": -37.5,
+      "diff_pct": 0.0,
+      "bootstrap_95_lo_pct": 0.0,
       "bootstrap_95_hi_pct": 0.0,
-      "mean_peak_prompt_diff": 3158.2
+      "mean_peak_prompt_diff": 3251.1
     },
     {
       "config_a": "flat_starter",
       "config_b": "sfd",
+      "n_paired": 16,
+      "a_only_resolved_b": 1,
+      "b_only_resolved_c": 1,
+      "mcnemar_p_value": 1.0,
+      "diff_pct": 0.0,
+      "bootstrap_95_lo_pct": -18.75,
+      "bootstrap_95_hi_pct": 18.75,
+      "mean_peak_prompt_diff": 1737.4
+    },
+    {
+      "config_a": "flat_starter",
+      "config_b": "sfd_rerun",
       "n_paired": 8,
       "a_only_resolved_b": 0,
       "b_only_resolved_c": 1,
@@ -103,37 +175,81 @@
       "diff_pct": -12.5,
       "bootstrap_95_lo_pct": -37.5,
       "bootstrap_95_hi_pct": 0.0,
-      "mean_peak_prompt_diff": 3557.1
+      "mean_peak_prompt_diff": 3548.9
+    },
+    {
+      "config_a": "sfd",
+      "config_b": "sfd_rerun",
+      "n_paired": 8,
+      "a_only_resolved_b": 0,
+      "b_only_resolved_c": 0,
+      "mcnemar_p_value": 1.0,
+      "diff_pct": 0.0,
+      "bootstrap_95_lo_pct": 0.0,
+      "bootstrap_95_hi_pct": 0.0,
+      "mean_peak_prompt_diff": -8.2
     }
   ],
   "stage_reset_stats": {
     "flat_starter_code_analyzer": {
-      "tasks_invoking_code_analyzer_k": 2,
+      "tasks_invoking_code_analyzer_k": 3,
       "tasks_invoking_code_analyzer_ids": [
+        "requests_7427",
         "requests_7505",
         "rich_4077"
       ],
-      "tasks_bypassing_code_analyzer_k": 6,
-      "tasks_bypassing_code_analyzer_pct": 75.0,
-      "code_analyzer_calls": 2,
-      "total_recorded_tool_calls": 79,
-      "code_analyzer_call_share_pct": 2.5
+      "tasks_bypassing_code_analyzer_k": 13,
+      "tasks_bypassing_code_analyzer_pct": 81.2,
+      "code_analyzer_calls": 4,
+      "budget_counted_tool_calls_total": 158,
+      "root_budget_counted_calls": 145,
+      "child_code_analyzer_calls": 14,
+      "free_submit_patch_calls": 13,
+      "free_get_status_calls": 0,
+      "root_non_submit_decisions": 149,
+      "code_analyzer_root_decision_share_pct": 2.7,
+      "total_recorded_tool_calls": 176,
+      "code_analyzer_call_share_pct": 2.3
     },
-    "n_triage_observed": 8,
-    "mean_triage_peak_prompt_tokens": 8558.5,
-    "max_triage_peak_prompt_tokens": 14454,
-    "n_patch_observed": 8,
-    "mean_patch_entry_prompt_tokens": 1534.9,
+    "n_triage_observed": 16,
+    "mean_triage_peak_prompt_tokens": 10922.1,
+    "max_triage_peak_prompt_tokens": 16146,
+    "n_patch_observed": 16,
+    "mean_patch_entry_prompt_tokens": 1500.9,
     "max_patch_entry_prompt_tokens": 2126,
-    "mean_patch_peak_prompt_tokens": 5730.1,
+    "mean_patch_peak_prompt_tokens": 5355.9,
     "max_patch_peak_prompt_tokens": 12680,
-    "n_verifier_observed": 8,
-    "mean_verifier_entry_prompt_tokens": 1559.4,
+    "n_verifier_observed": 16,
+    "mean_verifier_entry_prompt_tokens": 1470.2,
     "max_verifier_entry_prompt_tokens": 2165,
-    "mean_verifier_peak_prompt_tokens": 3912.8,
+    "mean_verifier_peak_prompt_tokens": 3477.7,
     "max_verifier_peak_prompt_tokens": 8140,
-    "mean_triage_to_patch_reduction_pct": 82.1,
+    "mean_triage_to_patch_reduction_pct": 86.3,
     "per_task": {
+      "fastapi_14099": {
+        "triage_entry": 2634,
+        "triage_peak": 15961,
+        "patch_entry": 1746,
+        "patch_peak": 4145,
+        "verifier_entry": 1420,
+        "verifier_peak": 6860
+      },
+      "fastapi_14361": {
+        "triage_entry": 2477,
+        "triage_peak": 9831,
+        "patch_entry": 1192,
+        "patch_peak": 6365,
+        "verifier_entry": 1260,
+        "verifier_peak": 2117
+      },
+      "fastapi_14459": {
+        "triage_entry": 2773,
+        "triage_peak": 15605,
+        "patch_entry": 1804,
+        "patch_peak": 3633,
+        "verifier_entry": 1562,
+        "verifier_peak": 2496
+      },
       "fastapi_15588": {
         "triage_entry": 3373,
         "triage_peak": 4979,
@@ -158,6 +274,14 @@
         "verifier_entry": 1557,
         "verifier_peak": 4875
       },
+      "fastapi_9753": {
+        "triage_entry": 2763,
+        "triage_peak": 6469,
+        "patch_entry": 1881,
+        "patch_peak": 3030,
+        "verifier_entry": 1652,
+        "verifier_peak": 4976
+      },
       "httpx_3672": {
         "triage_entry": 2116,
         "triage_peak": 7842,
@@ -165,6 +289,14 @@
         "patch_peak": 5007,
         "verifier_entry": 1304,
         "verifier_peak": 8140
+      },
+      "requests_7427": {
+        "triage_entry": 2072,
+        "triage_peak": 13362,
+        "patch_entry": 1326,
+        "patch_peak": 5891,
+        "verifier_entry": 1347,
+        "verifier_peak": 1850
       },
       "requests_7502": {
         "triage_entry": 1914,
@@ -182,6 +314,22 @@
         "verifier_entry": 1362,
         "verifier_peak": 1812
       },
+      "rich_3043": {
+        "triage_entry": 2618,
+        "triage_peak": 14384,
+        "patch_entry": 1388,
+        "patch_peak": 7650,
+        "verifier_entry": 1285,
+        "verifier_peak": 2014
+      },
+      "rich_3944": {
+        "triage_entry": 2892,
+        "triage_peak": 14528,
+        "patch_entry": 1187,
+        "patch_peak": 4323,
+        "verifier_entry": 1255,
+        "verifier_peak": 2141
+      },
       "rich_4070": {
         "triage_entry": 4829,
         "triage_peak": 8499,
@@ -189,6 +337,14 @@
         "patch_peak": 5380,
         "verifier_entry": 2165,
         "verifier_peak": 7542
+      },
+      "rich_4076": {
+        "triage_entry": 2901,
+        "triage_peak": 16146,
+        "patch_entry": 1212,
+        "patch_peak": 4816,
+        "verifier_entry": 1268,
+        "verifier_peak": 1887
       },
       "rich_4077": {
         "triage_entry": 2903,
@@ -200,13 +356,133 @@
       }
     }
   },
+  "prompt_length_buckets": [
+    {
+      "bucket": "< 4,000",
+      "llm_calls": 155,
+      "tool_calls": 138,
+      "tool_errors": 19,
+      "edit_calls": 20,
+      "edit_errors": 4,
+      "read_calls": 50,
+      "dup_reads": 6,
+      "tool_error_pct": 13.8,
+      "edit_error_pct": 20.0,
+      "dup_read_pct": 12.0
+    },
+    {
+      "bucket": "4,000 - 7,999",
+      "llm_calls": 220,
+      "tool_calls": 193,
+      "tool_errors": 33,
+      "edit_calls": 38,
+      "edit_errors": 13,
+      "read_calls": 102,
+      "dup_reads": 3,
+      "tool_error_pct": 17.1,
+      "edit_error_pct": 34.2,
+      "dup_read_pct": 2.9
+    },
+    {
+      "bucket": "8,000 - 11,999",
+      "llm_calls": 183,
+      "tool_calls": 160,
+      "tool_errors": 26,
+      "edit_calls": 30,
+      "edit_errors": 13,
+      "read_calls": 54,
+      "dup_reads": 6,
+      "tool_error_pct": 16.2,
+      "edit_error_pct": 43.3,
+      "dup_read_pct": 11.1
+    },
+    {
+      "bucket": ">= 12,000",
+      "llm_calls": 85,
+      "tool_calls": 72,
+      "tool_errors": 14,
+      "edit_calls": 17,
+      "edit_errors": 7,
+      "read_calls": 25,
+      "dup_reads": 5,
+      "tool_error_pct": 19.4,
+      "edit_error_pct": 41.2,
+      "dup_read_pct": 20.0
+    }
+  ],
+  "rerun_reproducibility": {
+    "flat_controlled": {
+      "n_tasks": 8,
+      "resolved_agreement_k": 7,
+      "resolved_agreement_pct": 87.5,
+      "patch_presence_agreement_k": 8,
+      "patch_presence_agreement_pct": 100.0,
+      "exact_peak_prompt_match_k": 0,
+      "mean_abs_peak_prompt_diff": 1797.4,
+      "max_abs_peak_prompt_diff": 4457
+    },
+    "sfd": {
+      "n_tasks": 8,
+      "resolved_agreement_k": 8,
+      "resolved_agreement_pct": 100.0,
+      "patch_presence_agreement_k": 6,
+      "patch_presence_agreement_pct": 75.0,
+      "exact_peak_prompt_match_k": 0,
+      "mean_abs_peak_prompt_diff": 2427.2,
+      "max_abs_peak_prompt_diff": 5292
+    }
+  },
+  "cohort_breakdown": {
+    "flat_starter": {
+      "cohort1_canonical": {
+        "n": 8,
+        "resolved_k": 0,
+        "resolved_pct": 0.0,
+        "mean_peak_prompt_tokens": 12855.2
+      },
+      "cohort2_seeded_random": {
+        "n": 8,
+        "resolved_k": 1,
+        "resolved_pct": 12.5,
+        "mean_peak_prompt_tokens": 13203.4
+      }
+    },
+    "flat_controlled": {
+      "cohort1_canonical": {
+        "n": 8,
+        "resolved_k": 0,
+        "resolved_pct": 0.0,
+        "mean_peak_prompt_tokens": 12456.4
+      },
+      "cohort2_seeded_random": {
+        "n": 8,
+        "resolved_k": 0,
+        "resolved_pct": 0.0,
+        "mean_peak_prompt_tokens": 14645.1
+      }
+    },
+    "sfd": {
+      "cohort1_canonical": {
+        "n": 8,
+        "resolved_k": 1,
+        "resolved_pct": 12.5,
+        "mean_peak_prompt_tokens": 9298.1
+      },
+      "cohort2_seeded_random": {
+        "n": 8,
+        "resolved_k": 0,
+        "resolved_pct": 0.0,
+        "mean_peak_prompt_tokens": 13285.8
+      }
+    }
+  },
   "per_repo_breakdown": {
     "flat_controlled": {
       "Textualize/rich": {
-        "n": 2,
+        "n": 5,
         "resolved_k": 0,
         "resolved_pct": 0.0,
-        "mean_peak_prompt_tokens": 11471.5
+        "mean_peak_prompt_tokens": 13575.4
       },
       "encode/httpx": {
         "n": 1,
@@ -215,24 +491,24 @@
         "mean_peak_prompt_tokens": 13010
       },
       "fastapi/fastapi": {
+        "n": 7,
+        "resolved_k": 0,
+        "resolved_pct": 0.0,
+        "mean_peak_prompt_tokens": 13854.6
+      },
+      "psf/requests": {
         "n": 3,
         "resolved_k": 0,
         "resolved_pct": 0.0,
-        "mean_peak_prompt_tokens": 13380.7
-      },
-      "psf/requests": {
-        "n": 2,
-        "resolved_k": 0,
-        "resolved_pct": 0.0,
-        "mean_peak_prompt_tokens": 11778
+        "mean_peak_prompt_tokens": 12981
       }
     },
     "flat_starter": {
       "Textualize/rich": {
-        "n": 2,
+        "n": 5,
         "resolved_k": 0,
         "resolved_pct": 0.0,
-        "mean_peak_prompt_tokens": 13988.5
+        "mean_peak_prompt_tokens": 14503.6
       },
       "encode/httpx": {
         "n": 1,
@@ -241,24 +517,24 @@
         "mean_peak_prompt_tokens": 14736
       },
       "fastapi/fastapi": {
+        "n": 7,
+        "resolved_k": 1,
+        "resolved_pct": 14.29,
+        "mean_peak_prompt_tokens": 12890.3
+      },
+      "psf/requests": {
         "n": 3,
         "resolved_k": 0,
         "resolved_pct": 0.0,
-        "mean_peak_prompt_tokens": 12964.3
-      },
-      "psf/requests": {
-        "n": 2,
-        "resolved_k": 0,
-        "resolved_pct": 0.0,
-        "mean_peak_prompt_tokens": 10618
+        "mean_peak_prompt_tokens": 10327.7
       }
     },
     "sfd": {
       "Textualize/rich": {
-        "n": 2,
+        "n": 5,
         "resolved_k": 1,
-        "resolved_pct": 50.0,
-        "mean_peak_prompt_tokens": 6107.5
+        "resolved_pct": 20.0,
+        "mean_peak_prompt_tokens": 11454.6
       },
       "encode/httpx": {
         "n": 1,
@@ -267,61 +543,161 @@
         "mean_peak_prompt_tokens": 8140
       },
       "fastapi/fastapi": {
+        "n": 7,
+        "resolved_k": 0,
+        "resolved_pct": 0.0,
+        "mean_peak_prompt_tokens": 10970.1
+      },
+      "psf/requests": {
         "n": 3,
         "resolved_k": 0,
         "resolved_pct": 0.0,
-        "mean_peak_prompt_tokens": 9641.7
-      },
-      "psf/requests": {
-        "n": 2,
-        "resolved_k": 0,
-        "resolved_pct": 0.0,
-        "mean_peak_prompt_tokens": 12552.5
+        "mean_peak_prompt_tokens": 12822.3
       }
     }
   },
   "failure_taxonomy": {
     "flat_controlled": {
+      "timeout_or_budget_no_patch": [
+        "fastapi_14099",
+        "fastapi_14459"
+      ],
       "test_verification_failed": [
+        "fastapi_14361",
         "fastapi_15588",
         "fastapi_15589",
         "fastapi_15661",
+        "fastapi_9753",
         "httpx_3672",
+        "requests_7427",
         "requests_7502",
         "requests_7505",
+        "rich_3043",
+        "rich_3944",
         "rich_4070",
+        "rich_4076",
         "rich_4077"
       ]
     },
     "flat_starter": {
       "test_verification_failed": [
+        "fastapi_14099",
+        "fastapi_14361",
+        "fastapi_14459",
         "fastapi_15588",
         "fastapi_15589",
         "fastapi_15661",
         "httpx_3672",
+        "requests_7427",
         "requests_7502",
-        "requests_7505"
+        "requests_7505",
+        "rich_3043",
+        "rich_4076"
       ],
       "timeout_or_budget_no_patch": [
+        "rich_3944",
         "rich_4070",
         "rich_4077"
       ]
     },
     "sfd": {
       "test_verification_failed": [
+        "fastapi_14099",
+        "fastapi_14361",
+        "fastapi_14459",
         "fastapi_15588",
         "fastapi_15661",
+        "fastapi_9753",
         "httpx_3672",
+        "requests_7427",
         "requests_7502",
         "requests_7505",
-        "rich_4070"
+        "rich_3944",
+        "rich_4070",
+        "rich_4076"
       ],
       "timeout_or_budget_no_patch": [
-        "fastapi_15589"
+        "fastapi_15589",
+        "rich_3043"
       ]
     }
   },
   "task_matrix": [
+    {
+      "instance_id": "fastapi_14099",
+      "repo": "fastapi/fastapi",
+      "flat_controlled_resolved": false,
+      "flat_controlled_patch_chars": 0,
+      "flat_controlled_peak_prompt_tokens": 13933,
+      "flat_controlled_cum_total_tokens": 117015,
+      "flat_controlled_tool_calls": 9,
+      "flat_controlled_duration_sec": 79.74,
+      "flat_controlled_failure_bucket": "timeout_or_budget_no_patch",
+      "flat_starter_resolved": false,
+      "flat_starter_patch_chars": 1108,
+      "flat_starter_peak_prompt_tokens": 15281,
+      "flat_starter_cum_total_tokens": 181430,
+      "flat_starter_tool_calls": 15,
+      "flat_starter_duration_sec": 122.9,
+      "flat_starter_failure_bucket": "test_verification_failed",
+      "sfd_resolved": false,
+      "sfd_patch_chars": 588,
+      "sfd_peak_prompt_tokens": 15961,
+      "sfd_cum_total_tokens": 143944,
+      "sfd_tool_calls": 15,
+      "sfd_duration_sec": 114.99,
+      "sfd_failure_bucket": "test_verification_failed"
+    },
+    {
+      "instance_id": "fastapi_14361",
+      "repo": "fastapi/fastapi",
+      "flat_controlled_resolved": false,
+      "flat_controlled_patch_chars": 530,
+      "flat_controlled_peak_prompt_tokens": 15010,
+      "flat_controlled_cum_total_tokens": 175229,
+      "flat_controlled_tool_calls": 15,
+      "flat_controlled_duration_sec": 85.05,
+      "flat_controlled_failure_bucket": "test_verification_failed",
+      "flat_starter_resolved": false,
+      "flat_starter_patch_chars": 598,
+      "flat_starter_peak_prompt_tokens": 10191,
+      "flat_starter_cum_total_tokens": 71244,
+      "flat_starter_tool_calls": 7,
+      "flat_starter_duration_sec": 52.72,
+      "flat_starter_failure_bucket": "test_verification_failed",
+      "sfd_resolved": false,
+      "sfd_patch_chars": 383,
+      "sfd_peak_prompt_tokens": 9831,
+      "sfd_cum_total_tokens": 61886,
+      "sfd_tool_calls": 9,
+      "sfd_duration_sec": 86.02,
+      "sfd_failure_bucket": "test_verification_failed"
+    },
+    {
+      "instance_id": "fastapi_14459",
+      "repo": "fastapi/fastapi",
+      "flat_controlled_resolved": false,
+      "flat_controlled_patch_chars": 0,
+      "flat_controlled_peak_prompt_tokens": 16154,
+      "flat_controlled_cum_total_tokens": 132214,
+      "flat_controlled_tool_calls": 12,
+      "flat_controlled_duration_sec": 151.44,
+      "flat_controlled_failure_bucket": "timeout_or_budget_no_patch",
+      "flat_starter_resolved": false,
+      "flat_starter_patch_chars": 573,
+      "flat_starter_peak_prompt_tokens": 14820,
+      "flat_starter_cum_total_tokens": 91740,
+      "flat_starter_tool_calls": 8,
+      "flat_starter_duration_sec": 65.85,
+      "flat_starter_failure_bucket": "test_verification_failed",
+      "sfd_resolved": false,
+      "sfd_patch_chars": 783,
+      "sfd_peak_prompt_tokens": 15605,
+      "sfd_cum_total_tokens": 122272,
+      "sfd_tool_calls": 13,
+      "sfd_duration_sec": 84.66,
+      "sfd_failure_bucket": "test_verification_failed"
+    },
     {
       "instance_id": "fastapi_15588",
       "repo": "fastapi/fastapi",
@@ -332,6 +708,13 @@
       "flat_controlled_tool_calls": 9,
       "flat_controlled_duration_sec": 53.97,
       "flat_controlled_failure_bucket": "test_verification_failed",
+      "flat_controlled_rerun_resolved": false,
+      "flat_controlled_rerun_patch_chars": 909,
+      "flat_controlled_rerun_peak_prompt_tokens": 13144,
+      "flat_controlled_rerun_cum_total_tokens": 74131,
+      "flat_controlled_rerun_tool_calls": 6,
+      "flat_controlled_rerun_duration_sec": 67.33,
+      "flat_controlled_rerun_failure_bucket": "test_verification_failed",
       "flat_starter_resolved": false,
       "flat_starter_patch_chars": 1196,
       "flat_starter_peak_prompt_tokens": 13083,
@@ -345,7 +728,14 @@
       "sfd_cum_total_tokens": 65483,
       "sfd_tool_calls": 10,
       "sfd_duration_sec": 68.83,
-      "sfd_failure_bucket": "test_verification_failed"
+      "sfd_failure_bucket": "test_verification_failed",
+      "sfd_rerun_resolved": false,
+      "sfd_rerun_patch_chars": 864,
+      "sfd_rerun_peak_prompt_tokens": 9079,
+      "sfd_rerun_cum_total_tokens": 111364,
+      "sfd_rerun_tool_calls": 15,
+      "sfd_rerun_duration_sec": 100.14,
+      "sfd_rerun_failure_bucket": "test_verification_failed"
     },
     {
       "instance_id": "fastapi_15589",
@@ -357,6 +747,13 @@
       "flat_controlled_tool_calls": 15,
       "flat_controlled_duration_sec": 117.78,
       "flat_controlled_failure_bucket": "test_verification_failed",
+      "flat_controlled_rerun_resolved": false,
+      "flat_controlled_rerun_patch_chars": 23711,
+      "flat_controlled_rerun_peak_prompt_tokens": 14666,
+      "flat_controlled_rerun_cum_total_tokens": 122894,
+      "flat_controlled_rerun_tool_calls": 12,
+      "flat_controlled_rerun_duration_sec": 161.95,
+      "flat_controlled_rerun_failure_bucket": "test_verification_failed",
       "flat_starter_resolved": false,
       "flat_starter_patch_chars": 662,
       "flat_starter_peak_prompt_tokens": 14711,
@@ -370,7 +767,14 @@
       "sfd_cum_total_tokens": 167473,
       "sfd_tool_calls": 15,
       "sfd_duration_sec": 98.18,
-      "sfd_failure_bucket": "timeout_or_budget_no_patch"
+      "sfd_failure_bucket": "timeout_or_budget_no_patch",
+      "sfd_rerun_resolved": false,
+      "sfd_rerun_patch_chars": 590,
+      "sfd_rerun_peak_prompt_tokens": 14268,
+      "sfd_rerun_cum_total_tokens": 107360,
+      "sfd_rerun_tool_calls": 12,
+      "sfd_rerun_duration_sec": 103.9,
+      "sfd_rerun_failure_bucket": "test_verification_failed"
     },
     {
       "instance_id": "fastapi_15661",
@@ -382,6 +786,13 @@
       "flat_controlled_tool_calls": 10,
       "flat_controlled_duration_sec": 50.04,
       "flat_controlled_failure_bucket": "test_verification_failed",
+      "flat_controlled_rerun_resolved": false,
+      "flat_controlled_rerun_patch_chars": 938,
+      "flat_controlled_rerun_peak_prompt_tokens": 10082,
+      "flat_controlled_rerun_cum_total_tokens": 111226,
+      "flat_controlled_rerun_tool_calls": 14,
+      "flat_controlled_rerun_duration_sec": 69.6,
+      "flat_controlled_rerun_failure_bucket": "test_verification_failed",
       "flat_starter_resolved": false,
       "flat_starter_patch_chars": 539,
       "flat_starter_peak_prompt_tokens": 11099,
@@ -395,6 +806,38 @@
       "sfd_cum_total_tokens": 65832,
       "sfd_tool_calls": 12,
       "sfd_duration_sec": 97.76,
+      "sfd_failure_bucket": "test_verification_failed",
+      "sfd_rerun_resolved": false,
+      "sfd_rerun_patch_chars": 655,
+      "sfd_rerun_peak_prompt_tokens": 7502,
+      "sfd_rerun_cum_total_tokens": 59783,
+      "sfd_rerun_tool_calls": 10,
+      "sfd_rerun_duration_sec": 81.95,
+      "sfd_rerun_failure_bucket": "test_verification_failed"
+    },
+    {
+      "instance_id": "fastapi_9753",
+      "repo": "fastapi/fastapi",
+      "flat_controlled_resolved": false,
+      "flat_controlled_patch_chars": 661,
+      "flat_controlled_peak_prompt_tokens": 11743,
+      "flat_controlled_cum_total_tokens": 93328,
+      "flat_controlled_tool_calls": 8,
+      "flat_controlled_duration_sec": 49.01,
+      "flat_controlled_failure_bucket": "test_verification_failed",
+      "flat_starter_resolved": true,
+      "flat_starter_patch_chars": 702,
+      "flat_starter_peak_prompt_tokens": 11047,
+      "flat_starter_cum_total_tokens": 72239,
+      "flat_starter_tool_calls": 7,
+      "flat_starter_duration_sec": 46.14,
+      "flat_starter_failure_bucket": "resolved",
+      "sfd_resolved": false,
+      "sfd_patch_chars": 349,
+      "sfd_peak_prompt_tokens": 6469,
+      "sfd_cum_total_tokens": 42946,
+      "sfd_tool_calls": 7,
+      "sfd_duration_sec": 52.93,
       "sfd_failure_bucket": "test_verification_failed"
     },
     {
@@ -407,6 +850,13 @@
       "flat_controlled_tool_calls": 7,
       "flat_controlled_duration_sec": 62.76,
       "flat_controlled_failure_bucket": "test_verification_failed",
+      "flat_controlled_rerun_resolved": false,
+      "flat_controlled_rerun_patch_chars": 1564,
+      "flat_controlled_rerun_peak_prompt_tokens": 11996,
+      "flat_controlled_rerun_cum_total_tokens": 83698,
+      "flat_controlled_rerun_tool_calls": 6,
+      "flat_controlled_rerun_duration_sec": 80.0,
+      "flat_controlled_rerun_failure_bucket": "test_verification_failed",
       "flat_starter_resolved": false,
       "flat_starter_patch_chars": 1764,
       "flat_starter_peak_prompt_tokens": 14736,
@@ -420,6 +870,38 @@
       "sfd_cum_total_tokens": 98084,
       "sfd_tool_calls": 15,
       "sfd_duration_sec": 95.55,
+      "sfd_failure_bucket": "test_verification_failed",
+      "sfd_rerun_resolved": false,
+      "sfd_rerun_patch_chars": 1115,
+      "sfd_rerun_peak_prompt_tokens": 12998,
+      "sfd_rerun_cum_total_tokens": 106256,
+      "sfd_rerun_tool_calls": 14,
+      "sfd_rerun_duration_sec": 98.58,
+      "sfd_rerun_failure_bucket": "test_verification_failed"
+    },
+    {
+      "instance_id": "requests_7427",
+      "repo": "psf/requests",
+      "flat_controlled_resolved": false,
+      "flat_controlled_patch_chars": 789,
+      "flat_controlled_peak_prompt_tokens": 15387,
+      "flat_controlled_cum_total_tokens": 153554,
+      "flat_controlled_tool_calls": 14,
+      "flat_controlled_duration_sec": 95.36,
+      "flat_controlled_failure_bucket": "test_verification_failed",
+      "flat_starter_resolved": false,
+      "flat_starter_patch_chars": 583,
+      "flat_starter_peak_prompt_tokens": 9747,
+      "flat_starter_cum_total_tokens": 102726,
+      "flat_starter_tool_calls": 13,
+      "flat_starter_duration_sec": 153.63,
+      "flat_starter_failure_bucket": "test_verification_failed",
+      "sfd_resolved": false,
+      "sfd_patch_chars": 471,
+      "sfd_peak_prompt_tokens": 13362,
+      "sfd_cum_total_tokens": 78245,
+      "sfd_tool_calls": 10,
+      "sfd_duration_sec": 77.21,
       "sfd_failure_bucket": "test_verification_failed"
     },
     {
@@ -432,6 +914,13 @@
       "flat_controlled_tool_calls": 5,
       "flat_controlled_duration_sec": 106.43,
       "flat_controlled_failure_bucket": "test_verification_failed",
+      "flat_controlled_rerun_resolved": false,
+      "flat_controlled_rerun_patch_chars": 506,
+      "flat_controlled_rerun_peak_prompt_tokens": 10295,
+      "flat_controlled_rerun_cum_total_tokens": 45883,
+      "flat_controlled_rerun_tool_calls": 4,
+      "flat_controlled_rerun_duration_sec": 121.02,
+      "flat_controlled_rerun_failure_bucket": "test_verification_failed",
       "flat_starter_resolved": false,
       "flat_starter_patch_chars": 653,
       "flat_starter_peak_prompt_tokens": 10436,
@@ -445,7 +934,14 @@
       "sfd_cum_total_tokens": 93765,
       "sfd_tool_calls": 11,
       "sfd_duration_sec": 149.55,
-      "sfd_failure_bucket": "test_verification_failed"
+      "sfd_failure_bucket": "test_verification_failed",
+      "sfd_rerun_resolved": false,
+      "sfd_rerun_patch_chars": 0,
+      "sfd_rerun_peak_prompt_tokens": 9154,
+      "sfd_rerun_cum_total_tokens": 92352,
+      "sfd_rerun_tool_calls": 15,
+      "sfd_rerun_duration_sec": 157.42,
+      "sfd_rerun_failure_bucket": "timeout_or_budget_no_patch"
     },
     {
       "instance_id": "requests_7505",
@@ -457,6 +953,13 @@
       "flat_controlled_tool_calls": 11,
       "flat_controlled_duration_sec": 174.33,
       "flat_controlled_failure_bucket": "test_verification_failed",
+      "flat_controlled_rerun_resolved": false,
+      "flat_controlled_rerun_patch_chars": 608,
+      "flat_controlled_rerun_peak_prompt_tokens": 12099,
+      "flat_controlled_rerun_cum_total_tokens": 91108,
+      "flat_controlled_rerun_tool_calls": 9,
+      "flat_controlled_rerun_duration_sec": 172.54,
+      "flat_controlled_rerun_failure_bucket": "test_verification_failed",
       "flat_starter_resolved": false,
       "flat_starter_patch_chars": 943,
       "flat_starter_peak_prompt_tokens": 10800,
@@ -470,6 +973,63 @@
       "sfd_cum_total_tokens": 57299,
       "sfd_tool_calls": 9,
       "sfd_duration_sec": 124.14,
+      "sfd_failure_bucket": "test_verification_failed",
+      "sfd_rerun_resolved": false,
+      "sfd_rerun_patch_chars": 598,
+      "sfd_rerun_peak_prompt_tokens": 7828,
+      "sfd_rerun_cum_total_tokens": 45631,
+      "sfd_rerun_tool_calls": 7,
+      "sfd_rerun_duration_sec": 136.6,
+      "sfd_rerun_failure_bucket": "test_verification_failed"
+    },
+    {
+      "instance_id": "rich_3043",
+      "repo": "Textualize/rich",
+      "flat_controlled_resolved": false,
+      "flat_controlled_patch_chars": 4963,
+      "flat_controlled_peak_prompt_tokens": 14820,
+      "flat_controlled_cum_total_tokens": 126500,
+      "flat_controlled_tool_calls": 12,
+      "flat_controlled_duration_sec": 91.26,
+      "flat_controlled_failure_bucket": "test_verification_failed",
+      "flat_starter_resolved": false,
+      "flat_starter_patch_chars": 3118,
+      "flat_starter_peak_prompt_tokens": 14789,
+      "flat_starter_cum_total_tokens": 149761,
+      "flat_starter_tool_calls": 15,
+      "flat_starter_duration_sec": 132.09,
+      "flat_starter_failure_bucket": "test_verification_failed",
+      "sfd_resolved": false,
+      "sfd_patch_chars": 0,
+      "sfd_peak_prompt_tokens": 14384,
+      "sfd_cum_total_tokens": 115173,
+      "sfd_tool_calls": 14,
+      "sfd_duration_sec": 111.53,
+      "sfd_failure_bucket": "timeout_or_budget_no_patch"
+    },
+    {
+      "instance_id": "rich_3944",
+      "repo": "Textualize/rich",
+      "flat_controlled_resolved": false,
+      "flat_controlled_patch_chars": 778,
+      "flat_controlled_peak_prompt_tokens": 15031,
+      "flat_controlled_cum_total_tokens": 130306,
+      "flat_controlled_tool_calls": 11,
+      "flat_controlled_duration_sec": 102.0,
+      "flat_controlled_failure_bucket": "test_verification_failed",
+      "flat_starter_resolved": false,
+      "flat_starter_patch_chars": 0,
+      "flat_starter_peak_prompt_tokens": 15175,
+      "flat_starter_cum_total_tokens": 143595,
+      "flat_starter_tool_calls": 14,
+      "flat_starter_duration_sec": 82.28,
+      "flat_starter_failure_bucket": "timeout_or_budget_no_patch",
+      "sfd_resolved": false,
+      "sfd_patch_chars": 474,
+      "sfd_peak_prompt_tokens": 14528,
+      "sfd_cum_total_tokens": 106347,
+      "sfd_tool_calls": 12,
+      "sfd_duration_sec": 80.31,
       "sfd_failure_bucket": "test_verification_failed"
     },
     {
@@ -482,6 +1042,13 @@
       "flat_controlled_tool_calls": 15,
       "flat_controlled_duration_sec": 112.24,
       "flat_controlled_failure_bucket": "test_verification_failed",
+      "flat_controlled_rerun_resolved": false,
+      "flat_controlled_rerun_patch_chars": 2410,
+      "flat_controlled_rerun_peak_prompt_tokens": 15604,
+      "flat_controlled_rerun_cum_total_tokens": 201345,
+      "flat_controlled_rerun_tool_calls": 15,
+      "flat_controlled_rerun_duration_sec": 137.69,
+      "flat_controlled_rerun_failure_bucket": "test_verification_failed",
       "flat_starter_resolved": false,
       "flat_starter_patch_chars": 0,
       "flat_starter_peak_prompt_tokens": 13298,
@@ -495,6 +1062,38 @@
       "sfd_cum_total_tokens": 75696,
       "sfd_tool_calls": 10,
       "sfd_duration_sec": 67.54,
+      "sfd_failure_bucket": "test_verification_failed",
+      "sfd_rerun_resolved": false,
+      "sfd_rerun_patch_chars": 733,
+      "sfd_rerun_peak_prompt_tokens": 7132,
+      "sfd_rerun_cum_total_tokens": 43870,
+      "sfd_rerun_tool_calls": 5,
+      "sfd_rerun_duration_sec": 50.52,
+      "sfd_rerun_failure_bucket": "test_verification_failed"
+    },
+    {
+      "instance_id": "rich_4076",
+      "repo": "Textualize/rich",
+      "flat_controlled_resolved": false,
+      "flat_controlled_patch_chars": 937,
+      "flat_controlled_peak_prompt_tokens": 15083,
+      "flat_controlled_cum_total_tokens": 110428,
+      "flat_controlled_tool_calls": 9,
+      "flat_controlled_duration_sec": 109.5,
+      "flat_controlled_failure_bucket": "test_verification_failed",
+      "flat_starter_resolved": false,
+      "flat_starter_patch_chars": 741,
+      "flat_starter_peak_prompt_tokens": 14577,
+      "flat_starter_cum_total_tokens": 92788,
+      "flat_starter_tool_calls": 8,
+      "flat_starter_duration_sec": 76.26,
+      "flat_starter_failure_bucket": "test_verification_failed",
+      "sfd_resolved": false,
+      "sfd_patch_chars": 467,
+      "sfd_peak_prompt_tokens": 16146,
+      "sfd_cum_total_tokens": 105412,
+      "sfd_tool_calls": 12,
+      "sfd_duration_sec": 80.4,
       "sfd_failure_bucket": "test_verification_failed"
     },
     {
@@ -507,6 +1106,13 @@
       "flat_controlled_tool_calls": 6,
       "flat_controlled_duration_sec": 34.07,
       "flat_controlled_failure_bucket": "test_verification_failed",
+      "flat_controlled_rerun_resolved": true,
+      "flat_controlled_rerun_patch_chars": 323,
+      "flat_controlled_rerun_peak_prompt_tokens": 12574,
+      "flat_controlled_rerun_cum_total_tokens": 59416,
+      "flat_controlled_rerun_tool_calls": 5,
+      "flat_controlled_rerun_duration_sec": 49.24,
+      "flat_controlled_rerun_failure_bucket": "resolved",
       "flat_starter_resolved": false,
       "flat_starter_patch_chars": 0,
       "flat_starter_peak_prompt_tokens": 14679,
@@ -520,7 +1126,14 @@
       "sfd_cum_total_tokens": 22695,
       "sfd_tool_calls": 5,
       "sfd_duration_sec": 40.3,
-      "sfd_failure_bucket": "resolved"
+      "sfd_failure_bucket": "resolved",
+      "sfd_rerun_resolved": true,
+      "sfd_rerun_patch_chars": 513,
+      "sfd_rerun_peak_prompt_tokens": 6490,
+      "sfd_rerun_cum_total_tokens": 31441,
+      "sfd_rerun_tool_calls": 6,
+      "sfd_rerun_duration_sec": 41.81,
+      "sfd_rerun_failure_bucket": "resolved"
     }
   ]
 }

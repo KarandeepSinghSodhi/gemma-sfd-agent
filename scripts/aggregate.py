@@ -77,15 +77,21 @@ def parse_atif_trace(trace_path: Path) -> Dict[str, Any]:
     stage_max_prompt: Dict[str, int] = defaultdict(int)
     stage_call_counts: Dict[str, int] = defaultdict(int)
     tool_names_used: List[str] = []
+    tool_events_detailed: List[Tuple[str, str]] = []
+    prompt_bucket_events: List[Dict[str, Any]] = []
+    seen_reads = set()
+    last_pt = 0
 
     for step in steps:
         extra = step.get("extra", {}) or {}
         author = extra.get("author", "unknown")
         metrics = step.get("metrics")
-        if isinstance(metrics, dict) and "prompt_tokens" in metrics:
+        has_pt = isinstance(metrics, dict) and "prompt_tokens" in metrics
+        if has_pt:
             pt = int(metrics.get("prompt_tokens", 0))
             ct = int(metrics.get("completion_tokens", 0))
             tt = int(metrics.get("total_tokens", pt + ct))
+            last_pt = pt
             call_prompt_tokens.append(pt)
             call_completion_tokens.append(ct)
             call_total_tokens.append(tt)
@@ -95,10 +101,51 @@ def parse_atif_trace(trace_path: Path) -> Dict[str, Any]:
                 stage_max_prompt[author] = pt
             stage_call_counts[author] += 1
 
-        for tc in step.get("tool_calls", []) or []:
+        tcs = step.get("tool_calls", []) or []
+        dup_r = 0
+        read_c = 0
+        edit_c = 0
+        for tc in tcs:
             fn = tc.get("function_name")
+            args = tc.get("arguments") or {}
+            tc_author = (tc.get("extra") or {}).get("author") or author
             if fn:
                 tool_names_used.append(fn)
+                tool_events_detailed.append((tc_author, fn))
+                if fn == "edit_file":
+                    edit_c += 1
+                if fn == "read_file":
+                    read_c += 1
+                    key = (args.get("filepath"), args.get("start_line"), args.get("end_line"))
+                    if key in seen_reads:
+                        dup_r += 1
+                    seen_reads.add(key)
+
+        obs = step.get("observation") or {}
+        obs_c = obs.get("content", "") if isinstance(obs, dict) else ""
+        tool_err = 0
+        edit_err = 0
+        if obs_c:
+            try:
+                is_err = json.loads(obs_c).get("status") == "error"
+            except Exception:
+                is_err = False
+            if is_err:
+                tool_err = 1
+                if (obs.get("extra") or {}).get("tool_name") == "edit_file":
+                    edit_err = 1
+
+        if has_pt or tcs or obs_c:
+            prompt_bucket_events.append({
+                "prompt_tokens": last_pt,
+                "is_llm_call": 1 if has_pt else 0,
+                "tool_calls": len(tcs),
+                "tool_errors": tool_err,
+                "edit_calls": edit_c,
+                "edit_errors": edit_err,
+                "read_calls": read_c,
+                "dup_reads": dup_r,
+            })
 
     peak_prompt = max(call_prompt_tokens) if call_prompt_tokens else 0
     peak_total = max(call_total_tokens) if call_total_tokens else 0
@@ -117,6 +164,8 @@ def parse_atif_trace(trace_path: Path) -> Dict[str, Any]:
         "stage_max_prompt": dict(stage_max_prompt),
         "stage_call_counts": dict(stage_call_counts),
         "tool_names_used": tool_names_used,
+        "tool_events_detailed": tool_events_detailed,
+        "prompt_bucket_events": prompt_bucket_events,
         "context_overflow": peak_total >= 32768,
     }
 
@@ -231,6 +280,8 @@ def aggregate(traces_dir: str = "traces", results_dir: str = "results") -> Dict[
     stage_reset_stats: Dict[str, Any] = {}
 
     for cfg in sorted(by_config.keys()):
+        if cfg.endswith("_rerun"):
+            continue
         records = [by_config[cfg][iid] for iid in sorted(by_config[cfg].keys())]
         n = len(records)
         if n == 0:
@@ -330,15 +381,138 @@ def aggregate(traces_dir: str = "traces", results_dir: str = "results") -> Dict[
             ca_tasks = [r["instance_id"] for r in records if "code_analyzer_agent" in r["tool_names_used"]]
             ca_calls = sum(r["tool_names_used"].count("code_analyzer_agent") for r in records)
             tot_tc = sum(len(r["tool_names_used"]) for r in records)
+            budget_tc_total = sum(int(r["tool_calls"]) for r in records)
+            root_budget_calls = 0
+            child_ca_calls = 0
+            free_submit_calls = 0
+            free_status_calls = 0
+            for r in records:
+                for tc_author, fn in r.get("tool_events_detailed", []):
+                    if fn == "code_analyzer_agent":
+                        continue
+                    elif fn == "submit_patch":
+                        free_submit_calls += 1
+                    elif fn == "get_status":
+                        free_status_calls += 1
+                    elif tc_author == "code_analyzer_agent":
+                        child_ca_calls += 1
+                    else:
+                        root_budget_calls += 1
+            root_non_submit_decisions = root_budget_calls + ca_calls
             stage_reset_stats["flat_starter_code_analyzer"] = {
                 "tasks_invoking_code_analyzer_k": len(ca_tasks),
                 "tasks_invoking_code_analyzer_ids": ca_tasks,
                 "tasks_bypassing_code_analyzer_k": n - len(ca_tasks),
                 "tasks_bypassing_code_analyzer_pct": round(((n - len(ca_tasks)) / n) * 100.0, 1),
                 "code_analyzer_calls": ca_calls,
+                "budget_counted_tool_calls_total": budget_tc_total,
+                "root_budget_counted_calls": root_budget_calls,
+                "child_code_analyzer_calls": child_ca_calls,
+                "free_submit_patch_calls": free_submit_calls,
+                "free_get_status_calls": free_status_calls,
+                "root_non_submit_decisions": root_non_submit_decisions,
+                "code_analyzer_root_decision_share_pct": round((ca_calls / root_non_submit_decisions) * 100.0, 1) if root_non_submit_decisions else 0.0,
                 "total_recorded_tool_calls": tot_tc,
                 "code_analyzer_call_share_pct": round((ca_calls / tot_tc) * 100.0, 1) if tot_tc else 0.0,
             }
+
+    # Prompt-length bucket analysis across primary configurations (testing Hypothesis 1)
+    bucket_defs = [
+        ("< 4,000", 0, 4000),
+        ("4,000 - 7,999", 4000, 8000),
+        ("8,000 - 11,999", 8000, 12000),
+        (">= 12,000", 12000, 100000),
+    ]
+    bucket_map = {
+        b[0]: {
+            "bucket": b[0],
+            "llm_calls": 0,
+            "tool_calls": 0,
+            "tool_errors": 0,
+            "edit_calls": 0,
+            "edit_errors": 0,
+            "read_calls": 0,
+            "dup_reads": 0,
+        }
+        for b in bucket_defs
+    }
+    primary_configs = [c for c in ("flat_starter", "flat_controlled", "sfd") if c in by_config]
+    for cfg in primary_configs:
+        for r in by_config[cfg].values():
+            for ev in r.get("prompt_bucket_events", []):
+                pt = int(ev.get("prompt_tokens", 0))
+                if pt <= 0:
+                    continue
+                bname = next(b[0] for b in bucket_defs if b[1] <= pt < b[2])
+                bm = bucket_map[bname]
+                bm["llm_calls"] += int(ev.get("is_llm_call", 0))
+                bm["tool_calls"] += int(ev.get("tool_calls", 0))
+                bm["tool_errors"] += int(ev.get("tool_errors", 0))
+                bm["edit_calls"] += int(ev.get("edit_calls", 0))
+                bm["edit_errors"] += int(ev.get("edit_errors", 0))
+                bm["read_calls"] += int(ev.get("read_calls", 0))
+                bm["dup_reads"] += int(ev.get("dup_reads", 0))
+
+    prompt_length_buckets = []
+    for b_label, _, _ in bucket_defs:
+        bm = bucket_map[b_label]
+        tc = bm["tool_calls"]
+        ec = bm["edit_calls"]
+        rc = bm["read_calls"]
+        prompt_length_buckets.append({
+            **bm,
+            "tool_error_pct": round((bm["tool_errors"] / tc) * 100.0, 1) if tc else 0.0,
+            "edit_error_pct": round((bm["edit_errors"] / ec) * 100.0, 1) if ec else 0.0,
+            "dup_read_pct": round((bm["dup_reads"] / rc) * 100.0, 1) if rc else 0.0,
+        })
+
+    # Rerun reproducibility analysis (if rerun configs are present)
+    rerun_reproducibility: Dict[str, Any] = {}
+    for base_cfg in ("flat_controlled", "sfd"):
+        rerun_cfg = f"{base_cfg}_rerun"
+        if base_cfg in by_config and rerun_cfg in by_config:
+            common = sorted(set(by_config[base_cfg].keys()) & set(by_config[rerun_cfg].keys()))
+            if common:
+                res_matches = sum(1 for iid in common if by_config[base_cfg][iid]["resolved"] == by_config[rerun_cfg][iid]["resolved"])
+                patch_matches = sum(1 for iid in common if (by_config[base_cfg][iid]["patch_chars"] > 0) == (by_config[rerun_cfg][iid]["patch_chars"] > 0))
+                exact_peak_matches = sum(1 for iid in common if by_config[base_cfg][iid]["peak_prompt_tokens"] == by_config[rerun_cfg][iid]["peak_prompt_tokens"])
+                peak_diffs = [abs(by_config[base_cfg][iid]["peak_prompt_tokens"] - by_config[rerun_cfg][iid]["peak_prompt_tokens"]) for iid in common]
+                rerun_reproducibility[base_cfg] = {
+                    "n_tasks": len(common),
+                    "resolved_agreement_k": res_matches,
+                    "resolved_agreement_pct": round((res_matches / len(common)) * 100.0, 1),
+                    "patch_presence_agreement_k": patch_matches,
+                    "patch_presence_agreement_pct": round((patch_matches / len(common)) * 100.0, 1),
+                    "exact_peak_prompt_match_k": exact_peak_matches,
+                    "mean_abs_peak_prompt_diff": round(mean(peak_diffs), 1),
+                    "max_abs_peak_prompt_diff": max(peak_diffs),
+                }
+
+    # Cohort breakdown (Cohort 1 canonical-order vs Cohort 2 seeded-random stratified)
+    cohort1_ids = {
+        "fastapi_15661", "fastapi_15588", "fastapi_15589",
+        "requests_7505", "requests_7502",
+        "rich_4070", "rich_4077",
+        "httpx_3672",
+    }
+    cohort_breakdown: Dict[str, Any] = {}
+    for cfg in primary_configs:
+        c1_recs = [r for iid, r in by_config[cfg].items() if iid in cohort1_ids]
+        c2_recs = [r for iid, r in by_config[cfg].items() if iid not in cohort1_ids]
+        cohort_breakdown[cfg] = {
+            "cohort1_canonical": {
+                "n": len(c1_recs),
+                "resolved_k": sum(1 for r in c1_recs if r["resolved"]),
+                "resolved_pct": round((sum(1 for r in c1_recs if r["resolved"]) / len(c1_recs)) * 100.0, 1) if c1_recs else 0.0,
+                "mean_peak_prompt_tokens": round(mean(r["peak_prompt_tokens"] for r in c1_recs), 1) if c1_recs else 0.0,
+            },
+            "cohort2_seeded_random": {
+                "n": len(c2_recs),
+                "resolved_k": sum(1 for r in c2_recs if r["resolved"]),
+                "resolved_pct": round((sum(1 for r in c2_recs if r["resolved"]) / len(c2_recs)) * 100.0, 1) if c2_recs else 0.0,
+                "mean_peak_prompt_tokens": round(mean(r["peak_prompt_tokens"] for r in c2_recs), 1) if c2_recs else 0.0,
+            },
+        }
 
     # Paired comparisons across configurations
     paired_tests: List[Dict[str, Any]] = []
@@ -403,6 +577,9 @@ def aggregate(traces_dir: str = "traces", results_dir: str = "results") -> Dict[
         "summary_rows": summary_rows,
         "paired_tests": paired_tests,
         "stage_reset_stats": stage_reset_stats,
+        "prompt_length_buckets": prompt_length_buckets,
+        "rerun_reproducibility": rerun_reproducibility,
+        "cohort_breakdown": cohort_breakdown,
         "per_repo_breakdown": per_repo_breakdown,
         "failure_taxonomy": failure_taxonomy,
         "task_matrix": task_matrix,

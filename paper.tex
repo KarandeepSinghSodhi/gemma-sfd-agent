@@ -13,23 +13,23 @@
 \maketitle
 
 \begin{abstract}
-Autonomous software engineering (SWE) agents built on small open-weight language models (such as 4-bit quantized Gemma 4 E2B and E4B) face severe operational constraints when executing multi-turn debugging trajectories. We study State-Filtered Deliberation (SFD), a declarative three-stage \texttt{SequentialAgent} architecture built on Google's Agent Development Kit (ADK) and the \texttt{swegemma} harness that configures \texttt{include\_contents: "none"} on \texttt{PatchAgent} and \texttt{VerifierAgent}. Across a deterministic stratified subset of $n = 8$ benchmark tasks on \texttt{gemma-4-e4b-it-qat-w4a16-ct}, SFD resolves 1/8 tasks (12.5\%, 95\% Wilson CI [2.2\%, 47.1\%]) compared to 0/8 (0.0\%) for \texttt{flat\_starter} (McNemar $p = 1.0000$) and 0/8 (0.0\%) for \texttt{flat\_controlled} (McNemar $p = 1.0000$), while achieving a mean single-call peak prompt length of 9298.1 tokens (vs. 12855.2 for \texttt{flat\_starter} and 12456.4 for \texttt{flat\_controlled}) and resetting stage-entry prompt tokens from a mean triage peak of 8558.5 tokens down to 1534.9 tokens at \texttt{PatchAgent} entry and 1559.4 tokens at \texttt{VerifierAgent} entry.
+Autonomous software engineering (SWE) agents built on small open-weight language models (such as 4-bit quantized Gemma 4 E2B and E4B) face tight context and capability constraints when executing multi-turn debugging trajectories. We study State-Filtered Deliberation (SFD), a declarative three-stage \texttt{SequentialAgent} architecture built on Google's Agent Development Kit (ADK) and the \texttt{swegemma} harness that configures \texttt{include\_contents: "none"} on \texttt{PatchAgent} and \texttt{VerifierAgent} to bound stage-entry prompt length. Across $n = 16$ benchmark tasks on \texttt{gemma-4-e4b-it-qat-w4a16-ct}, SFD resolves 1/16 tasks (6.2\%, 95\% Wilson CI [1.1\%, 28.3\%]) compared to 1/16 (6.2\%) for \texttt{flat\_starter} (McNemar $p = 1.0000$) and 0/16 (0.0\%) for \texttt{flat\_controlled} (McNemar $p = 1.0000$), while achieving a mean single-call peak prompt length of 11291.9 tokens (vs. 13029.3 for \texttt{flat\_starter} and 13550.8 for \texttt{flat\_controlled}) and resetting stage-entry prompt tokens from a mean triage peak of 10922.1 tokens down to 1500.9 tokens at \texttt{PatchAgent} entry and 1470.2 tokens at \texttt{VerifierAgent} entry.
 \end{abstract}
 
 \section{Paired Evaluation Summary}
 \begin{table*}[t]
 \centering
 \small
-\begin{tabular}{lcccccccc}
+\begin{tabular}{lccccccccc}
 \toprule
-Configuration & Resolved & 95\% Wilson CI & Non-Empty Patch & Mean Peak $P_t$ & Max Peak $P_t$ & Mean Cum. & Mean Tools & Mean Time \\
+Configuration & Resolved & 95\% Wilson CI & Non-Empty Patch & Fail (No/Wrong) & Mean Peak $P_t$ & Max Peak $P_t$ & Mean Cum. & Mean Tools & Mean Time \\
 \midrule
-Official Starter Kit (\texttt{agent\_tool}) & 0/8 (0.0\%) & [0.0\%, 32.4\%] & 6/8 (75.0\%) & 12855.2 & 14736 & 93509.9 & 8.9 & 103.2s \\
-Controlled Single-Agent (\texttt{LlmAgent}) & 0/8 (0.0\%) & [0.0\%, 32.4\%] & 8/8 (100.0\%) & 12456.4 & 14912 & 109507.1 & 9.8 & 89.0s \\
-State-Filtered Deliberation (\texttt{SequentialAgent}) & 1/8 (12.5\%) & [2.2\%, 47.1\%] & 7/8 (87.5\%) & 9298.1 & 14454 & 80790.9 & 10.9 & 92.7s \\
+Official Starter Kit (\texttt{agent\_tool}) & 1/16 (6.2\%) & [1.1\%, 28.3\%] & 13/16 (81.2\%) & 3/12 & 13029.3 & 15281 & 103350.1 & 9.9 & 97.3s \\
+Controlled Single-Agent (\texttt{LlmAgent}) & 0/16 (0.0\%) & [0.0\%, 19.4\%] & 14/16 (87.5\%) & 2/14 & 13550.8 & 16154 & 119664.4 & 10.5 & 92.2s \\
+State-Filtered Deliberation (\texttt{SequentialAgent}) & 1/16 (6.2\%) & [1.1\%, 28.3\%] & 14/16 (87.5\%) & 2/13 & 11291.9 & 16146 & 88909.5 & 11.2 & 89.4s \\
 \bottomrule
 \end{tabular}
-\caption{Paired evaluation results on \texttt{gemma-4-e4b-it-qat-w4a16-ct} ($n = 8$) on 4x NVIDIA L4 GPUs.}
+\caption{Paired evaluation results on \texttt{gemma-4-e4b-it-qat-w4a16-ct} ($n = 16$) on 4x NVIDIA L4 GPUs.}
 \end{table*}
 
 \bibliographystyle{plain}

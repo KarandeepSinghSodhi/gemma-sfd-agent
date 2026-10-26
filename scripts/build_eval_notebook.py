@@ -548,10 +548,23 @@ nb = {
     ],
 }
 
-# Write Shard 1
+# Write Kernel 1: Rerun Reproducibility on Cohort 1 (8 tasks x 2 configs = 16 runs)
 k1_dir = Path(r"d:\AI Research\gemma_paper\kaggle_kernel")
 k1_dir.mkdir(parents=True, exist_ok=True)
-(k1_dir / "sfd_developer_agent.ipynb").write_text(json.dumps(nb, indent=2), encoding="utf-8")
+nb1 = json.loads(json.dumps(nb))
+c4_src1 = "".join(nb1["cells"][3]["source"])
+old_cfg_block = """CONFIGS = {
+    'flat_starter': FLAT_STARTER_DIR,
+    'flat_controlled': FLAT_CTRL_DIR,
+    'sfd': SFD_DIR,
+}"""
+new_cfg_block1 = """CONFIGS = {
+    'flat_controlled_rerun': FLAT_CTRL_DIR,
+    'sfd_rerun': SFD_DIR,
+}"""
+assert old_cfg_block in c4_src1
+nb1["cells"][3]["source"] = c4_src1.replace(old_cfg_block, new_cfg_block1).splitlines(keepends=True)
+(k1_dir / "sfd_developer_agent.ipynb").write_text(json.dumps(nb1, indent=2), encoding="utf-8")
 meta1 = {
     "id": "karandeepsinghsodhi/sfd-state-filtered-deliberation-agent-gemma-4",
     "title": "SFD: State-Filtered Deliberation Agent (Gemma 4)",
@@ -577,7 +590,7 @@ meta1 = {
 }
 (k1_dir / "kernel-metadata.json").write_text(json.dumps(meta1, indent=2), encoding="utf-8")
 
-# Write Shard 2 (with matching slug 'sfd-paired-eval-shard-2-gemma-4')
+# Write Kernel 2: Disjoint Seeded-Random Stratified Sample (seed=42, n=8 tasks x 3 configs = 24 runs)
 k2_dir = Path(r"d:\AI Research\gemma_paper\kaggle_kernel_shard2")
 k2_dir.mkdir(parents=True, exist_ok=True)
 nb2 = json.loads(json.dumps(nb))
@@ -594,28 +607,30 @@ for t in all_tasks:
     if counts[t.repo] < QUOTAS.get(t.repo, 0):
         BENCHMARK_TASKS.append(t)
         counts[t.repo] += 1"""
-new_sel = """SKIP_FIRST = {
-    'fastapi/fastapi': 3,
-    'Textualize/rich': 2,
-    'psf/requests': 2,
-    'encode/httpx': 1,
+new_sel = """import random
+COHORT1_IDS = {
+    'fastapi_15661', 'fastapi_15588', 'fastapi_15589',
+    'requests_7505', 'requests_7502',
+    'rich_4070', 'rich_4077',
+    'httpx_3672',
 }
 QUOTAS = {
-    'fastapi/fastapi': 3,
+    'fastapi/fastapi': 4,
     'Textualize/rich': 3,
-    'psf/requests': 2,
+    'psf/requests': 1,
     'encode/httpx': 0,
 }
-seen = defaultdict(int)
-counts = defaultdict(int)
-BENCHMARK_TASKS = []
+by_repo = defaultdict(list)
 for t in all_tasks:
-    seen[t.repo] += 1
-    if seen[t.repo] <= SKIP_FIRST.get(t.repo, 0):
-        continue
-    if counts[t.repo] < QUOTAS.get(t.repo, 0):
-        BENCHMARK_TASKS.append(t)
-        counts[t.repo] += 1"""
+    if t.instance_id not in COHORT1_IDS:
+        by_repo[t.repo].append(t)
+rng = random.Random(42)
+BENCHMARK_TASKS = []
+for repo in sorted(QUOTAS.keys()):
+    k_r = QUOTAS[repo]
+    if k_r > 0 and len(by_repo[repo]) >= k_r:
+        sampled = rng.sample(by_repo[repo], k_r)
+        BENCHMARK_TASKS.extend(sampled)"""
 assert old_sel in c4_src
 nb2["cells"][3]["source"] = c4_src.replace(old_sel, new_sel).splitlines(keepends=True)
 (k2_dir / "sfd_eval_shard2.ipynb").write_text(json.dumps(nb2, indent=2), encoding="utf-8")
@@ -624,4 +639,4 @@ meta2["id"] = "karandeepsinghsodhi/sfd-paired-eval-shard-2-gemma-4"
 meta2["title"] = "SFD Paired Eval Shard 2 Gemma 4"
 meta2["code_file"] = "sfd_eval_shard2.ipynb"
 (k2_dir / "kernel-metadata.json").write_text(json.dumps(meta2, indent=2), encoding="utf-8")
-print("Updated Shard 1 and Shard 2 with docker_image and NvidiaL4 machine_shape")
+print("Updated Kernel 1 (Rerun Reproducibility) and Kernel 2 (Seeded-Random Stratified Cohort 2)")
