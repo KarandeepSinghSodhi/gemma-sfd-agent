@@ -124,25 +124,44 @@ def parse_atif_trace(trace_path: Path) -> Dict[str, Any]:
         obs = step.get("observation") or {}
         obs_c = obs.get("content", "") if isinstance(obs, dict) else ""
         tool_err = 0
-        edit_err = 0
+        tool_err_non_budget = 0
+        budget_err = 0
+        edit_file_err = 0
+        edit_budget_err = 0
         if obs_c:
             try:
-                is_err = json.loads(obs_c).get("status") == "error"
+                obs_json = json.loads(obs_c)
+                is_err = obs_json.get("status") == "error"
+                err_type = str(obs_json.get("error_type") or "")
             except Exception:
                 is_err = False
+                err_type = ""
             if is_err:
                 tool_err = 1
+                is_budget = err_type == "BudgetExceeded" or "budget exhausted" in obs_c.lower()
+                if is_budget:
+                    budget_err = 1
+                else:
+                    tool_err_non_budget = 1
                 if (obs.get("extra") or {}).get("tool_name") == "edit_file":
-                    edit_err = 1
+                    if is_budget:
+                        edit_budget_err = 1
+                    else:
+                        edit_file_err = 1
 
         if has_pt or tcs or obs_c:
             prompt_bucket_events.append({
                 "prompt_tokens": last_pt,
+                "author": author,
                 "is_llm_call": 1 if has_pt else 0,
                 "tool_calls": len(tcs),
                 "tool_errors": tool_err,
+                "tool_errors_non_budget": tool_err_non_budget,
+                "budget_errors": budget_err,
                 "edit_calls": edit_c,
-                "edit_errors": edit_err,
+                "edit_errors": edit_file_err + edit_budget_err,
+                "edit_file_errors": edit_file_err,
+                "edit_budget_errors": edit_budget_err,
                 "read_calls": read_c,
                 "dup_reads": dup_r,
             })
@@ -423,19 +442,46 @@ def aggregate(traces_dir: str = "traces", results_dir: str = "results") -> Dict[
         ("8,000 - 11,999", 8000, 12000),
         (">= 12,000", 12000, 100000),
     ]
-    bucket_map = {
-        b[0]: {
-            "bucket": b[0],
-            "llm_calls": 0,
-            "tool_calls": 0,
-            "tool_errors": 0,
-            "edit_calls": 0,
-            "edit_errors": 0,
-            "read_calls": 0,
-            "dup_reads": 0,
+
+    def _init_bucket_map() -> Dict[str, Dict[str, Any]]:
+        return {
+            b[0]: {
+                "bucket": b[0],
+                "llm_calls": 0,
+                "tool_calls": 0,
+                "tool_errors": 0,
+                "tool_errors_non_budget": 0,
+                "budget_errors": 0,
+                "edit_calls": 0,
+                "edit_errors": 0,
+                "edit_file_errors": 0,
+                "edit_budget_errors": 0,
+                "read_calls": 0,
+                "dup_reads": 0,
+            }
+            for b in bucket_defs
         }
-        for b in bucket_defs
-    }
+
+    def _finalize_bucket_list(bmap: Dict[str, Dict[str, Any]]) -> List[Dict[str, Any]]:
+        out = []
+        for b_label, _, _ in bucket_defs:
+            bm = bmap[b_label]
+            tc = bm["tool_calls"]
+            ec = bm["edit_calls"]
+            rc = bm["read_calls"]
+            out.append({
+                **bm,
+                "tool_error_pct": round((bm["tool_errors"] / tc) * 100.0, 1) if tc else 0.0,
+                "tool_error_non_budget_pct": round((bm["tool_errors_non_budget"] / tc) * 100.0, 1) if tc else 0.0,
+                "edit_error_pct": round((bm["edit_errors"] / ec) * 100.0, 1) if ec else 0.0,
+                "edit_file_error_pct": round((bm["edit_file_errors"] / ec) * 100.0, 1) if ec else 0.0,
+                "edit_budget_error_pct": round((bm["edit_budget_errors"] / ec) * 100.0, 1) if ec else 0.0,
+                "dup_read_pct": round((bm["dup_reads"] / rc) * 100.0, 1) if rc else 0.0,
+            })
+        return out
+
+    bucket_map = _init_bucket_map()
+    by_cfg_bucket_map = {c: _init_bucket_map() for c in ("flat_starter", "flat_controlled", "sfd")}
     primary_configs = [c for c in ("flat_starter", "flat_controlled", "sfd") if c in by_config]
     for cfg in primary_configs:
         for r in by_config[cfg].values():
@@ -444,27 +490,23 @@ def aggregate(traces_dir: str = "traces", results_dir: str = "results") -> Dict[
                 if pt <= 0:
                     continue
                 bname = next(b[0] for b in bucket_defs if b[1] <= pt < b[2])
-                bm = bucket_map[bname]
-                bm["llm_calls"] += int(ev.get("is_llm_call", 0))
-                bm["tool_calls"] += int(ev.get("tool_calls", 0))
-                bm["tool_errors"] += int(ev.get("tool_errors", 0))
-                bm["edit_calls"] += int(ev.get("edit_calls", 0))
-                bm["edit_errors"] += int(ev.get("edit_errors", 0))
-                bm["read_calls"] += int(ev.get("read_calls", 0))
-                bm["dup_reads"] += int(ev.get("dup_reads", 0))
+                for target_bm in (bucket_map[bname], by_cfg_bucket_map[cfg][bname]):
+                    target_bm["llm_calls"] += int(ev.get("is_llm_call", 0))
+                    target_bm["tool_calls"] += int(ev.get("tool_calls", 0))
+                    target_bm["tool_errors"] += int(ev.get("tool_errors", 0))
+                    target_bm["tool_errors_non_budget"] += int(ev.get("tool_errors_non_budget", 0))
+                    target_bm["budget_errors"] += int(ev.get("budget_errors", 0))
+                    target_bm["edit_calls"] += int(ev.get("edit_calls", 0))
+                    target_bm["edit_errors"] += int(ev.get("edit_errors", 0))
+                    target_bm["edit_file_errors"] += int(ev.get("edit_file_errors", 0))
+                    target_bm["edit_budget_errors"] += int(ev.get("edit_budget_errors", 0))
+                    target_bm["read_calls"] += int(ev.get("read_calls", 0))
+                    target_bm["dup_reads"] += int(ev.get("dup_reads", 0))
 
-    prompt_length_buckets = []
-    for b_label, _, _ in bucket_defs:
-        bm = bucket_map[b_label]
-        tc = bm["tool_calls"]
-        ec = bm["edit_calls"]
-        rc = bm["read_calls"]
-        prompt_length_buckets.append({
-            **bm,
-            "tool_error_pct": round((bm["tool_errors"] / tc) * 100.0, 1) if tc else 0.0,
-            "edit_error_pct": round((bm["edit_errors"] / ec) * 100.0, 1) if ec else 0.0,
-            "dup_read_pct": round((bm["dup_reads"] / rc) * 100.0, 1) if rc else 0.0,
-        })
+    prompt_length_buckets = _finalize_bucket_list(bucket_map)
+    prompt_length_buckets_by_config = {
+        cfg: _finalize_bucket_list(by_cfg_bucket_map[cfg]) for cfg in primary_configs
+    }
 
     # Rerun reproducibility analysis (if rerun configs are present)
     rerun_reproducibility: Dict[str, Any] = {}
@@ -532,6 +574,10 @@ def aggregate(traces_dir: str = "traces", results_dir: str = "results") -> Dict[
 
             peak1 = [by_config[c1][iid]["peak_prompt_tokens"] for iid in common_ids]
             peak2 = [by_config[c2][iid]["peak_prompt_tokens"] for iid in common_ids]
+            pk_diff_mean, pk_diff_lo, pk_diff_hi = paired_bootstrap_diff_ci(peak1, peak2)
+            a_lower_k = sum(1 for p1, p2 in zip(peak1, peak2) if p1 < p2)
+            b_lower_k = sum(1 for p1, p2 in zip(peak1, peak2) if p1 > p2)
+            sign_pval = mcnemar_exact_pvalue(a_lower_k, b_lower_k)
 
             paired_tests.append({
                 "config_a": c1,
@@ -543,7 +589,12 @@ def aggregate(traces_dir: str = "traces", results_dir: str = "results") -> Dict[
                 "diff_pct": round(diff_mean * 100.0, 2),
                 "bootstrap_95_lo_pct": round(diff_lo * 100.0, 2),
                 "bootstrap_95_hi_pct": round(diff_hi * 100.0, 2),
-                "mean_peak_prompt_diff": round(mean(p1 - p2 for p1, p2 in zip(peak1, peak2)), 1),
+                "mean_peak_prompt_diff": round(pk_diff_mean, 1),
+                "peak_diff_bootstrap_95_lo": round(pk_diff_lo, 1),
+                "peak_diff_bootstrap_95_hi": round(pk_diff_hi, 1),
+                "a_lower_peak_k": a_lower_k,
+                "b_lower_peak_k": b_lower_k,
+                "peak_sign_test_p_value": round(sign_pval, 4),
             })
 
     # Write CSV summary
@@ -578,6 +629,7 @@ def aggregate(traces_dir: str = "traces", results_dir: str = "results") -> Dict[
         "paired_tests": paired_tests,
         "stage_reset_stats": stage_reset_stats,
         "prompt_length_buckets": prompt_length_buckets,
+        "prompt_length_buckets_by_config": prompt_length_buckets_by_config,
         "rerun_reproducibility": rerun_reproducibility,
         "cohort_breakdown": cohort_breakdown,
         "per_repo_breakdown": per_repo_breakdown,

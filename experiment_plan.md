@@ -10,7 +10,7 @@
 
 Our objective is to evaluate whether **mandatory stage-isolated sequential decomposition** (`SequentialAgent` with `include_contents: "none"` and role-partitioned tool subsets) improves patch generation, context efficiency, or task resolution on a 4-bit quantized 4B model (`gemma-4-e4b-it-qat-w4a16-ct`) relative to:
 1. The official competition starter kit (`flat_starter`), which already binds all 9 built-in `swegemma` tools (including `search_similar_code`, `get_code_neighbors`, `get_code_subgraph`) to a root `LlmAgent` and attaches `sub_agents/code_analyzer.yaml` as an optional `AgentTool` (`skip_summarization: true`).
-2. An unconfounded single-agent baseline (`flat_controlled`) given the exact same prompt rules, tool set, and generation parameters as SFD, running inside a single continuous `LlmAgent` context (`include_contents: "default"`).
+2. A controlled single-agent baseline (`flat_controlled`) given the exact same prompt rules, tool set, and generation parameters as SFD, running inside a single continuous `LlmAgent` context (`include_contents: "default"`).
 
 ### 1.1 Primary Paired Configurations
 All three configurations are evaluated on the exact same task subset using identical generation parameters (`temperature: 0.0`, `seed: 42`, `max_output_tokens: 8192`, `thinking_budget: 1536`, `include_thoughts: true`) and identical `eval_config.yaml` session budgets (`max_tool_calls: 15`, `max_turns: 20`, `max_time_minutes: 2.5`, `timeout_seconds: 60`, `verification_timeout_seconds: 120`):
