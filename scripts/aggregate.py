@@ -579,6 +579,20 @@ def aggregate(traces_dir: str = "traces", results_dir: str = "results") -> Dict[
             b_lower_k = sum(1 for p1, p2 in zip(peak1, peak2) if p1 > p2)
             sign_pval = mcnemar_exact_pvalue(a_lower_k, b_lower_k)
 
+            cum1 = [by_config[c1][iid]["cumulative_total_tokens"] for iid in common_ids]
+            cum2 = [by_config[c2][iid]["cumulative_total_tokens"] for iid in common_ids]
+            cum_diff_mean, cum_diff_lo, cum_diff_hi = paired_bootstrap_diff_ci(cum1, cum2)
+            a_lower_cum_k = sum(1 for x1, x2 in zip(cum1, cum2) if x1 < x2)
+            b_lower_cum_k = sum(1 for x1, x2 in zip(cum1, cum2) if x1 > x2)
+            cum_sign_pval = mcnemar_exact_pvalue(a_lower_cum_k, b_lower_cum_k)
+
+            dur1 = [by_config[c1][iid]["duration_seconds"] for iid in common_ids]
+            dur2 = [by_config[c2][iid]["duration_seconds"] for iid in common_ids]
+            dur_diff_mean, dur_diff_lo, dur_diff_hi = paired_bootstrap_diff_ci(dur1, dur2)
+            a_lower_dur_k = sum(1 for d1, d2 in zip(dur1, dur2) if d1 < d2)
+            b_lower_dur_k = sum(1 for d1, d2 in zip(dur1, dur2) if d1 > d2)
+            dur_sign_pval = mcnemar_exact_pvalue(a_lower_dur_k, b_lower_dur_k)
+
             paired_tests.append({
                 "config_a": c1,
                 "config_b": c2,
@@ -595,6 +609,18 @@ def aggregate(traces_dir: str = "traces", results_dir: str = "results") -> Dict[
                 "a_lower_peak_k": a_lower_k,
                 "b_lower_peak_k": b_lower_k,
                 "peak_sign_test_p_value": round(sign_pval, 4),
+                "mean_cum_tokens_diff": round(cum_diff_mean, 1),
+                "cum_tokens_diff_bootstrap_95_lo": round(cum_diff_lo, 1),
+                "cum_tokens_diff_bootstrap_95_hi": round(cum_diff_hi, 1),
+                "a_lower_cum_tokens_k": a_lower_cum_k,
+                "b_lower_cum_tokens_k": b_lower_cum_k,
+                "cum_tokens_sign_test_p_value": round(cum_sign_pval, 4),
+                "mean_duration_diff_sec": round(dur_diff_mean, 2),
+                "duration_diff_bootstrap_95_lo": round(dur_diff_lo, 2),
+                "duration_diff_bootstrap_95_hi": round(dur_diff_hi, 2),
+                "a_lower_duration_k": a_lower_dur_k,
+                "b_lower_duration_k": b_lower_dur_k,
+                "duration_sign_test_p_value": round(dur_sign_pval, 4),
             })
 
     # Write CSV summary
