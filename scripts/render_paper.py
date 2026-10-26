@@ -217,9 +217,7 @@ def render_all() -> None:
     md_task_rows = []
     for tm in task_matrix:
         iid = tm["instance_id"]
-        iid_t = iid.replace("_", "\\_")
         repo = tm.get("repo", "")
-        repo_t = repo.replace("_", "\\_")
         st_res = "Pass" if tm.get("flat_starter_resolved") else f"Fail ({tm.get('flat_starter_failure_bucket', 'n/a').replace('_', ' ')})"
         ct_res = "Pass" if tm.get("flat_controlled_resolved") else f"Fail ({tm.get('flat_controlled_failure_bucket', 'n/a').replace('_', ' ')})"
         sf_res = "Pass" if tm.get("sfd_resolved") else f"Fail ({tm.get('sfd_failure_bucket', 'n/a').replace('_', ' ')})"
@@ -230,7 +228,7 @@ def render_all() -> None:
         ct_pk = tm.get("flat_controlled_peak_prompt_tokens", 0)
         sf_pk = tm.get("sfd_peak_prompt_tokens", 0)
         typst_task_rows.append(
-            f"  [`{iid_t}`], [`{repo_t}`], [{st_res} ({st_pk})], [{ct_res} ({ct_pk})], [{sf_res} ({sf_pk})],"
+            f"  [`{iid}`], [`{repo}`], [{st_res} ({st_pk})], [{ct_res} ({ct_pk})], [{sf_res} ({sf_pk})],"
         )
         md_task_rows.append(
             f"| `{iid}` | `{repo}` | {st_res_m} ({st_pk}) | {ct_res_m} ({ct_pk}) | {sf_res_m} ({sf_pk}) |"
@@ -270,10 +268,9 @@ def render_all() -> None:
     md_stage_rows = []
     for iid in sorted(per_task_stage.keys()):
         st = per_task_stage[iid]
-        iid_t = iid.replace("_", "\\_")
         red_pct = round((1.0 - (st["patch_entry"] / st["triage_peak"])) * 100.0, 1) if st["triage_peak"] else 0.0
         typst_stage_rows.append(
-            f"  [`{iid_t}`], [{st['triage_entry']}], [{st['triage_peak']}], [{st['patch_entry']} (-{red_pct:.1f}%)], [{st['patch_peak']}], [{st['verifier_entry']}], [{st['verifier_peak']}],"
+            f"  [`{iid}`], [{st['triage_entry']}], [{st['triage_peak']}], [{st['patch_entry']} (-{red_pct:.1f}%)], [{st['patch_peak']}], [{st['verifier_entry']}], [{st['verifier_peak']}],"
         )
         md_stage_rows.append(
             f"| `{iid}` | {st['triage_entry']} | {st['triage_peak']} | {st['patch_entry']} (-{red_pct:.1f}%) | {st['patch_peak']} | {st['verifier_entry']} | {st['verifier_peak']} |"
@@ -312,7 +309,7 @@ def render_all() -> None:
     for cfg_k in ("flat_starter", "flat_controlled", "sfd"):
         cb_list = prompt_buckets_by_cfg.get(cfg_k, [])
         if len(cb_list) == 4:
-            cells_t = [f"`{cfg_k.replace('_', '\\_')}`"]
+            cells_t = [f"`{cfg_k}`"]
             cells_m = [f"`{cfg_k}`"]
             for cb in cb_list:
                 cells_t.append(f"{cb['edit_file_errors']}/{cb['edit_calls']} ({cb['edit_file_error_pct']:.1f}%)")
@@ -329,7 +326,6 @@ def render_all() -> None:
         iid = tm["instance_id"]
         if tm.get("sfd_resolved"):
             continue
-        iid_t = iid.replace("_", "\\_")
         if iid in SFD_FAILURE_AUDIT:
             patch_desc, bucket_str, trace_obs_str, phase2_ref_str = SFD_FAILURE_AUDIT[iid]
         else:
@@ -339,11 +335,30 @@ def render_all() -> None:
             bucket_str = f"`{fb}`"
             trace_obs_str = "Stage 1–3 trace recorded in `traces/`."
             phase2_ref_str = "Failed Phase 2 pytest verification on held-out test suite." if p_chars > 0 else "Exhausted session tool or time budget prior to patch generation."
+        def _wrap_typst_code(s: str) -> str:
+            import re
+            def _repl(m: re.Match) -> str:
+                inner = m.group(1)
+                if len(inner) <= 18 or " " in inner:
+                    return f"`{inner}`"
+                parts = re.split(r"(?<=[/_.,(])", inner)
+                chunks, cur = [], ""
+                for p in parts:
+                    if len(cur) + len(p) > 18 and cur:
+                        chunks.append(f"`{cur}`")
+                        cur = p
+                    else:
+                        cur += p
+                if cur:
+                    chunks.append(f"`{cur}`")
+                return "#sym.zws;".join(chunks)
+            return re.sub(r"`([^`]+)`", _repl, s)
+
         typst_audit_rows.append(
-            f"  [`{iid_t}`], [{patch_desc}], [{bucket_str}], [{trace_obs_str.replace('<=', '$<=$')}], [{phase2_ref_str.replace('<=', '$<=$')}],"
+            f"  [`{iid}`], [{_wrap_typst_code(patch_desc)}], [{_wrap_typst_code(bucket_str)}], [{_wrap_typst_code(trace_obs_str)}], [{_wrap_typst_code(phase2_ref_str)}],"
         )
         md_audit_rows.append(
-            f"| `{iid}` | {patch_desc} | {bucket_str} | {trace_obs_str} | {phase2_ref_str} |"
+            f"| `{iid}` | {patch_desc} | {bucket_str} | {trace_obs_str.replace('|', '\\|')} | {phase2_ref_str.replace('|', '\\|')} |"
         )
     typst_audit_table_body = "\n".join(typst_audit_rows)
     md_audit_table_body = "\n".join(md_audit_rows)
@@ -478,7 +493,7 @@ def render_all() -> None:
 
 = 1. Introduction & Motivating Hypotheses
 
-Repository-level software engineering benchmarks such as SWE-bench (@jimenez2024swebench) evaluate whether language model agents can diagnose bug reports, navigate multi-file codebases, synthesize patches, and pass unit test suites. While frontier models and 31B open-weight models achieve strong resolution rates using iterative ReAct loops (@yao2023react; @yang2024sweagent; @wang2024openhands), deploying autonomous coding agents on local developer workstations requires compact, quantized open-weight models such as the Gemma 4 family (E2B, E4B, 12B, 31B) (@gemma2026team).
+Repository-level software engineering benchmarks such as SWE-bench @jimenez2024swebench evaluate whether language model agents can diagnose bug reports, navigate multi-file codebases, synthesize patches, and pass unit test suites. While frontier models and 31B open-weight models achieve strong resolution rates using iterative ReAct loops @yao2023react @yang2024sweagent @wang2024openhands, deploying autonomous coding agents on local developer workstations requires compact, quantized open-weight models such as the Gemma 4 family (E2B, E4B, 12B, 31B) @gemma2026team.
 
 Empirical data from the Google Gemma 4 Developer Agent Challenge highlights the severity of this capability gap. In our archived leaderboard snapshots (`results/leaderboard_snapshot_2026_10_26.json`, retrieved 2026-10-26 UTC, and `results/small_model_leaderboard_2026_10_24.csv` from `ryanholbrook/gemma-4-developer-agent-small-model-leaderboard`, updated 2026-10-24 23:58 UTC), the official competition starter baseline running on `gemma-4-31b-it-qat-w4a16-ct` with fine-tuned LoRA adapters achieves a 22.0% (`0.22`) public resolution rate and the top 31B submissions reach 24.0% (`0.24`). By contrast, across all $N = 197$ participating teams on the official Small Model Prize leaderboard (restricted to E2B/E4B models), public resolution scores range from 0.0% (`0.00`) to 10.0% (`0.10`), with a median of 5.0% (`0.05`), a mean of 4.23% (`0.0423`), and 183 of 197 teams (92.9%) scoring $<= 6.0%$ (`0.06`). (Our own full-set competition submission, Ref `#57643078` submitted 2026-10-25 21:22:35 UTC, remained in `SubmissionStatus.PENDING` (`public_score: null`) in the asynchronous evaluation queue at the time of snapshot retrieval on 2026-10-26 UTC.)
 
@@ -592,27 +607,26 @@ The trace data demonstrate a clear distinction between *stage-entry* prompt leng
 To test whether longer prompts correlate with higher tool error rates in our recorded trajectories, Table 5a groups all LLM calls and tool invocations across the primary configurations (`flat_starter`, `flat_controlled`, `sfd`, 48 runs across $n = {n_tasks}$ tasks) into four prompt-length buckets ($P_t < 4,000$; $4,000$--$7,999$; $8,000$--$11,999$; and $>= 12,000$ tokens). Because global budget exhaustion (`BudgetExceeded` when `tool_calls_used == 15`) occurs late in trajectories by definition, Table 5a explicitly separates genuine non-budget tool errors (`FileEditError`, `CommandError`, `FileReadError`) from `BudgetExceeded` events, and Table 5b stratifies `edit_file` `FileEditError` rates by configuration.
 
 #figure(
-  table(
-    columns: (1.15fr, 0.65fr, 0.65fr, 1.05fr, 0.85fr, 1.05fr, 0.85fr, 0.95fr),
-    inset: 3.8pt,
-    align: (left, center, center, center, center, center, center, center),
-    stroke: 0.5pt + luma(180),
-    [*Bucket ($P_t$)*], [*LLM Calls*], [*Tool Calls*], [*Non-Budget Tool Err*], [*Budget Exceeded*], [*`edit_file` `FileEditError`*], [*`edit_file` BudgetErr*], [*Dup `read_file`*],
+  stack(
+    spacing: 6pt,
+    table(
+      columns: (1.15fr, 0.65fr, 0.65fr, 1.05fr, 0.85fr, 1.05fr, 0.85fr, 0.95fr),
+      inset: 3.8pt,
+      align: (left, center, center, center, center, center, center, center),
+      stroke: 0.5pt + luma(180),
+      [*Bucket ($P_t$, 5a)*], [*LLM Calls*], [*Tool Calls*], [*Non-Budget Tool Err*], [*Budget Exceeded*], [*`edit_file` `FileEditError`*], [*`edit_file` BudgetErr*], [*Dup `read_file`*],
 {typst_bucket_table_body}
-  ),
-  caption: [Table 5a: Pooled observational non-budget tool error, `BudgetExceeded`, `edit_file` `FileEditError`, and duplicate `read_file` rates by per-call prompt-length bucket ($P_t$).]
-)
-
-#figure(
-  table(
-    columns: (1.6fr, 1.1fr, 1.1fr, 1.1fr, 1.1fr),
-    inset: 4.0pt,
-    align: (left, center, center, center, center),
-    stroke: 0.5pt + luma(180),
-    [*Configuration (`edit_file` `FileEditError`)*], [*$< 4,000$*], [*$4,000$--$7,999$*], [*$8,000$--$11,999$*], [*$>= 12,000$*],
+    ),
+    table(
+      columns: (1.6fr, 1.1fr, 1.1fr, 1.1fr, 1.1fr),
+      inset: 4.0pt,
+      align: (left, center, center, center, center),
+      stroke: 0.5pt + luma(180),
+      [*Config (`edit_file` `FileEditError`, 5b)*], [*$< 4,000$*], [*$4,000$--$7,999$*], [*$8,000$--$11,999$*], [*$>= 12,000$*],
 {typst_cfg_bucket_body}
+    )
   ),
-  caption: [Table 5b: Per-configuration stratification of `edit_file` `FileEditError` rates across prompt-length buckets ($P_t$). Numerators exclude `edit_file` `BudgetExceeded` rejections (`1` in `flat_controlled` at $8,000$--$11,999$, `1` in `sfd` at $4,000$--$7,999$, and `1` in `sfd` at $8,000$--$11,999$, shown in Table 5a).]
+  caption: [(5a, top) Pooled observational non-budget tool error, `BudgetExceeded`, `edit_file` `FileEditError`, and duplicate `read_file` rates by per-call prompt-length bucket ($P_t$); (5b, bottom) per-configuration stratification of `edit_file` `FileEditError` rates across buckets (numerators exclude `edit_file` `BudgetExceeded` rejections: `1` in `flat_controlled` at $8,000$--$11,999$, `1` in `sfd` at $4,000$--$7,999$, and `1` in `sfd` at $8,000$--$11,999$, shown in 5a).]
 )
 
 When `BudgetExceeded` rejections are separated from genuine tool errors, Hypothesis 1 is *inconclusive* in these traces: overall non-budget tool error rates remain flat across the first three buckets ({b0['tool_error_non_budget_pct']:.1f}% at $P_t < 4,000$, {b1['tool_error_non_budget_pct']:.1f}% at $4,000$--$7,999$, and {b2['tool_error_non_budget_pct']:.1f}% at $8,000$--$11,999$) before rising slightly to {b3['tool_error_non_budget_pct']:.1f}% ({b3['tool_errors_non_budget']}/{b3['tool_calls']}) at $P_t >= 12,000$, while duplicate `read_file` rates are non-monotonic ({b0['dup_read_pct']:.1f}%, {b1['dup_read_pct']:.1f}%, {b2['dup_read_pct']:.1f}%, and {b3['dup_read_pct']:.1f}%). Furthermore, as Table 5b shows, the pooled increase in `edit_file` `FileEditError` rates from {b0['edit_file_error_pct']:.1f}% ({b0['edit_file_errors']}/{b0['edit_calls']}) at $P_t < 4,000$ to {b3['edit_file_error_pct']:.1f}% ({b3['edit_file_errors']}/{b3['edit_calls']}) at $P_t >= 12,000$ is confounded by stage and configuration: every `< 4,000` `edit_file` call comes from `sfd` (`PatchAgent` immediately after the ~1.5k stage-entry reset), whereas within `flat_starter` (`46.7%`, `50.0%`, `42.9%`) and `flat_controlled` (`0.0%`, `29.4%`, `40.0%`), `edit_file` sample sizes per bucket are small ($7$--$17$ calls) and multiple calls come from the same trajectory.
@@ -633,23 +647,30 @@ Cross-referencing the 16 `sfd` runs against the Stage 1--3 ATIF traces (`traces/
 - *By Phase 2 Verification Exit Code (`15` unresolved `sfd` runs):* *5 tasks* exited with `test_exit_code = 2` (`pytest` collection/import error prior to test execution): `fastapi_14099` (where `PatchAgent` left a detached `else:` block at `fastapi/routing.py:259`, raising `SyntaxError` during collection), `fastapi_15661` (where the reference patch creates a new module `scripts/prepare_release.py` imported by `test_patch`, whereas SFD edited `scripts/add_latest_release_date.py`, raising `ModuleNotFoundError`), and `fastapi_14361`, `fastapi_14459`, and `httpx_3672` (where the offline sandbox venv lacked `inline_snapshot` or resolved `import httpx` to `/usr/local/lib/python3.12/dist-packages/httpx` across all 3 configurations, alongside wrong or incomplete file localization by SFD). *8 tasks* generated a non-empty patch that ran under `pytest` and exited with `test_exit_code = 1` (test assertion failure: `fastapi_15588`, `fastapi_9753`, `requests_7427`, `requests_7502`, `requests_7505`, `rich_3944`, `rich_4070`, `rich_4076`). Finally, *2 tasks* produced a 0-byte patch due to tool or budget exhaustion (`fastapi_15589`, `test_exit_code = -1`; and `rich_3043`, `test_exit_code = 1` after 4 `FileEditError` calls).
 - *By Ground-Truth File & Symbol Localization (`16` total `sfd` runs vs. `tasks.jsonl` reference patches):* SFD localized the *exact single reference file* on *4/16 tasks* (`rich_4077` [resolved], `fastapi_15588` [wrong `ValueError` message string in `fastapi/sse.py`], `fastapi_15589` [localized `fastapi/dependencies/utils.py` but hit `BudgetExceeded` before editing], and `rich_3043` [localized `CONSOLE_HTML_FORMAT` in `rich/_export_format.py` but failed 4 `edit_file` calls]); achieved *partial localization on multi-file or multi-site reference patches* on *6/16 tasks* (`fastapi_14099` [1/3 files + `SyntaxError`], `fastapi_14459` [1/3 files], `httpx_3672` [1/7 files], `requests_7502` [1/2 sites in `src/requests/models.py`], `requests_7505` [1/2 files, omitting `src/requests/_types.py`], and `rich_4070` [1/9 files]); and localized the *wrong file or function* on *6/16 tasks* (`fastapi_14361`, `fastapi_15661`, `fastapi_9753`, `requests_7427`, `rich_3944`, `rich_4076`).
 
-#figure(
-  table(
-    columns: (0.85fr, 1.15fr, 1.0fr, 1.9fr, 1.9fr),
-    inset: 3.8pt,
-    align: (left, left, left, left, left),
-    stroke: 0.5pt + luma(180),
-    [*Task ID*], [*Submitted SFD Patch*], [*Failure Bucket (Exit)*], [*Trace-Recorded Stage 1--3 Observation (`traces/`)*], [*Phase 2 Outcome & Reference Comparison (`tasks.jsonl`)*],
+#[
+  #show figure: set block(breakable: true)
+  #set text(size: 7.8pt)
+  #show raw: set text(size: 6.8pt)
+  #figure(
+    table(
+      columns: (0.88fr, 1.18fr, 1.08fr, 1.93fr, 1.93fr),
+      inset: 3.4pt,
+      align: (left, left, left, left, left),
+      stroke: 0.5pt + luma(180),
+      table.header(
+        [*Task ID*], [*Submitted SFD Patch*], [*Failure Bucket (Exit)*], [*Trace-Recorded Stage 1--3 Observation (`traces/`)*], [*Phase 2 Outcome & Reference Comparison (`tasks.jsonl`)*]
+      ),
 {typst_audit_table_body}
-  ),
-  caption: [Complete task-by-task audit of all $15/16$ unresolved `sfd` runs separating Stage 1--3 observations (`traces/`) from Phase 2 verification exit codes (`1` = assertion failure, `2` = collection/import error, `-1` = no patch) and ground-truth reference patches (`tasks.jsonl`).]
-)
+    ),
+    caption: [Complete task-by-task audit of all $15/16$ unresolved `sfd` runs separating Stage 1--3 observations (`traces/`) from Phase 2 verification exit codes (`1` = assertion failure, `2` = collection/import error, `-1` = no patch) and ground-truth reference patches (`tasks.jsonl`).]
+  )
+]
 
 = 6. Related Work
 
-*Staged vs. Monolithic SWE Agents.* SWE-agent (@yang2024sweagent) and OpenHands (@wang2024openhands) equip an LLM with an interactive bash/file environment inside a continuous trajectory, whereas Agentless (@xia2024agentless) uses a fixed pipeline of localization and repair without autonomous tool loops. SFD combines tool-using ADK sub-agents with stage-boundary context slicing.
+*Staged vs. Monolithic SWE Agents.* SWE-agent @yang2024sweagent and OpenHands @wang2024openhands equip an LLM with an interactive bash/file environment inside a continuous trajectory, whereas Agentless @xia2024agentless uses a fixed pipeline of localization and repair without autonomous tool loops. SFD combines tool-using ADK sub-agents with stage-boundary context slicing.
 
-*Observation Masking vs. LLM Summarization.* Lindenbauer et al. (@lindenbauer2025complexity) (*"The Complexity Trap"*, JetBrains Research & TU Munich) show that simple observation masking of older tool outputs halves token costs while matching or outperforming LLM-based trajectory summarization on SWE-bench Verified. SFD's `include_contents: "none"` transition acts as a coarse stage-boundary observation mask.
+*Observation Masking vs. LLM Summarization.* Lindenbauer et al. @lindenbauer2025complexity (*"The Complexity Trap"*, JetBrains Research & TU Munich) show that simple observation masking of older tool outputs halves token costs while matching or outperforming LLM-based trajectory summarization on SWE-bench Verified. SFD's `include_contents: "none"` transition acts as a coarse stage-boundary observation mask.
 
 = 7. Limitations & Threats to Validity
 

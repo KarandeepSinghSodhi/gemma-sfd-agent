@@ -48,7 +48,7 @@
 
 = 1. Introduction & Motivating Hypotheses
 
-Repository-level software engineering benchmarks such as SWE-bench (@jimenez2024swebench) evaluate whether language model agents can diagnose bug reports, navigate multi-file codebases, synthesize patches, and pass unit test suites. While frontier models and 31B open-weight models achieve strong resolution rates using iterative ReAct loops (@yao2023react; @yang2024sweagent; @wang2024openhands), deploying autonomous coding agents on local developer workstations requires compact, quantized open-weight models such as the Gemma 4 family (E2B, E4B, 12B, 31B) (@gemma2026team).
+Repository-level software engineering benchmarks such as SWE-bench @jimenez2024swebench evaluate whether language model agents can diagnose bug reports, navigate multi-file codebases, synthesize patches, and pass unit test suites. While frontier models and 31B open-weight models achieve strong resolution rates using iterative ReAct loops @yao2023react @yang2024sweagent @wang2024openhands, deploying autonomous coding agents on local developer workstations requires compact, quantized open-weight models such as the Gemma 4 family (E2B, E4B, 12B, 31B) @gemma2026team.
 
 Empirical data from the Google Gemma 4 Developer Agent Challenge highlights the severity of this capability gap. In our archived leaderboard snapshots (`results/leaderboard_snapshot_2026_10_26.json`, retrieved 2026-10-26 UTC, and `results/small_model_leaderboard_2026_10_24.csv` from `ryanholbrook/gemma-4-developer-agent-small-model-leaderboard`, updated 2026-10-24 23:58 UTC), the official competition starter baseline running on `gemma-4-31b-it-qat-w4a16-ct` with fine-tuned LoRA adapters achieves a 22.0% (`0.22`) public resolution rate and the top 31B submissions reach 24.0% (`0.24`). By contrast, across all $N = 197$ participating teams on the official Small Model Prize leaderboard (restricted to E2B/E4B models), public resolution scores range from 0.0% (`0.00`) to 10.0% (`0.10`), with a median of 5.0% (`0.05`), a mean of 4.23% (`0.0423`), and 183 of 197 teams (92.9%) scoring $<= 6.0%$ (`0.06`). (Our own full-set competition submission, Ref `#57643078` submitted 2026-10-25 21:22:35 UTC, remained in `SubmissionStatus.PENDING` (`public_score: null`) in the asynchronous evaluation queue at the time of snapshot retrieval on 2026-10-26 UTC.)
 
@@ -143,22 +143,22 @@ The trace data demonstrate a clear distinction between *stage-entry* prompt leng
     align: (left, left, left, left, left),
     stroke: 0.5pt + luma(180),
     [*Task ID*], [*Repository*], [*`flat_starter` (Peak $P_t$)*], [*`flat_controlled` (Peak $P_t$)*], [*`sfd` (Peak $P_t$)*],
-  [`fastapi\_14099`], [`fastapi/fastapi`], [Fail (test verification failed) (15281)], [Fail (timeout or budget no patch) (13933)], [Fail (test verification failed) (15961)],
-  [`fastapi\_14361`], [`fastapi/fastapi`], [Fail (test verification failed) (10191)], [Fail (test verification failed) (15010)], [Fail (test verification failed) (9831)],
-  [`fastapi\_14459`], [`fastapi/fastapi`], [Fail (test verification failed) (14820)], [Fail (timeout or budget no patch) (16154)], [Fail (test verification failed) (15605)],
-  [`fastapi\_15588`], [`fastapi/fastapi`], [Fail (test verification failed) (13083)], [Fail (test verification failed) (10785)], [Fail (test verification failed) (7291)],
-  [`fastapi\_15589`], [`fastapi/fastapi`], [Fail (test verification failed) (14711)], [Fail (test verification failed) (14912)], [Fail (timeout or budget no patch) (14454)],
-  [`fastapi\_15661`], [`fastapi/fastapi`], [Fail (test verification failed) (11099)], [Fail (test verification failed) (14445)], [Fail (test verification failed) (7180)],
-  [`fastapi\_9753`], [`fastapi/fastapi`], [Pass (11047)], [Fail (test verification failed) (11743)], [Fail (test verification failed) (6469)],
-  [`httpx\_3672`], [`encode/httpx`], [Fail (test verification failed) (14736)], [Fail (test verification failed) (13010)], [Fail (test verification failed) (8140)],
-  [`requests\_7427`], [`psf/requests`], [Fail (test verification failed) (9747)], [Fail (test verification failed) (15387)], [Fail (test verification failed) (13362)],
-  [`requests\_7502`], [`psf/requests`], [Fail (test verification failed) (10436)], [Fail (test verification failed) (11238)], [Fail (test verification failed) (14446)],
-  [`requests\_7505`], [`psf/requests`], [Fail (test verification failed) (10800)], [Fail (test verification failed) (12318)], [Fail (test verification failed) (10659)],
-  [`rich\_3043`], [`Textualize/rich`], [Fail (test verification failed) (14789)], [Fail (test verification failed) (14820)], [Fail (timeout or budget no patch) (14384)],
-  [`rich\_3944`], [`Textualize/rich`], [Fail (timeout or budget no patch) (15175)], [Fail (test verification failed) (15031)], [Fail (test verification failed) (14528)],
-  [`rich\_4070`], [`Textualize/rich`], [Fail (timeout or budget no patch) (13298)], [Fail (test verification failed) (14826)], [Fail (test verification failed) (8499)],
-  [`rich\_4076`], [`Textualize/rich`], [Fail (test verification failed) (14577)], [Fail (test verification failed) (15083)], [Fail (test verification failed) (16146)],
-  [`rich\_4077`], [`Textualize/rich`], [Fail (timeout or budget no patch) (14679)], [Fail (test verification failed) (8117)], [Pass (3716)],
+  [`fastapi_14099`], [`fastapi/fastapi`], [Fail (test verification failed) (15281)], [Fail (timeout or budget no patch) (13933)], [Fail (test verification failed) (15961)],
+  [`fastapi_14361`], [`fastapi/fastapi`], [Fail (test verification failed) (10191)], [Fail (test verification failed) (15010)], [Fail (test verification failed) (9831)],
+  [`fastapi_14459`], [`fastapi/fastapi`], [Fail (test verification failed) (14820)], [Fail (timeout or budget no patch) (16154)], [Fail (test verification failed) (15605)],
+  [`fastapi_15588`], [`fastapi/fastapi`], [Fail (test verification failed) (13083)], [Fail (test verification failed) (10785)], [Fail (test verification failed) (7291)],
+  [`fastapi_15589`], [`fastapi/fastapi`], [Fail (test verification failed) (14711)], [Fail (test verification failed) (14912)], [Fail (timeout or budget no patch) (14454)],
+  [`fastapi_15661`], [`fastapi/fastapi`], [Fail (test verification failed) (11099)], [Fail (test verification failed) (14445)], [Fail (test verification failed) (7180)],
+  [`fastapi_9753`], [`fastapi/fastapi`], [Pass (11047)], [Fail (test verification failed) (11743)], [Fail (test verification failed) (6469)],
+  [`httpx_3672`], [`encode/httpx`], [Fail (test verification failed) (14736)], [Fail (test verification failed) (13010)], [Fail (test verification failed) (8140)],
+  [`requests_7427`], [`psf/requests`], [Fail (test verification failed) (9747)], [Fail (test verification failed) (15387)], [Fail (test verification failed) (13362)],
+  [`requests_7502`], [`psf/requests`], [Fail (test verification failed) (10436)], [Fail (test verification failed) (11238)], [Fail (test verification failed) (14446)],
+  [`requests_7505`], [`psf/requests`], [Fail (test verification failed) (10800)], [Fail (test verification failed) (12318)], [Fail (test verification failed) (10659)],
+  [`rich_3043`], [`Textualize/rich`], [Fail (test verification failed) (14789)], [Fail (test verification failed) (14820)], [Fail (timeout or budget no patch) (14384)],
+  [`rich_3944`], [`Textualize/rich`], [Fail (timeout or budget no patch) (15175)], [Fail (test verification failed) (15031)], [Fail (test verification failed) (14528)],
+  [`rich_4070`], [`Textualize/rich`], [Fail (timeout or budget no patch) (13298)], [Fail (test verification failed) (14826)], [Fail (test verification failed) (8499)],
+  [`rich_4076`], [`Textualize/rich`], [Fail (test verification failed) (14577)], [Fail (test verification failed) (15083)], [Fail (test verification failed) (16146)],
+  [`rich_4077`], [`Textualize/rich`], [Fail (timeout or budget no patch) (14679)], [Fail (test verification failed) (8117)], [Pass (3716)],
   ),
   caption: [Task-by-task paired outcomes and single-call peak prompt tokens ($max_t P_t$) on `gemma-4-e4b-it-qat-w4a16-ct`.]
 )
@@ -170,22 +170,22 @@ The trace data demonstrate a clear distinction between *stage-entry* prompt leng
     align: (left, center, center, center, center, center, center),
     stroke: 0.5pt + luma(180),
     [*Task ID*], [*Triage Entry*], [*Triage Peak*], [*Patch Entry (Reset vs. Peak)*], [*Patch Peak*], [*Verifier Entry*], [*Verifier Peak*],
-  [`fastapi\_14099`], [2634], [15961], [1746 (-89.1%)], [4145], [1420], [6860],
-  [`fastapi\_14361`], [2477], [9831], [1192 (-87.9%)], [6365], [1260], [2117],
-  [`fastapi\_14459`], [2773], [15605], [1804 (-88.4%)], [3633], [1562], [2496],
-  [`fastapi\_15588`], [3373], [4979], [1877 (-62.3%)], [7291], [1818], [2333],
-  [`fastapi\_15589`], [3083], [14454], [1534 (-89.4%)], [12680], [1588], [1588],
-  [`fastapi\_15661`], [2993], [3873], [1505 (-61.1%)], [7180], [1557], [4875],
-  [`fastapi\_9753`], [2763], [6469], [1881 (-70.9%)], [3030], [1652], [4976],
-  [`httpx\_3672`], [2116], [7842], [1261 (-83.9%)], [5007], [1304], [8140],
-  [`requests\_7427`], [2072], [13362], [1326 (-90.1%)], [5891], [1347], [1850],
-  [`requests\_7502`], [1914], [14446], [1480 (-89.8%)], [2714], [1427], [3042],
-  [`requests\_7505`], [2102], [10659], [1293 (-87.9%)], [2784], [1362], [1812],
-  [`rich\_3043`], [2618], [14384], [1388 (-90.4%)], [7650], [1285], [2014],
-  [`rich\_3944`], [2892], [14528], [1187 (-91.8%)], [4323], [1255], [2141],
-  [`rich\_4070`], [4829], [8499], [2126 (-75.0%)], [5380], [2165], [7542],
-  [`rich\_4076`], [2901], [16146], [1212 (-92.5%)], [4816], [1268], [1887],
-  [`rich\_4077`], [2903], [3716], [1203 (-67.6%)], [2805], [1254], [1970],
+  [`fastapi_14099`], [2634], [15961], [1746 (-89.1%)], [4145], [1420], [6860],
+  [`fastapi_14361`], [2477], [9831], [1192 (-87.9%)], [6365], [1260], [2117],
+  [`fastapi_14459`], [2773], [15605], [1804 (-88.4%)], [3633], [1562], [2496],
+  [`fastapi_15588`], [3373], [4979], [1877 (-62.3%)], [7291], [1818], [2333],
+  [`fastapi_15589`], [3083], [14454], [1534 (-89.4%)], [12680], [1588], [1588],
+  [`fastapi_15661`], [2993], [3873], [1505 (-61.1%)], [7180], [1557], [4875],
+  [`fastapi_9753`], [2763], [6469], [1881 (-70.9%)], [3030], [1652], [4976],
+  [`httpx_3672`], [2116], [7842], [1261 (-83.9%)], [5007], [1304], [8140],
+  [`requests_7427`], [2072], [13362], [1326 (-90.1%)], [5891], [1347], [1850],
+  [`requests_7502`], [1914], [14446], [1480 (-89.8%)], [2714], [1427], [3042],
+  [`requests_7505`], [2102], [10659], [1293 (-87.9%)], [2784], [1362], [1812],
+  [`rich_3043`], [2618], [14384], [1388 (-90.4%)], [7650], [1285], [2014],
+  [`rich_3944`], [2892], [14528], [1187 (-91.8%)], [4323], [1255], [2141],
+  [`rich_4070`], [4829], [8499], [2126 (-75.0%)], [5380], [2165], [7542],
+  [`rich_4076`], [2901], [16146], [1212 (-92.5%)], [4816], [1268], [1887],
+  [`rich_4077`], [2903], [3716], [1203 (-67.6%)], [2805], [1254], [1970],
   ),
   caption: [Measured prompt token counts ($P_t$) at stage entry and stage peak across `sfd` runs (`traces/`). Note that *Patch Entry (Reset vs. Peak)* compares `PatchAgent`'s first call against `TriageAgent`'s peak call.]
 )
@@ -194,32 +194,31 @@ The trace data demonstrate a clear distinction between *stage-entry* prompt leng
 To test whether longer prompts correlate with higher tool error rates in our recorded trajectories, Table 5a groups all LLM calls and tool invocations across the primary configurations (`flat_starter`, `flat_controlled`, `sfd`, 48 runs across $n = 16$ tasks) into four prompt-length buckets ($P_t < 4,000$; $4,000$--$7,999$; $8,000$--$11,999$; and $>= 12,000$ tokens). Because global budget exhaustion (`BudgetExceeded` when `tool_calls_used == 15`) occurs late in trajectories by definition, Table 5a explicitly separates genuine non-budget tool errors (`FileEditError`, `CommandError`, `FileReadError`) from `BudgetExceeded` events, and Table 5b stratifies `edit_file` `FileEditError` rates by configuration.
 
 #figure(
-  table(
-    columns: (1.15fr, 0.65fr, 0.65fr, 1.05fr, 0.85fr, 1.05fr, 0.85fr, 0.95fr),
-    inset: 3.8pt,
-    align: (left, center, center, center, center, center, center, center),
-    stroke: 0.5pt + luma(180),
-    [*Bucket ($P_t$)*], [*LLM Calls*], [*Tool Calls*], [*Non-Budget Tool Err*], [*Budget Exceeded*], [*`edit_file` `FileEditError`*], [*`edit_file` BudgetErr*], [*Dup `read_file`*],
+  stack(
+    spacing: 6pt,
+    table(
+      columns: (1.15fr, 0.65fr, 0.65fr, 1.05fr, 0.85fr, 1.05fr, 0.85fr, 0.95fr),
+      inset: 3.8pt,
+      align: (left, center, center, center, center, center, center, center),
+      stroke: 0.5pt + luma(180),
+      [*Bucket ($P_t$, 5a)*], [*LLM Calls*], [*Tool Calls*], [*Non-Budget Tool Err*], [*Budget Exceeded*], [*`edit_file` `FileEditError`*], [*`edit_file` BudgetErr*], [*Dup `read_file`*],
   [$<$ 4,000], [155], [138], [18/138 (13.0%)], [1/138], [4/20 (20.0%)], [0/20], [6/50 (12.0%)],
   [4,000 - 7,999], [220], [193], [30/193 (15.5%)], [3/193], [12/38 (31.6%)], [1/38], [3/102 (2.9%)],
   [8,000 - 11,999], [183], [160], [22/160 (13.8%)], [4/160], [11/30 (36.7%)], [2/30], [6/54 (11.1%)],
   [$>=$ 12,000], [85], [72], [13/72 (18.1%)], [1/72], [7/17 (41.2%)], [0/17], [5/25 (20.0%)],
-  ),
-  caption: [Table 5a: Pooled observational non-budget tool error, `BudgetExceeded`, `edit_file` `FileEditError`, and duplicate `read_file` rates by per-call prompt-length bucket ($P_t$).]
-)
-
-#figure(
-  table(
-    columns: (1.6fr, 1.1fr, 1.1fr, 1.1fr, 1.1fr),
-    inset: 4.0pt,
-    align: (left, center, center, center, center),
-    stroke: 0.5pt + luma(180),
-    [*Configuration (`edit_file` `FileEditError`)*], [*$< 4,000$*], [*$4,000$--$7,999$*], [*$8,000$--$11,999$*], [*$>= 12,000$*],
-  [`flat\_starter`], [0/0 (0.0%)], [7/15 (46.7%)], [6/12 (50.0%)], [3/7 (42.9%)],
-  [`flat\_controlled`], [0/0 (0.0%)], [0/10 (0.0%)], [5/17 (29.4%)], [4/10 (40.0%)],
+    ),
+    table(
+      columns: (1.6fr, 1.1fr, 1.1fr, 1.1fr, 1.1fr),
+      inset: 4.0pt,
+      align: (left, center, center, center, center),
+      stroke: 0.5pt + luma(180),
+      [*Config (`edit_file` `FileEditError`, 5b)*], [*$< 4,000$*], [*$4,000$--$7,999$*], [*$8,000$--$11,999$*], [*$>= 12,000$*],
+  [`flat_starter`], [0/0 (0.0%)], [7/15 (46.7%)], [6/12 (50.0%)], [3/7 (42.9%)],
+  [`flat_controlled`], [0/0 (0.0%)], [0/10 (0.0%)], [5/17 (29.4%)], [4/10 (40.0%)],
   [`sfd`], [4/20 (20.0%)], [5/13 (38.5%)], [0/1 (0.0%)], [0/0 (0.0%)],
+    )
   ),
-  caption: [Table 5b: Per-configuration stratification of `edit_file` `FileEditError` rates across prompt-length buckets ($P_t$). Numerators exclude `edit_file` `BudgetExceeded` rejections (`1` in `flat_controlled` at $8,000$--$11,999$, `1` in `sfd` at $4,000$--$7,999$, and `1` in `sfd` at $8,000$--$11,999$, shown in Table 5a).]
+  caption: [(5a, top) Pooled observational non-budget tool error, `BudgetExceeded`, `edit_file` `FileEditError`, and duplicate `read_file` rates by per-call prompt-length bucket ($P_t$); (5b, bottom) per-configuration stratification of `edit_file` `FileEditError` rates across buckets (numerators exclude `edit_file` `BudgetExceeded` rejections: `1` in `flat_controlled` at $8,000$--$11,999$, `1` in `sfd` at $4,000$--$7,999$, and `1` in `sfd` at $8,000$--$11,999$, shown in 5a).]
 )
 
 When `BudgetExceeded` rejections are separated from genuine tool errors, Hypothesis 1 is *inconclusive* in these traces: overall non-budget tool error rates remain flat across the first three buckets (13.0% at $P_t < 4,000$, 15.5% at $4,000$--$7,999$, and 13.8% at $8,000$--$11,999$) before rising slightly to 18.1% (13/72) at $P_t >= 12,000$, while duplicate `read_file` rates are non-monotonic (12.0%, 2.9%, 11.1%, and 20.0%). Furthermore, as Table 5b shows, the pooled increase in `edit_file` `FileEditError` rates from 20.0% (4/20) at $P_t < 4,000$ to 41.2% (7/17) at $P_t >= 12,000$ is confounded by stage and configuration: every `< 4,000` `edit_file` call comes from `sfd` (`PatchAgent` immediately after the ~1.5k stage-entry reset), whereas within `flat_starter` (`46.7%`, `50.0%`, `42.9%`) and `flat_controlled` (`0.0%`, `29.4%`, `40.0%`), `edit_file` sample sizes per bucket are small ($7$--$17$ calls) and multiple calls come from the same trajectory.
@@ -240,37 +239,44 @@ Cross-referencing the 16 `sfd` runs against the Stage 1--3 ATIF traces (`traces/
 - *By Phase 2 Verification Exit Code (`15` unresolved `sfd` runs):* *5 tasks* exited with `test_exit_code = 2` (`pytest` collection/import error prior to test execution): `fastapi_14099` (where `PatchAgent` left a detached `else:` block at `fastapi/routing.py:259`, raising `SyntaxError` during collection), `fastapi_15661` (where the reference patch creates a new module `scripts/prepare_release.py` imported by `test_patch`, whereas SFD edited `scripts/add_latest_release_date.py`, raising `ModuleNotFoundError`), and `fastapi_14361`, `fastapi_14459`, and `httpx_3672` (where the offline sandbox venv lacked `inline_snapshot` or resolved `import httpx` to `/usr/local/lib/python3.12/dist-packages/httpx` across all 3 configurations, alongside wrong or incomplete file localization by SFD). *8 tasks* generated a non-empty patch that ran under `pytest` and exited with `test_exit_code = 1` (test assertion failure: `fastapi_15588`, `fastapi_9753`, `requests_7427`, `requests_7502`, `requests_7505`, `rich_3944`, `rich_4070`, `rich_4076`). Finally, *2 tasks* produced a 0-byte patch due to tool or budget exhaustion (`fastapi_15589`, `test_exit_code = -1`; and `rich_3043`, `test_exit_code = 1` after 4 `FileEditError` calls).
 - *By Ground-Truth File & Symbol Localization (`16` total `sfd` runs vs. `tasks.jsonl` reference patches):* SFD localized the *exact single reference file* on *4/16 tasks* (`rich_4077` [resolved], `fastapi_15588` [wrong `ValueError` message string in `fastapi/sse.py`], `fastapi_15589` [localized `fastapi/dependencies/utils.py` but hit `BudgetExceeded` before editing], and `rich_3043` [localized `CONSOLE_HTML_FORMAT` in `rich/_export_format.py` but failed 4 `edit_file` calls]); achieved *partial localization on multi-file or multi-site reference patches* on *6/16 tasks* (`fastapi_14099` [1/3 files + `SyntaxError`], `fastapi_14459` [1/3 files], `httpx_3672` [1/7 files], `requests_7502` [1/2 sites in `src/requests/models.py`], `requests_7505` [1/2 files, omitting `src/requests/_types.py`], and `rich_4070` [1/9 files]); and localized the *wrong file or function* on *6/16 tasks* (`fastapi_14361`, `fastapi_15661`, `fastapi_9753`, `requests_7427`, `rich_3944`, `rich_4076`).
 
-#figure(
-  table(
-    columns: (0.85fr, 1.15fr, 1.0fr, 1.9fr, 1.9fr),
-    inset: 3.8pt,
-    align: (left, left, left, left, left),
-    stroke: 0.5pt + luma(180),
-    [*Task ID*], [*Submitted SFD Patch*], [*Failure Bucket (Exit)*], [*Trace-Recorded Stage 1--3 Observation (`traces/`)*], [*Phase 2 Outcome & Reference Comparison (`tasks.jsonl`)*],
-  [`fastapi\_14099`], [`fastapi/routing.py` (588 chars)], [`test_verification_failed` (exit=2)], [`P_t` peaked at 15,961 in `TriageAgent` (6,860 in `VerifierAgent`). `PatchAgent` inserted `for dep in dependencies: file_stack.callback(dep())` in `fastapi/routing.py`, leaving a detached `else:` at line 259; Stage 3 `run_command` Step 18 failed `pytest` collection (`SyntaxError: invalid syntax`, `exit_code=2`).], [Phase 2 `pytest` exited with `test_exit_code=2` (collection error from `SyntaxError` at `fastapi/routing.py:259`). Reference patch in `tasks.jsonl` modifies `fastapi/applications.py`, `fastapi/middleware/asyncexitstack.py`, and `fastapi/routing.py`.],
-  [`fastapi\_14361`], [`fastapi/openapi/models.py` (383 chars)], [`test_verification_failed` (exit=2)], [`PatchAgent` changed `Reference.ref` in `fastapi/openapi/models.py` to `Optional[str] = Field(default=None, alias='$ref')`; Stage 3 `run_command` Step 14 ran `pytest tests/test_openapi_schema.py` (`exit_code=4`, file not found).], [Reference patch modifies `_remap_definitions_and_field_mappings` in `fastapi/_compat/v2.py` (wrong file localized). Also, `test_patch` (`tests/test_schema_compat_pydantic_v2.py`) imports `inline_snapshot`, which is absent in the offline sandbox venv (`ModuleNotFoundError` at collection, `test_exit_code=2` across all 3 configs; seen in `flat_starter` Step 11).],
-  [`fastapi\_14459`], [`fastapi/dependencies/models.py` (783 chars)], [`test_verification_failed` (exit=2)], [`PatchAgent` replaced ordered list deduplication in `Dependant.oauth_scopes` in `fastapi/dependencies/models.py` with `set(self.parent_oauth_scopes) | set(self.own_oauth_scopes)`; Stage 3 `run_command` Step 18 ran `pytest tests/test_dependencies.py` (`exit_code=4`, file not found).], [Reference patch modifies 3 files (`fastapi/dependencies/models.py`, `fastapi/dependencies/utils.py`, `fastapi/openapi/utils.py`; SFD edited 1/3 files). Also, `test_patch` imports `inline_snapshot`, causing `pytest` collection to exit with `test_exit_code=2`.],
-  [`fastapi\_15588`], [`fastapi/sse.py` (1008 chars)], [`test_verification_failed` (exit=1)], [`PatchAgent` replaced `_check_id_no_null` with `_check_sse_string` (`\0`, `\n`, `\r`) in `fastapi/sse.py`, raising `ValueError('SSE field cannot contain null, newline, or carriage return characters')`; existing `tests/test_sse.py` passed in Stage 3 Step 15 (18 passed).], [Phase 2 `pytest` exited with `test_exit_code=1` (assertion failure): `test_patch` (`tests/test_sse.py`) asserts `pytest.raises(ValueError, match=f"SSE '{field_name}' must be a single line")`, which did not match SFD's error message string.],
-  [`fastapi\_15589`], [None (0 chars)], [`timeout_or_budget_no_patch` (exit=-1)], [`TriageAgent` made 10 read-only calls (`P_t` peaked at 14,454); `PatchAgent` entered at 1,534 tokens, read 6 slices of `fastapi/dependencies/utils.py`, and hit `BudgetExceeded` (`max_tool_calls=15`) on Step 20 `edit_file` (0 patch chars).], [No patch submitted (`test_exit_code=-1`). Reference patch adds `processed_keys.add(get_validation_alias(field))` at line 829 of `fastapi/dependencies/utils.py` (correct file localized by `TriageAgent`, but budget exhausted before edit).],
-  [`fastapi\_15661`], [`scripts/add_latest_release_date.py` (660 chars)], [`test_verification_failed` (exit=2)], [`PatchAgent` rewrote `RELEASE_HEADER_PATTERN` in `scripts/add_latest_release_date.py`; Stage 3 `run_command` Steps 14 & 17 failed with `CommandError: No release header found` (`exit_code=1`).], [Reference patch creates a new 216-line CLI module `scripts/prepare_release.py`, and `test_patch` (`tests/test_prepare_release.py`) imports `from scripts.prepare_release import ...` at top level, failing Phase 2 collection (`test_exit_code=2`, `ModuleNotFoundError`) across all 3 configs.],
-  [`fastapi\_9753`], [`fastapi/dependencies/utils.py` (349 chars)], [`test_verification_failed` (exit=1)], [`TriageAgent` (`P_t` peak 6,469) localized `fastapi/dependencies/utils.py`, and `PatchAgent` only added an unused `from functools import partial` import (349 chars).], [Phase 2 `pytest` exited with `test_exit_code=1` (assertion failure): reference patch (and `flat_starter`, which resolved the task with `test_exit_code=0`) unwraps `isinstance(self.call, functools.partial)` inside `Dependant._unwrapped_call` in `fastapi/dependencies/models.py` (wrong file localized by SFD).],
-  [`httpx\_3672`], [`src/httpx/_server.py` (630 chars)], [`test_verification_failed` (exit=2)], [`PatchAgent` added `self._parser.complete()` and `self._parser.reset()` in `src/httpx/_server.py` (hit `BudgetExceeded` on Step 12 `edit_file`); Stage 3 `run_command` Steps 13, 16, 18, 20 failed `pytest tests/test_parsers.py` at collection (`exit_code=2`, `ImportError: cannot import name 'Stream' from 'httpx'`).], [Reference patch modifies 7 files across `src/httpx/` and `src/ahttpx/` (SFD edited 1/7 files). Also, in the offline sandbox venv, `import httpx` resolves to `/usr/local/lib/python3.12/dist-packages/httpx` instead of `/workspace/src/httpx`, yielding `test_exit_code=2` at collection across all 3 configs.],
-  [`requests\_7427`], [`src/requests/utils.py` (471 chars)], [`test_verification_failed` (exit=1)], [`PatchAgent` added `host = urlparse(host).hostname if host else host` inside `proxy_bypass` in `src/requests/utils.py`; existing `pytest tests/test_utils.py -k proxy` passed in Stage 3 Step 15 (56 passed).], [Phase 2 `pytest` exited with `test_exit_code=1` (assertion failure): reference patch modifies `should_bypass_proxies` in `src/requests/utils.py` (`if hostname == host or host_with_port == host: return True`) rather than `proxy_bypass`.],
-  [`requests\_7502`], [`src/requests/models.py` (581 chars)], [`test_verification_failed` (exit=1)], [`PatchAgent` replaced `elif isinstance(fp, _SupportsRead):` with `elif hasattr(fp, 'read'):` at line 236 of `src/requests/models.py`; Stage 3 `run_command` Step 16 failed (`CommandError` on `pytest`, 1 failed).], [Phase 2 `pytest` exited with `test_exit_code=1` (assertion failure): reference patch in `src/requests/models.py` uses `elif isinstance(fp, _SupportsRead) or hasattr(fp, 'read'):` at both lines 239 and 251 of `_encode_files` (SFD updated only one site).],
-  [`requests\_7505`], [`src/requests/models.py` (978 chars)], [`test_verification_failed` (exit=1)], [`PatchAgent` replaced two `isinstance(data, _SupportsRead)` checks in `src/requests/models.py` with `hasattr(data, 'read')`; Stage 3 `run_command` Step 14 passed 1 selected test in `tests/test_requests.py`.], [Phase 2 `pytest` exited with `test_exit_code=1` (assertion failure): reference patch adds `has_read(obj)` in `src/requests/_types.py` and updates 4 `_SupportsRead` sites across `src/requests/models.py` (SFD updated only 2/4 sites and omitted `_types.py`).],
-  [`rich\_3043`], [None (0 chars)], [`timeout_or_budget_no_patch` (exit=1)], [`TriageAgent` localized `CONSOLE_HTML_FORMAT` in `rich/_export_format.py`, but `PatchAgent` failed 4 consecutive `edit_file` calls (`FileEditError: old_string not found` on Steps 12, 13, 15, 16) and `VerifierAgent` submitted a 0-byte diff (`patch_size: 0`).], [No patch submitted (`test_exit_code=1`). Reference patch moves `<html>` before `<head>` in `CONSOLE_HTML_FORMAT` in `rich/_export_format.py` (correct file and symbol localized by `TriageAgent`, but unpatched due to `FileEditError`).],
-  [`rich\_3944`], [`rich/_win32_console.py` (474 chars)], [`test_verification_failed` (exit=1)], [`PatchAgent` changed `ctypes.c_char(char.encode())` to `ctypes.c_wchar(char)` in `rich/_win32_console.py`; Stage 3 `run_command` Step 17 ran `pytest tests/test_win32_console.py` (`collected 0 items` on Linux).], [Phase 2 `pytest` exited with `test_exit_code=1` (assertion failure): reference patch changes `if codepoint > table[-1][1]: return 0` to `return 1` in `get_character_cell_size` in `rich/cells.py` (wrong file localized by `TriageAgent`).],
-  [`rich\_4070`], [`rich/logging.py` (967 chars)], [`test_verification_failed` (exit=1)], [`PatchAgent` deferred `from .traceback import Traceback` inside `RichHandler.emit` in `rich/logging.py`; Stage 3 `run_command` Steps 12 & 15 failed (`CommandError` on `pytest`).], [Phase 2 `pytest` exited with `test_exit_code=1` (assertion failure): reference patch modifies 9 files (`rich/_emoji_replace.py`, `console.py`, `emoji.py`, `logging.py`, `protocol.py`, `repr.py`, `segment.py`, `syntax.py`, `theme.py`) to lazy-load `_emoji_codes` and `pygments` (SFD edited 1/9 files).],
-  [`rich\_4076`], [`rich/text.py` (467 chars)], [`test_verification_failed` (exit=1)], [`TriageAgent` (`P_t` peak 16,146) localized `rich/text.py`; `PatchAgent` replaced `sanitized_text = strip_control_codes(text)` with `sanitized_text = text` in `Text.__init__`; Stage 3 `run_command` Step 17 passed 1 test in `tests/test_text.py`.], [Phase 2 `pytest` exited with `test_exit_code=1` (assertion failure): reference patch changes `for line in terminal_text.splitlines():` to `for line in re.split(r'(?$<=$\n)', terminal_text):` in `AnsiDecoder.decode` in `rich/ansi.py` (wrong file localized by `TriageAgent`).],
-  ),
-  caption: [Complete task-by-task audit of all $15/16$ unresolved `sfd` runs separating Stage 1--3 observations (`traces/`) from Phase 2 verification exit codes (`1` = assertion failure, `2` = collection/import error, `-1` = no patch) and ground-truth reference patches (`tasks.jsonl`).]
-)
+#[
+  #show figure: set block(breakable: true)
+  #set text(size: 7.8pt)
+  #show raw: set text(size: 6.8pt)
+  #figure(
+    table(
+      columns: (0.88fr, 1.18fr, 1.08fr, 1.93fr, 1.93fr),
+      inset: 3.4pt,
+      align: (left, left, left, left, left),
+      stroke: 0.5pt + luma(180),
+      table.header(
+        [*Task ID*], [*Submitted SFD Patch*], [*Failure Bucket (Exit)*], [*Trace-Recorded Stage 1--3 Observation (`traces/`)*], [*Phase 2 Outcome & Reference Comparison (`tasks.jsonl`)*]
+      ),
+  [`fastapi_14099`], [`fastapi/routing.py` (588 chars)], [`test_verification_`#sym.zws;`failed` (exit=2)], [`P_t` peaked at 15,961 in `TriageAgent` (6,860 in `VerifierAgent`). `PatchAgent` inserted `for dep in dependencies: file_stack.callback(dep())` in `fastapi/routing.py`, leaving a detached `else:` at line 259; Stage 3 `run_command` Step 18 failed `pytest` collection (`SyntaxError: invalid syntax`, `exit_code=2`).], [Phase 2 `pytest` exited with `test_exit_code=2` (collection error from `SyntaxError` at `fastapi/routing.`#sym.zws;`py:259`). Reference patch in `tasks.jsonl` modifies `fastapi/`#sym.zws;`applications.py`, `fastapi/`#sym.zws;`middleware/`#sym.zws;`asyncexitstack.py`, and `fastapi/routing.py`.],
+  [`fastapi_14361`], [`fastapi/openapi/`#sym.zws;`models.py` (383 chars)], [`test_verification_`#sym.zws;`failed` (exit=2)], [`PatchAgent` changed `Reference.ref` in `fastapi/openapi/`#sym.zws;`models.py` to `Optional[str] = Field(default=None, alias='$ref')`; Stage 3 `run_command` Step 14 ran `pytest tests/test_openapi_schema.py` (`exit_code=4`, file not found).], [Reference patch modifies `_remap_`#sym.zws;`definitions_and_`#sym.zws;`field_mappings` in `fastapi/_compat/`#sym.zws;`v2.py` (wrong file localized). Also, `test_patch` (`tests/test_schema_`#sym.zws;`compat_pydantic_`#sym.zws;`v2.py`) imports `inline_snapshot`, which is absent in the offline sandbox venv (`ModuleNotFoundError` at collection, `test_exit_code=2` across all 3 configs; seen in `flat_starter` Step 11).],
+  [`fastapi_14459`], [`fastapi/`#sym.zws;`dependencies/`#sym.zws;`models.py` (783 chars)], [`test_verification_`#sym.zws;`failed` (exit=2)], [`PatchAgent` replaced ordered list deduplication in `Dependant.oauth_`#sym.zws;`scopes` in `fastapi/`#sym.zws;`dependencies/`#sym.zws;`models.py` with `set(self.parent_oauth_scopes) | set(self.own_oauth_scopes)`; Stage 3 `run_command` Step 18 ran `pytest tests/test_dependencies.py` (`exit_code=4`, file not found).], [Reference patch modifies 3 files (`fastapi/`#sym.zws;`dependencies/`#sym.zws;`models.py`, `fastapi/`#sym.zws;`dependencies/`#sym.zws;`utils.py`, `fastapi/openapi/`#sym.zws;`utils.py`; SFD edited 1/3 files). Also, `test_patch` imports `inline_snapshot`, causing `pytest` collection to exit with `test_exit_code=2`.],
+  [`fastapi_15588`], [`fastapi/sse.py` (1008 chars)], [`test_verification_`#sym.zws;`failed` (exit=1)], [`PatchAgent` replaced `_check_id_no_null` with `_check_sse_string` (`\0`, `\n`, `\r`) in `fastapi/sse.py`, raising `ValueError('SSE field cannot contain null, newline, or carriage return characters')`; existing `tests/test_sse.py` passed in Stage 3 Step 15 (18 passed).], [Phase 2 `pytest` exited with `test_exit_code=1` (assertion failure): `test_patch` (`tests/test_sse.py`) asserts `pytest.raises(ValueError, match=f"SSE '{field_name}' must be a single line")`, which did not match SFD's error message string.],
+  [`fastapi_15589`], [None (0 chars)], [`timeout_or_budget_`#sym.zws;`no_patch` (exit=-1)], [`TriageAgent` made 10 read-only calls (`P_t` peaked at 14,454); `PatchAgent` entered at 1,534 tokens, read 6 slices of `fastapi/`#sym.zws;`dependencies/`#sym.zws;`utils.py`, and hit `BudgetExceeded` (`max_tool_calls=15`) on Step 20 `edit_file` (0 patch chars).], [No patch submitted (`test_exit_code=-1`). Reference patch adds `processed_keys.`#sym.zws;`add(get_`#sym.zws;`validation_alias(`#sym.zws;`field))` at line 829 of `fastapi/`#sym.zws;`dependencies/`#sym.zws;`utils.py` (correct file localized by `TriageAgent`, but budget exhausted before edit).],
+  [`fastapi_15661`], [`scripts/add_`#sym.zws;`latest_release_`#sym.zws;`date.py` (660 chars)], [`test_verification_`#sym.zws;`failed` (exit=2)], [`PatchAgent` rewrote `RELEASE_HEADER_`#sym.zws;`PATTERN` in `scripts/add_`#sym.zws;`latest_release_`#sym.zws;`date.py`; Stage 3 `run_command` Steps 14 & 17 failed with `CommandError: No release header found` (`exit_code=1`).], [Reference patch creates a new 216-line CLI module `scripts/prepare_`#sym.zws;`release.py`, and `test_patch` (`tests/test_`#sym.zws;`prepare_release.py`) imports `from scripts.prepare_release import ...` at top level, failing Phase 2 collection (`test_exit_code=2`, `ModuleNotFoundError`) across all 3 configs.],
+  [`fastapi_9753`], [`fastapi/`#sym.zws;`dependencies/`#sym.zws;`utils.py` (349 chars)], [`test_verification_`#sym.zws;`failed` (exit=1)], [`TriageAgent` (`P_t` peak 6,469) localized `fastapi/`#sym.zws;`dependencies/`#sym.zws;`utils.py`, and `PatchAgent` only added an unused `from functools import partial` import (349 chars).], [Phase 2 `pytest` exited with `test_exit_code=1` (assertion failure): reference patch (and `flat_starter`, which resolved the task with `test_exit_code=0`) unwraps `isinstance(self.call, functools.partial)` inside `Dependant._`#sym.zws;`unwrapped_call` in `fastapi/`#sym.zws;`dependencies/`#sym.zws;`models.py` (wrong file localized by SFD).],
+  [`httpx_3672`], [`src/httpx/_server.`#sym.zws;`py` (630 chars)], [`test_verification_`#sym.zws;`failed` (exit=2)], [`PatchAgent` added `self._parser.`#sym.zws;`complete()` and `self._parser.`#sym.zws;`reset()` in `src/httpx/_server.`#sym.zws;`py` (hit `BudgetExceeded` on Step 12 `edit_file`); Stage 3 `run_command` Steps 13, 16, 18, 20 failed `pytest tests/test_parsers.py` at collection (`exit_code=2`, `ImportError: cannot import name 'Stream' from 'httpx'`).], [Reference patch modifies 7 files across `src/httpx/` and `src/ahttpx/` (SFD edited 1/7 files). Also, in the offline sandbox venv, `import httpx` resolves to `/usr/local/lib/`#sym.zws;`python3.12/`#sym.zws;`dist-packages/`#sym.zws;`httpx` instead of `/workspace/src/`#sym.zws;`httpx`, yielding `test_exit_code=2` at collection across all 3 configs.],
+  [`requests_7427`], [`src/requests/`#sym.zws;`utils.py` (471 chars)], [`test_verification_`#sym.zws;`failed` (exit=1)], [`PatchAgent` added `host = urlparse(host).hostname if host else host` inside `proxy_bypass` in `src/requests/`#sym.zws;`utils.py`; existing `pytest tests/test_utils.py -k proxy` passed in Stage 3 Step 15 (56 passed).], [Phase 2 `pytest` exited with `test_exit_code=1` (assertion failure): reference patch modifies `should_bypass_`#sym.zws;`proxies` in `src/requests/`#sym.zws;`utils.py` (`if hostname == host or host_with_port == host: return True`) rather than `proxy_bypass`.],
+  [`requests_7502`], [`src/requests/`#sym.zws;`models.py` (581 chars)], [`test_verification_`#sym.zws;`failed` (exit=1)], [`PatchAgent` replaced `elif isinstance(fp, _SupportsRead):` with `elif hasattr(fp, 'read'):` at line 236 of `src/requests/`#sym.zws;`models.py`; Stage 3 `run_command` Step 16 failed (`CommandError` on `pytest`, 1 failed).], [Phase 2 `pytest` exited with `test_exit_code=1` (assertion failure): reference patch in `src/requests/`#sym.zws;`models.py` uses `elif isinstance(fp, _SupportsRead) or hasattr(fp, 'read'):` at both lines 239 and 251 of `_encode_files` (SFD updated only one site).],
+  [`requests_7505`], [`src/requests/`#sym.zws;`models.py` (978 chars)], [`test_verification_`#sym.zws;`failed` (exit=1)], [`PatchAgent` replaced two `isinstance(data, _SupportsRead)` checks in `src/requests/`#sym.zws;`models.py` with `hasattr(data, 'read')`; Stage 3 `run_command` Step 14 passed 1 selected test in `tests/test_`#sym.zws;`requests.py`.], [Phase 2 `pytest` exited with `test_exit_code=1` (assertion failure): reference patch adds `has_read(obj)` in `src/requests/_`#sym.zws;`types.py` and updates 4 `_SupportsRead` sites across `src/requests/`#sym.zws;`models.py` (SFD updated only 2/4 sites and omitted `_types.py`).],
+  [`rich_3043`], [None (0 chars)], [`timeout_or_budget_`#sym.zws;`no_patch` (exit=1)], [`TriageAgent` localized `CONSOLE_HTML_`#sym.zws;`FORMAT` in `rich/_export_`#sym.zws;`format.py`, but `PatchAgent` failed 4 consecutive `edit_file` calls (`FileEditError: old_string not found` on Steps 12, 13, 15, 16) and `VerifierAgent` submitted a 0-byte diff (`patch_size: 0`).], [No patch submitted (`test_exit_code=1`). Reference patch moves `<html>` before `<head>` in `CONSOLE_HTML_`#sym.zws;`FORMAT` in `rich/_export_`#sym.zws;`format.py` (correct file and symbol localized by `TriageAgent`, but unpatched due to `FileEditError`).],
+  [`rich_3944`], [`rich/_win32_`#sym.zws;`console.py` (474 chars)], [`test_verification_`#sym.zws;`failed` (exit=1)], [`PatchAgent` changed `ctypes.c_char(`#sym.zws;`char.encode())` to `ctypes.c_wchar(`#sym.zws;`char)` in `rich/_win32_`#sym.zws;`console.py`; Stage 3 `run_command` Step 17 ran `pytest tests/test_win32_console.py` (`collected 0 items` on Linux).], [Phase 2 `pytest` exited with `test_exit_code=1` (assertion failure): reference patch changes `if codepoint > table[-1][1]: return 0` to `return 1` in `get_character_`#sym.zws;`cell_size` in `rich/cells.py` (wrong file localized by `TriageAgent`).],
+  [`rich_4070`], [`rich/logging.py` (967 chars)], [`test_verification_`#sym.zws;`failed` (exit=1)], [`PatchAgent` deferred `from .traceback import Traceback` inside `RichHandler.emit` in `rich/logging.py`; Stage 3 `run_command` Steps 12 & 15 failed (`CommandError` on `pytest`).], [Phase 2 `pytest` exited with `test_exit_code=1` (assertion failure): reference patch modifies 9 files (`rich/_emoji_`#sym.zws;`replace.py`, `console.py`, `emoji.py`, `logging.py`, `protocol.py`, `repr.py`, `segment.py`, `syntax.py`, `theme.py`) to lazy-load `_emoji_codes` and `pygments` (SFD edited 1/9 files).],
+  [`rich_4076`], [`rich/text.py` (467 chars)], [`test_verification_`#sym.zws;`failed` (exit=1)], [`TriageAgent` (`P_t` peak 16,146) localized `rich/text.py`; `PatchAgent` replaced `sanitized_text = strip_control_codes(text)` with `sanitized_text = text` in `Text.__init__`; Stage 3 `run_command` Step 17 passed 1 test in `tests/test_text.py`.], [Phase 2 `pytest` exited with `test_exit_code=1` (assertion failure): reference patch changes `for line in terminal_text.splitlines():` to `for line in re.split(r'(?<=\n)', terminal_text):` in `AnsiDecoder.decode` in `rich/ansi.py` (wrong file localized by `TriageAgent`).],
+    ),
+    caption: [Complete task-by-task audit of all $15/16$ unresolved `sfd` runs separating Stage 1--3 observations (`traces/`) from Phase 2 verification exit codes (`1` = assertion failure, `2` = collection/import error, `-1` = no patch) and ground-truth reference patches (`tasks.jsonl`).]
+  )
+]
 
 = 6. Related Work
 
-*Staged vs. Monolithic SWE Agents.* SWE-agent (@yang2024sweagent) and OpenHands (@wang2024openhands) equip an LLM with an interactive bash/file environment inside a continuous trajectory, whereas Agentless (@xia2024agentless) uses a fixed pipeline of localization and repair without autonomous tool loops. SFD combines tool-using ADK sub-agents with stage-boundary context slicing.
+*Staged vs. Monolithic SWE Agents.* SWE-agent @yang2024sweagent and OpenHands @wang2024openhands equip an LLM with an interactive bash/file environment inside a continuous trajectory, whereas Agentless @xia2024agentless uses a fixed pipeline of localization and repair without autonomous tool loops. SFD combines tool-using ADK sub-agents with stage-boundary context slicing.
 
-*Observation Masking vs. LLM Summarization.* Lindenbauer et al. (@lindenbauer2025complexity) (*"The Complexity Trap"*, JetBrains Research & TU Munich) show that simple observation masking of older tool outputs halves token costs while matching or outperforming LLM-based trajectory summarization on SWE-bench Verified. SFD's `include_contents: "none"` transition acts as a coarse stage-boundary observation mask.
+*Observation Masking vs. LLM Summarization.* Lindenbauer et al. @lindenbauer2025complexity (*"The Complexity Trap"*, JetBrains Research & TU Munich) show that simple observation masking of older tool outputs halves token costs while matching or outperforming LLM-based trajectory summarization on SWE-bench Verified. SFD's `include_contents: "none"` transition acts as a coarse stage-boundary observation mask.
 
 = 7. Limitations & Threats to Validity
 
