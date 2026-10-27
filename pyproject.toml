@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "atif-gemma"
+version = "1.7.0"
+authors = [
+  { name="Karandeep Singh Sodhi", email="karandeepsinghsodhi@gmail.com" },
+]
+description = "Diagnostic Toolkit and Failure Taxonomy for Small Open-Weight Software Engineering Agents"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+[project.scripts]
+atif-gemma = "atif_gemma.cli:main"

@@ -1,0 +1,8 @@
+# Optimized evaluation configuration for 31B SFD Agent
+# Strictly guarantees completion inside the Kaggle 12-hour evaluation window
+evaluation:
+  timeout_seconds: 75
+  verification_timeout_seconds: 60
+  max_tool_calls: 12
+  max_time_minutes: 2.0
+  max_turns: 25

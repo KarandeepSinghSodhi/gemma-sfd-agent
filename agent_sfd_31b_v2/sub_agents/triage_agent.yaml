@@ -1,0 +1,11 @@
+name: triage_agent
+description: Pinpoints the exact root-cause file and symbol without reading entire files.
+model: gemma-4-31b-it-qat-w4a16-ct
+instruction: !include ../prompts/triage.md
+tools:
+  - read_file
+  - search_similar_code
+  - get_code_neighbors
+  - get_code_subgraph
+output_key: triage_packet
+generate_content_config: !include ../configs/sampling.yaml

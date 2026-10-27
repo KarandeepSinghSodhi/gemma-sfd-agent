@@ -20,6 +20,8 @@ cohort_mapping = [
     ("Cohort 1 (Canonical)", TRACES_DIR / "eval_results" / "paired_progress.jsonl", TRACES_DIR / "eval_results"),
     ("Cohort 2 (Stratified Random)", TRACES_DIR / "shard2_results" / "eval_results" / "paired_progress.jsonl", TRACES_DIR / "shard2_results" / "eval_results"),
     ("Cohort 1 Rerun (Reproducibility)", TRACES_DIR / "rerun_results" / "eval_results" / "paired_progress.jsonl", TRACES_DIR / "rerun_results" / "eval_results"),
+    ("Cohort 3 (Stratified Disjoint)", TRACES_DIR / "shard3_results" / "eval_results" / "paired_progress.jsonl", TRACES_DIR / "shard3_results" / "eval_results"),
+    ("Cohort 4 (Stratified Disjoint)", TRACES_DIR / "shard4_results" / "eval_results" / "paired_progress.jsonl", TRACES_DIR / "shard4_results" / "eval_results"),
 ]
 
 records = []
@@ -110,10 +112,10 @@ for cohort_name, prog_file, base_dir in cohort_mapping:
             "dataset_trace_file": dest_trace_name
         })
 
-assert len(records) == 64, f"Expected 64 records, got {len(records)}"
+assert len(records) == 112, f"Expected 112 records, got {len(records)}"
 
 print("=" * 70)
-print("  ATIF-GEMMA DIAGNOSTIC CORPUS AUDIT COMPLETE (n=64 Traces)")
+print("  ATIF-GEMMA DIAGNOSTIC CORPUS AUDIT COMPLETE (n=112 Traces)")
 print("=" * 70)
 print(f"Total Traces: {len(records)}")
 print(f"Cohort Breakdown: {dict(cohort_counts)}")

@@ -1,0 +1,13 @@
+name: TriageAgent
+model: gemma-4-e4b-it-qat-w4a16-ct
+description: Stage 1 read-only fault localization agent
+instruction: !include ../prompts/triage.md
+output_key: localization_packet
+include_contents: default
+generate_content_config: !include ../configs/sampling.yaml
+tools:
+  - search_similar_code
+  - get_code_neighbors
+  - get_code_subgraph
+  - read_file
+  - get_status
