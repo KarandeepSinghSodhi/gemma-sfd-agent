@@ -22,26 +22,27 @@ To assist reviewers in verifying our experiments, this repository maintains an e
 
 ### Artifact 1: SFD Architecture Paper (Methods Track)
 - **Manuscripts:** [`paper.typ`](paper.typ), [`paper.pdf`](paper.pdf), and [`KAGGLE_WRITEUP.md`](KAGGLE_WRITEUP.md).
-- **Scope:** 64 total GPU runs across 16 tasks (Cohort 1 Canonical + Cohort 2 Random, 48 paired primary runs + 16 rerun reproducibility runs).
+- **Scope:** 64 total GPU runs across 16 tasks (Cohort 1 Canonical + Cohort 2 Random: 48 paired primary runs in `traces/eval_results/` and `traces/shard2_results/`, plus 16 rerun reproducibility runs in `traces/rerun_results/`).
 - **Core Focus:** Evaluates the declarative 3-stage `SequentialAgent` context management mechanism (`include_contents: "none"`).
-- **Raw Traces:** Stored in [`traces/eval_results/`](traces/eval_results/) and [`traces/rerun_results/`](traces/rerun_results/).
+- **Raw Traces:** Stored in [`traces/eval_results/`](traces/eval_results/), [`traces/shard2_results/`](traces/shard2_results/), and [`traces/rerun_results/`](traces/rerun_results/).
 - **Aggregation Pipeline:** Produced by [`scripts/aggregate.py`](scripts/aggregate.py) into [`results/summary.json`](results/summary.json).
 
 ### Artifact 2: ATIF-Gemma Diagnostic Corpus (Best New Resource Track)
 - **Manuscripts:** [`paper_resource.typ`](paper_resource.typ), [`paper_resource.pdf`](paper_resource.pdf), and [`KAGGLE_WRITEUP_RESOURCE.md`](KAGGLE_WRITEUP_RESOURCE.md).
-- **Scope:** **112 total GPU runs across 32 unique benchmark tasks** spanning 5 cohorts on 4x NVIDIA L4 GPUs (1,518 LLM turns, 1,328 tool calls, 11,706,178 logged tokens).
+- **Scope:** **112 total GPU runs across 32 unique benchmark tasks** spanning 5 cohorts on 4x NVIDIA L4 GPUs (1,518 LLM turns, 1,328 tool calls, 11,706,178 logged tokens). Expands Artifact 1's 64 runs by adding Cohort 3 (24 runs in `traces/shard3_results/`) and Cohort 4 (24 runs in `traces/shard4_results/`) across 16 additional tasks (+48 runs = 112 runs total).
 - **Core Focus:** An open empirical diagnostic corpus and Phase 2 exit code failure taxonomy for small open-weight developer agents (`gemma-4-e4b-it-qat-w4a16-ct`), accompanied by an Actionable Remediation Playbook and the `atif_gemma` Python toolkit.
-- **Dataset Manifest:** [`dataset_resource/corpus_metadata.csv`](dataset_resource/corpus_metadata.csv) (complete index of all 112 runs: task ID, repo, config, cohort, exit code, tokens, duration).
-- **Raw ATIF v1.7 Traces:** Stored in [`dataset_resource/traces/`](dataset_resource/traces/) (112 standardized JSON traces, 100% schema validated).
+- **Dataset Manifest:** [`dataset_resource/corpus_metadata.csv`](dataset_resource/corpus_metadata.csv) (complete master index of all 112 runs: task ID, repo, config, cohort, exit code, tokens, duration).
+- **Raw ATIF v1.7 Traces:** Stored in [`dataset_resource/traces/`](dataset_resource/traces/) (all 112 standardized JSON traces, 100% dual schema validated against local schema and upstream ATIF v1.7 specification).
 - **Documentation & Hygiene:** [`dataset_resource/datasheet.md`](dataset_resource/datasheet.md) (Gebru et al. standard), [`dataset_resource/atif_schema_v1_7.json`](dataset_resource/atif_schema_v1_7.json), and [`dataset_resource/checksums.sha256`](dataset_resource/checksums.sha256).
 - **Reproduction Pipeline:** Standalone scripts in [`analysis/`](analysis/) generate all tables, metrics, and vector figures:
-  - `analysis/reproduce_tables.py` $	o$ Tables 1–3 (`results/table*.csv`, `results/summary_metrics.json`)
-  - `analysis/classify_exit2.py` $	o$ Exit Code 2 breakdown (`results/exit2_breakdown.json`)
-  - `analysis/subclassify_exit1.py` $	o$ Exit Code 1 assertion failure taxonomy (`results/exit1_breakdown.json`)
-  - `analysis/statistical_tests.py` $	o$ Wilson CIs, bootstrap CIs, Wilcoxon & McNemar tests (`results/stats_report.json`)
-  - `analysis/claim_audit.py` $	o$ Tool errors & stage prompt reset distributions (`results/tool_errors_breakdown.json`)
-  - `analysis/figures.py` $	o$ Publication vector graphics (`figures/fig*.svg`)
-  - `scripts/check_consistency_resource.py` $	o$ 7/7 automated assertion checks pass.
+  - `analysis/reproduce_tables.py` $\to$ Tables 1–3 (`results/table*.csv`, `results/summary_metrics.json`)
+  - `analysis/classify_exit2.py` $\to$ Exit Code 2 breakdown (`results/exit2_breakdown.json`)
+  - `analysis/subclassify_exit1.py` $\to$ Exit Code 1 assertion failure taxonomy (`results/exit1_breakdown.json`)
+  - `analysis/statistical_tests.py` $\to$ Wilson CIs, bootstrap CIs, Wilcoxon & McNemar tests (`results/stats_report.json`)
+  - `analysis/claim_audit.py` $\to$ Tool errors & stage prompt reset distributions (`results/tool_errors_breakdown.json`)
+  - `analysis/validate_atif_schema.py` $\to$ 100% dual schema validation (`results/schema_validation_report.json`)
+  - `analysis/figures.py` $\to$ Publication vector graphics (`figures/fig*.svg`)
+  - `scripts/check_consistency_resource.py` $\to$ 7/7 automated assertion checks pass.
 - **Companion Diagnostic Toolkit:** Installable directly via `pip install git+https://github.com/KarandeepSinghSodhi/gemma-sfd-agent.git`. Unit test suite in [`tests/test_taxonomy.py`](tests/test_taxonomy.py) (5/5 passed).
 
 ---
@@ -85,26 +86,55 @@ We evaluated three controlled configurations on `gemma-4-e4b-it-qat-w4a16-ct` on
 │       ├── triage_agent.yaml   # Stage 1: TriageAgent
 │       ├── patch_agent.yaml    # Stage 2: PatchAgent (include_contents: "none")
 │       └── verifier_agent.yaml # Stage 3: VerifierAgent (include_contents: "none")
-├── traces/                     # All 64 real ATIF v1.7 traces & logs from 4x L4 GPU runs
+├── traces/                     # Raw execution traces & logs from all 112 4x L4 GPU runs (5 cohorts)
 │   ├── eval_results/           # Cohort 1 paired runs (24 runs across 8 canonical tasks)
 │   ├── shard2_results/         # Cohort 2 paired runs (24 runs across 8 seeded-random tasks)
-│   └── rerun_results/          # Cohort 1 rerun reproducibility runs (16 runs)
+│   ├── rerun_results/          # Cohort 1 rerun reproducibility runs (16 runs)
+│   ├── shard3_results/         # Cohort 3 paired runs (24 runs across 8 stratified disjoint tasks)
+│   └── shard4_results/         # Cohort 4 paired runs (24 runs across 8 stratified disjoint tasks)
+├── dataset_resource/           # Unified ATIF-Gemma Resource Directory (112 traces)
+│   ├── traces/                 # All 112 standardized ATIF v1.7 JSON traces (100% dual schema validated)
+│   ├── corpus_metadata.csv     # Master index of all 112 runs (task, repo, config, cohort, exit code, tokens)
+│   ├── datasheet.md            # Dataset documentation conforming to Gebru et al. (2021)
+│   ├── atif_schema_v1_7.json   # Concrete ATIF v1.7 Draft-07 JSON schema
+│   └── checksums.sha256        # SHA-256 verification hashes for all 112 traces
+├── analysis/                   # Standalone diagnostic reproduction & statistical scripts
+│   ├── reproduce_tables.py     # Re-generates Tables 1–3 from 112 raw traces
+│   ├── classify_exit2.py       # Deterministic Exit Code 2 breakdown (agent vs environment)
+│   ├── subclassify_exit1.py    # Mutually exclusive Exit Code 1 assertion failure taxonomy
+│   ├── statistical_tests.py    # Wilson CIs, bootstrap CIs, Wilcoxon & McNemar tests
+│   ├── claim_audit.py          # Tool error taxonomy & stage prompt reset distributions
+│   ├── validate_atif_schema.py # Dual-mode ATIF v1.7 schema validation
+│   └── figures.py              # Generates publication vector figures (figures/fig*.svg)
 ├── results/
-│   ├── summary.json                        # Aggregated metrics, Wilson CIs, McNemar & bootstrap tests
-│   ├── summary_table.csv                   # Tabular summary generated by scripts/aggregate.py
+│   ├── summary.json                        # Aggregated metrics for Artifact 1 (64 runs)
+│   ├── resource_summary.json               # Aggregated metrics for Artifact 2 (112 runs)
+│   ├── summary_metrics.json                # Corpus-level token and turn statistics
+│   ├── table1_cohort_summary.csv           # Re-generated Table 1 (5 cohorts)
+│   ├── table2_taxonomy.csv                 # Re-generated Table 2 (exit codes)
+│   ├── table3_architectures.csv            # Re-generated Table 3 (configurations)
+│   ├── exit1_breakdown.json                # Mutually exclusive Exit 1 localization tiers
+│   ├── exit2_breakdown.json                # Exit 2 agent vs environment breakdown
+│   ├── schema_validation_report.json       # 100% dual schema validation audit
+│   ├── stats_report.json                   # Comprehensive statistical tests & CIs
+│   ├── tool_errors_breakdown.json          # Tool error frequencies & prompt reset distributions
+│   ├── remediation_eval.json               # Post-hoc remediation gate evaluation
 │   ├── leaderboard_snapshot_2026_10_26.json # Official main leaderboard & submission #57643078 snapshot
 │   └── small_model_leaderboard_2026_10_24.csv # Official Small Model Prize leaderboard snapshot (N=197)
 ├── scripts/
-│   ├── aggregate.py            # Computes results/summary.json from all traces in traces/
+│   ├── aggregate.py            # Computes results/summary.json from traces/
 │   ├── render_paper.py         # Renders paper.typ, paper.tex, KAGGLE_WRITEUP.md, README.md
-│   └── check_consistency.py    # Automated verification that zero unmeasured/retracted numbers exist
+│   ├── check_consistency.py    # Consistency checks for Artifact 1
+│   └── check_consistency_resource.py # Automated 7/7 assertion audit for Artifact 2
 ├── _retracted_simulation/      # Quarantined earlier synthetic simulation files with README notice
 ├── kaggle_kernel/              # Reproducible Kaggle 4x L4 GPU evaluation notebook
-├── paper.typ                   # Typst source for paper manuscript
-├── paper.pdf                   # Compiled camera-ready PDF
-├── paper.tex                   # LaTeX source version
+├── paper.typ                   # Typst source for Artifact 1 paper (Methods Track)
+├── paper.pdf                   # Compiled camera-ready PDF (Methods Track)
+├── paper_resource.typ          # Typst source for Artifact 2 paper (Resource Track)
+├── paper_resource.pdf          # Compiled camera-ready PDF (Resource Track)
 ├── references_gemma.bib        # Verified BibTeX bibliography
-├── KAGGLE_WRITEUP.md           # Complete Kaggle Paper Track writeup
+├── KAGGLE_WRITEUP.md           # Kaggle writeup for Artifact 1 (Methods Track)
+├── KAGGLE_WRITEUP_RESOURCE.md  # Kaggle writeup for Artifact 2 (Resource Track)
 ├── experiment_plan.md          # Pre-registered experimental design & failure taxonomy
 └── compute_plan.md             # Hardware & runtime budget documentation
 ```

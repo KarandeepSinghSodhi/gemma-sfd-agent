@@ -1,11 +1,14 @@
 {
   "total_traces": 112,
-  "passed": 112,
-  "failed": 0,
-  "validation_rate_pct": 100.0,
-  "schema_version": [
-    "ATIF-v1.7",
-    "1.7",
-    "v1.7"
-  ]
+  "concrete_schema_passed": 112,
+  "concrete_schema_pass_rate_pct": 100.0,
+  "upstream_atif_interoperability_passed": 112,
+  "upstream_atif_pass_rate_pct": 100.0,
+  "total_steps_audited": 1942,
+  "deliberative_reasoning_steps": 1503,
+  "provenance_mapping": {
+    "model_reasoning_field": "message (with extra.event_type == 'thinking')",
+    "upstream_standard_field": "reasoning_content",
+    "extensions_storage": "extra block (timestamp, elapsed_s, author)"
+  }
 }

@@ -174,3 +174,24 @@ Format:
   - Schema validation: unvalidated claim -> 112/112 (100.0%) verified passing
   - Exit 2 classification: monolithic collection crash -> 44.4% agent-attributable / 55.6% environment-attributable
   - Exit 1 classification: overlapping definitions -> strict mutually exclusive decision tree (1 empty, 17 wrong file, 14 partial multi-file, 24 right file wrong logic).
+
+
+---
+
+## [T13 Complete] 2026-10-28 00:15 UTC
+- **Task ID**: T13 (Final Camera-Ready Submission Polish & Public Artifact Sync)
+- **What Changed**:
+  1. **Public Repository & 48 Extra Traces Clarity**: Updated README.md to explicitly document all 5 shards/cohorts in traces/ (eval_results, shard2_results, rerun_results, shard3_results, shard4_results), detailing how Artifact 1 evaluates 64 runs on 16 tasks and Artifact 2 expands this with Cohorts 3 and 4 (+48 runs) to establish the complete 112-trace corpus across 32 unique tasks unified in dataset_resource/traces/ and corpus_metadata.csv. Updated scripts/render_paper.py to prevent clobbering the dual-artifact README.md.
+  2. **Novelty Claim & Related Datasets**: Acknowledged recent public trajectory datasets, specifically citing Raja Rajak (2026) (@rajak2026tfd) 50 multi-turn Gemma SWE-bench trajectories on Kaggle in both paper_resource.typ and KAGGLE_WRITEUP_RESOURCE.md. Replaced unqualified claims with scoped language articulating ATIF-Gemma unique additions (paired architecture control across 112 runs, 4-way failure taxonomy, agent vs environment attribution, mutually exclusive localization tree, and open diagnostic tooling).
+  3. **Abstract Correction**: Corrected abstract terminology in both paper_resource.typ and KAGGLE_WRITEUP_RESOURCE.md: from agent-attributable syntax errors (44.4%) to agent-attributable collection failures (44.4%) versus environment/dependency failures (55.6%) (reflecting 13 syntax errors [36.1%] and 3 missing module errors [8.3%]).
+  4. **References Section**: Added formatted Section 10 References to KAGGLE_WRITEUP_RESOURCE.md. Added @misc{rajak2026tfd} to references_gemma.bib and cited in paper_resource.typ.
+  5. **Dual ATIF v1.7 Schema Validation**: Authored dual-mode schema validator in analysis/validate_atif_schema.py verifying both concrete repository schema (atif_schema_v1_7.json) and upstream ATIF v1.7 specification mapping (message with extra.event_type: thinking mapped to reasoning_content), achieving 100.0% pass rate (112/112 traces, 1,942 audited steps, 1,503 deliberative turns). Output saved to results/schema_validation_report.json.
+  6. **Word Limit Safety Margin**: Trimmed KAGGLE_WRITEUP_RESOURCE.md to 2,812 cleaned prose words (under Kaggle 3,000 word limit with an 188-word safety margin, including the new Section 10 References). In Section 1, separated syntax degradation from context accumulation/dynamics to avoid asserting unproven causal links.
+  7. **Compilation & Consistency Verification**: Recompiled paper_resource.pdf via Typst (0 errors). Verified all 7 automated consistency checks pass via scripts/check_consistency_resource.py and 5/5 unit tests pass via tests/test_taxonomy.py.
+- **Evidence Files**: KAGGLE_WRITEUP_RESOURCE.md, paper_resource.typ, paper_resource.pdf, README.md, references_gemma.bib, analysis/validate_atif_schema.py, results/schema_validation_report.json, analysis/count_words.py.
+- **Numbers Before / After**:
+  - Cleaned prose word count: 2,970 words -> 2,812 words (188-word safety margin under 3,000-word limit)
+  - References: 0 in writeup -> 12 verified entries in Section 10; rajak2026tfd added to BibTeX
+  - Dual Schema Validation: 100.0% (112/112 concrete repository, 112/112 upstream interoperability)
+  - Abstract Exit 2 partition: syntax errors (44.4%) -> collection failures (44.4%)
+  - README trace shards: 3 shards (64 runs) -> 5 shards (112 runs) fully documented.

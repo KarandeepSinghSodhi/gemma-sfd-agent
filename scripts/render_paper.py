@@ -1023,8 +1023,10 @@ python scripts/check_consistency.py
 typst compile paper.typ paper.pdf
 ```
 """
-    (ROOT / "README.md").write_text(readme_md, encoding="utf-8")
-    print("Rendered paper.typ, paper.tex, KAGGLE_WRITEUP.md, and README.md from results/summary.json")
+    # Note: README.md is maintained as the dual-artifact repository landing page
+    # and describes both Artifact 1 (64 runs) and Artifact 2 (112 runs).
+    # (ROOT / "README.md").write_text(readme_md, encoding="utf-8")
+    print("Rendered paper.typ, paper.tex, and KAGGLE_WRITEUP.md from results/summary.json")
 
 
 if __name__ == "__main__":
