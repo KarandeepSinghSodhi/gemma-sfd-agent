@@ -217,3 +217,34 @@ Format:
   - Hardcoded Windows drive paths: 15 instances -> 0 instances across all scripts
   - ATIF citation: SWE-bench Working Group (2024) -> Harbor Framework Contributors (2026)
   - Schema validation claim: dual schema -> formal Harbor ATIF v1.7 specification validation (100.0% pass).
+
+
+---
+
+## [T15 Complete] 2026-10-28 01:30 UTC
+- **Task ID**: T15 (Comprehensive Reviewer Harmonization, Invalid Environment Isolation, Rerun Edit Determinism, & Cross-Paper Reconciliations)
+- **What Changed**:
+  1. **Invalid Environment Flagging (`env_invalid=True`)**: Added `env_invalid` boolean column to `dataset_resource/corpus_metadata.csv` flagging 20/112 runs where Phase 2 failed due to offline container constraints (10 venv/import-path shadowing, 10 missing wheels like `inline_snapshot`/`dirty_equals`). Recomputed SHA-256 checksums across all 118 dataset files.
+  2. **Primary (n=96) vs Valid (n=80/92) vs Pooled (n=112) Resolution Rates**:
+     - Primary 96: 6/96 (6.25%, 95% Wilson CI [2.90%, 12.97%]; 2/32 = 6.25% across all 3 configs).
+     - Valid Primary 80: 6/80 (7.50%, 95% Wilson CI [3.48%, 15.41%]).
+     - Valid Pooled 92: 8/92 (8.70%, 95% Wilson CI [4.47%, 16.23%]).
+     - Pooled 112: 8/112 (7.14%, 95% Wilson CI [3.66%, 13.46%]).
+  3. **Task-Level Aggregation & Clustering**: 4 of 32 unique tasks resolved at least once (`rich_4077`, `fastapi_9753`, `fastapi_14077`, `rich_3894`), 0/32 resolved across all 3 configs. Acknowledged runs are paired/clustered across tasks.
+  4. **True Rerun Edit Sequence Determinism**: Fixed `submit_patch` hash bug by hashing actual workspace modifications (`edit_file`/`write_file`). Confirmed 0/16 edits were byte-for-byte identical due to token-level sampling variance under vLLM, while 12/16 (75.0%) exit codes matched. Documented the 4 exact exit-code flips and the 18,571 mean token drift (~19%).
+  5. **Starter Kit Delegation Numbers Corrected**: Across all 32 tasks, 6/32 tasks invoked `code_analyzer` (26/32 bypassed, 81.25%), making 7 total root delegation calls (2.1% of 336 tool invocations). Updated Fig 3 and text.
+  6. **Softened Candidate Remediations**: Retitled Section 6 to "Candidate Remediations (Untested Unless Stated)"; noted circularity of `py_compile` check; noted `PYTHONPATH` priority is structurally predicted to avoid shadowing; replaced "memory leak" with "unbounded context growth".
+  7. **Cross-Paper Reconciliation (Paper 1 & Paper 2)**: Reconciled Table 6 in `paper.typ` and `KAGGLE_WRITEUP.md` to classify collection errors (agent vs environment) and clarified `rich_3043` 0-byte submitted diff due to 4 consecutive `FileEditError` exceptions. Added reference to expanded 32-task corpus.
+  8. **Word Count Ceiling Maintained**: `KAGGLE_WRITEUP_RESOURCE.md` raw whitespace word count is strictly **2,977 words** (< 3,000 max), with cleaned prose at **2,844 words**.
+  9. **Compilation & Consistency Verification**: Both `paper_resource.pdf` and `paper.pdf` recompiled cleanly (0 errors). All 7 consistency checks for Paper 2 and all checks for Paper 1 passed. 5/5 pytest unit tests passed.
+- **Evidence Files**: `dataset_resource/corpus_metadata.csv`, `dataset_resource/checksums.sha256`, `dataset_resource/datasheet.md`, `analysis/statistical_tests.py`, `analysis/figures.py`, `figures/fig*.{svg,pdf,png}`, `results/stats_report.json`, `results/rerun_determinism.json`, `KAGGLE_WRITEUP_RESOURCE.md`, `paper_resource.typ`, `paper_resource.pdf`, `paper.typ`, `paper.pdf`, `KAGGLE_WRITEUP.md`, `references_gemma.bib`.
+- **Numbers Before / After**:
+  - Primary resolution rate: 6/96 (6.25%, 95% Wilson CI [2.90%, 12.97%])
+  - Valid-environment primary resolution: 6/80 (7.50%, 95% CI [3.48%, 15.41%])
+  - Valid-environment pooled resolution: 8/92 (8.70%, 95% CI [4.47%, 16.23%])
+  - Rerun edit identity: 14/16 (artifact of empty hash) -> 0/16 byte-identical (true workspace edit sequence hashing)
+  - Exit code consistency: 12/16 (75.0%) with 4 documented flips
+  - Mean absolute token drift on rerun: 18,571 tokens (~19% of typical run total)
+  - Starter kit delegation: 3/32 tasks -> 6/32 tasks (18.8% invoking, 81.2% bypassing; 7 calls / 336 tool calls)
+  - Markdown raw whitespace word count: 2,977 words (< 3,000 max)
+  - Cleaned prose tokens: 2,844 words (< 3,000 max)

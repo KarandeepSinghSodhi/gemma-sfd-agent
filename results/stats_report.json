@@ -1,63 +1,94 @@
 {
   "wilson_cis": {
-    "flat_starter": {
-      "resolved": 2,
-      "n": 32,
-      "rate_pct": 6.25,
-      "ci_95_lo_pct": 1.73,
-      "ci_95_hi_pct": 20.15
-    },
-    "flat_controlled": {
-      "resolved": 2,
-      "n": 32,
-      "rate_pct": 6.25,
-      "ci_95_lo_pct": 1.73,
-      "ci_95_hi_pct": 20.15
-    },
-    "sfd": {
-      "resolved": 2,
-      "n": 32,
-      "rate_pct": 6.25,
-      "ci_95_lo_pct": 1.73,
-      "ci_95_hi_pct": 20.15
-    },
-    "flat_controlled_rerun": {
-      "resolved": 1,
-      "n": 8,
-      "rate_pct": 12.5,
-      "ci_95_lo_pct": 2.24,
-      "ci_95_hi_pct": 47.09
-    },
-    "sfd_rerun": {
-      "resolved": 1,
-      "n": 8,
-      "rate_pct": 12.5,
-      "ci_95_lo_pct": 2.24,
-      "ci_95_hi_pct": 47.09
-    },
-    "ALL": {
+    "POOLED_ALL": {
       "resolved": 8,
       "n": 112,
       "rate_pct": 7.14,
       "ci_95_lo_pct": 3.66,
       "ci_95_hi_pct": 13.46
+    },
+    "PRIMARY_ALL": {
+      "resolved": 6,
+      "n": 96,
+      "rate_pct": 6.25,
+      "ci_95_lo_pct": 2.9,
+      "ci_95_hi_pct": 12.97
+    },
+    "PRIMARY_flat_starter": {
+      "resolved": 2,
+      "n": 32,
+      "rate_pct": 6.25,
+      "ci_95_lo_pct": 1.73,
+      "ci_95_hi_pct": 20.15
+    },
+    "PRIMARY_flat_controlled": {
+      "resolved": 2,
+      "n": 32,
+      "rate_pct": 6.25,
+      "ci_95_lo_pct": 1.73,
+      "ci_95_hi_pct": 20.15
+    },
+    "PRIMARY_sfd": {
+      "resolved": 2,
+      "n": 32,
+      "rate_pct": 6.25,
+      "ci_95_lo_pct": 1.73,
+      "ci_95_hi_pct": 20.15
+    },
+    "VALID_POOLED_ALL": {
+      "resolved": 8,
+      "n": 92,
+      "rate_pct": 8.7,
+      "ci_95_lo_pct": 4.47,
+      "ci_95_hi_pct": 16.23
+    },
+    "VALID_PRIMARY_ALL": {
+      "resolved": 6,
+      "n": 80,
+      "rate_pct": 7.5,
+      "ci_95_lo_pct": 3.48,
+      "ci_95_hi_pct": 15.41
+    },
+    "VALID_PRIMARY_flat_starter": {
+      "resolved": 2,
+      "n": 27,
+      "rate_pct": 7.41,
+      "ci_95_lo_pct": 2.06,
+      "ci_95_hi_pct": 23.37
+    },
+    "VALID_PRIMARY_flat_controlled": {
+      "resolved": 2,
+      "n": 27,
+      "rate_pct": 7.41,
+      "ci_95_lo_pct": 2.06,
+      "ci_95_hi_pct": 23.37
+    },
+    "VALID_PRIMARY_sfd": {
+      "resolved": 2,
+      "n": 26,
+      "rate_pct": 7.69,
+      "ci_95_lo_pct": 2.14,
+      "ci_95_hi_pct": 24.14
     }
   },
   "mcnemar_exact": {
     "sfd_vs_flat_controlled": {
-      "b_c1_only": 1,
-      "c_c2_only": 1,
-      "p_value": 1.0
+      "c1_only_resolved (b)": 1,
+      "c2_only_resolved (c)": 1,
+      "mcnemar_exact_pvalue": 1.0,
+      "discordant_pairs": 2
     },
     "sfd_vs_flat_starter": {
-      "b_c1_only": 2,
-      "c_c2_only": 2,
-      "p_value": 1.0
+      "c1_only_resolved (b)": 2,
+      "c2_only_resolved (c)": 2,
+      "mcnemar_exact_pvalue": 1.0,
+      "discordant_pairs": 4
     },
     "flat_controlled_vs_flat_starter": {
-      "b_c1_only": 1,
-      "c_c2_only": 1,
-      "p_value": 1.0
+      "c1_only_resolved (b)": 1,
+      "c2_only_resolved (c)": 1,
+      "mcnemar_exact_pvalue": 1.0,
+      "discordant_pairs": 2
     }
   },
   "metric_comparisons_n32": {
@@ -178,8 +209,13 @@
     "total_pairs": 16,
     "identical_exit_codes": 12,
     "exit_code_agreement_pct": 75.0,
-    "identical_patch_hashes": 14,
-    "patch_hash_agreement_pct": 87.5,
+    "identical_edit_hashes": 0,
+    "edit_hash_agreement_pct": 0.0,
     "mean_abs_token_diff": 18571.0
+  },
+  "task_level_summary": {
+    "total_tasks": 32,
+    "tasks_with_resolution": 4,
+    "tasks_with_env_invalid": 6
   }
 }

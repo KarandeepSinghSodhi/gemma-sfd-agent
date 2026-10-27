@@ -1,14 +1,20 @@
 """
 statistical_tests.py: Rigorous inferential statistics, paired tests, and rerun determinism audit.
 Computes:
-1. Wilson score 95% confidence intervals for binomial resolution rates.
+1. Wilson score 95% confidence intervals for binomial resolution rates:
+   - Primary 96 runs (overall & per-config)
+   - Primary valid-environment 80 runs
+   - Pooled 112 runs (overall & per-config)
+   - Pooled valid-environment 92 runs
 2. McNemar's exact two-sided test for paired resolution outcomes (n=32).
 3. Wilcoxon signed-rank tests and 10,000-sample paired bootstrap 95% CIs for:
    - Cumulative prompt tokens
-   - Peak prompt tokens
+   - Peak prompt tokens (vs flat_controlled and flat_starter)
    - Cumulative total tokens
    - Execution duration
-4. Rerun determinism analysis on Cohort 1 (original vs rerun across 8 tasks x 2 configs = 16 pairs).
+4. Rerun determinism analysis on Cohort 1 (original vs rerun across 8 tasks x 2 configs = 16 pairs)
+   evaluating true edit sequence hashes, exit code agreement, flips, and token drift.
+5. Task-level failure and resolution concentration audit across all 32 tasks.
 Outputs:
 - results/stats_report.json
 - results/rerun_determinism.json
@@ -38,7 +44,7 @@ def wilson_ci(k: int, n: int, confidence: float = 0.95) -> tuple[float, float]:
     denom = 1 + z**2 / n
     center = (p + z**2 / (2 * n)) / denom
     half = (z * math.sqrt((p * (1 - p) + z**2 / (4 * n)) / n)) / denom
-    return (max(0.0, round(center - half, 4)), min(1.0, round(center + half, 4)))
+    return (max(0.0, round(float(center - half), 4)), min(1.0, round(float(center + half), 4)))
 
 def paired_bootstrap_diff_ci(a: list[float], b: list[float], n_boot: int = 10000, seed: int = 42) -> tuple[float, float, float]:
     """Compute 95% bootstrap confidence interval for mean(a) - mean(b)."""
@@ -58,28 +64,42 @@ def paired_bootstrap_diff_ci(a: list[float], b: list[float], n_boot: int = 10000
 def mcnemar_exact(outcomes_a: list[bool], outcomes_b: list[bool]) -> tuple[int, int, float]:
     """Exact two-sided McNemar test for discordant pairs."""
     assert len(outcomes_a) == len(outcomes_b)
-    # b: a=True, b=False; c: a=False, b=True
     b = sum(1 for x, y in zip(outcomes_a, outcomes_b) if x and not y)
     c = sum(1 for x, y in zip(outcomes_a, outcomes_b) if not x and y)
     n_disc = b + c
     if n_disc == 0:
         return (0, 0, 1.0)
-    # Binomial test with p=0.5
     res = stats.binomtest(min(b, c), n_disc, 0.5, alternative="two-sided")
-    return (b, c, round(res.pvalue, 4))
+    return (b, c, round(float(res.pvalue), 4))
 
-def get_trace_patch_hash(trace_file: str) -> tuple[str, int]:
+def get_trace_edits_hash(trace_file: str) -> tuple[str, int]:
+    """Extract and hash actual workspace modifications from trace tool calls."""
     p = TRACES_DIR / trace_file
     if not p.is_file():
-        return ("", 0)
+        return ("NO_FILE", 0)
     data = json.loads(p.read_text(encoding="utf-8"))
+    edits = []
     for s in data.get("steps", []):
         for tc in s.get("tool_calls", []):
-            if tc.get("function_name") == "submit_patch":
-                patch_str = tc.get("arguments", {}).get("patch", "")
-                h = hashlib.sha256(patch_str.encode("utf-8")).hexdigest()[:12]
-                return (h, len(patch_str))
-    return ("NO_PATCH", 0)
+            fn = tc.get("function_name")
+            args = tc.get("arguments", {})
+            if fn in ("write_file", "edit_file"):
+                edits.append({
+                    "fn": fn,
+                    "path": args.get("filepath") or args.get("path") or args.get("file_path"),
+                    "content": args.get("content") or args.get("new_string") or "",
+                    "old": args.get("old_string") or ""
+                })
+            elif fn == "submit_patch" and args.get("patch"):
+                edits.append({
+                    "fn": "submit_patch",
+                    "patch": args.get("patch")
+                })
+    if not edits:
+        return ("NO_EDITS", 0)
+    serialized = json.dumps(edits, sort_keys=True)
+    h = hashlib.sha256(serialized.encode("utf-8")).hexdigest()[:12]
+    return (h, len(edits))
 
 def main():
     df = pd.read_csv(METADATA_PATH)
@@ -91,44 +111,76 @@ def main():
     # --- 1. Wilson CIs for Resolution Proportions ---
     print("\n--- 1. Wilson 95% Confidence Intervals for Resolution ---")
     wilson_results = {}
-    for cfg in ["flat_starter", "flat_controlled", "sfd", "flat_controlled_rerun", "sfd_rerun", "ALL"]:
-        if cfg == "ALL":
-            sub = df
-            k = int(sub["resolved"].sum())
-            n = len(sub)
-        else:
-            sub = df[df["config"] == cfg]
-            k = int(sub["resolved"].sum())
-            n = len(sub)
-        lo, hi = wilson_ci(k, n)
-        wilson_results[cfg] = {
-            "resolved": k,
-            "n": n,
-            "rate_pct": round(k / n * 100, 2),
-            "ci_95_lo_pct": round(lo * 100, 2),
-            "ci_95_hi_pct": round(hi * 100, 2)
+    
+    # Pooled (n=112)
+    k_all = int(df["resolved"].sum())
+    n_all = len(df)
+    lo, hi = wilson_ci(k_all, n_all)
+    wilson_results["POOLED_ALL"] = {
+        "resolved": k_all, "n": n_all, "rate_pct": round(k_all / n_all * 100, 2),
+        "ci_95_lo_pct": round(lo * 100, 2), "ci_95_hi_pct": round(hi * 100, 2)
+    }
+    
+    # Primary (n=96)
+    p_df = df[df["cohort"] != "Cohort 1 Rerun (Reproducibility)"]
+    k_p = int(p_df["resolved"].sum())
+    n_p = len(p_df)
+    lo_p, hi_p = wilson_ci(k_p, n_p)
+    wilson_results["PRIMARY_ALL"] = {
+        "resolved": k_p, "n": n_p, "rate_pct": round(k_p / n_p * 100, 2),
+        "ci_95_lo_pct": round(lo_p * 100, 2), "ci_95_hi_pct": round(hi_p * 100, 2)
+    }
+    
+    # Primary per-config (n=32 each)
+    for cfg in ["flat_starter", "flat_controlled", "sfd"]:
+        sub = p_df[p_df["config"] == cfg]
+        k_cfg = int(sub["resolved"].sum())
+        n_cfg = len(sub)
+        lo_c, hi_c = wilson_ci(k_cfg, n_cfg)
+        wilson_results[f"PRIMARY_{cfg}"] = {
+            "resolved": k_cfg, "n": n_cfg, "rate_pct": round(k_cfg / n_cfg * 100, 2),
+            "ci_95_lo_pct": round(lo_c * 100, 2), "ci_95_hi_pct": round(hi_c * 100, 2)
         }
-        print(f"  {cfg:24s}: {k:2d}/{n:2d} ({k/n*100:5.2f}%) | 95% CI: [{lo*100:5.2f}%, {hi*100:5.2f}%]")
+        
+    # Valid-environment pooled (n=92)
+    v_df = df[~df["env_invalid"]]
+    k_vp = int(v_df["resolved"].sum())
+    n_vp = len(v_df)
+    lo_v, hi_v = wilson_ci(k_vp, n_vp)
+    wilson_results["VALID_POOLED_ALL"] = {
+        "resolved": k_vp, "n": n_vp, "rate_pct": round(k_vp / n_vp * 100, 2),
+        "ci_95_lo_pct": round(lo_v * 100, 2), "ci_95_hi_pct": round(hi_v * 100, 2)
+    }
+    
+    # Valid-environment primary (n=80)
+    vp_df = p_df[~p_df["env_invalid"]]
+    k_vp80 = int(vp_df["resolved"].sum())
+    n_vp80 = len(vp_df)
+    lo_vp80, hi_vp80 = wilson_ci(k_vp80, n_vp80)
+    wilson_results["VALID_PRIMARY_ALL"] = {
+        "resolved": k_vp80, "n": n_vp80, "rate_pct": round(k_vp80 / n_vp80 * 100, 2),
+        "ci_95_lo_pct": round(lo_vp80 * 100, 2), "ci_95_hi_pct": round(hi_vp80 * 100, 2)
+    }
+    for cfg in ["flat_starter", "flat_controlled", "sfd"]:
+        sub = vp_df[vp_df["config"] == cfg]
+        k_cfg = int(sub["resolved"].sum())
+        n_cfg = len(sub)
+        lo_c, hi_c = wilson_ci(k_cfg, n_cfg)
+        wilson_results[f"VALID_PRIMARY_{cfg}"] = {
+            "resolved": k_cfg, "n": n_cfg, "rate_pct": round(k_cfg / n_cfg * 100, 2),
+            "ci_95_lo_pct": round(lo_c * 100, 2), "ci_95_hi_pct": round(hi_c * 100, 2)
+        }
+        
+    for k, v in wilson_results.items():
+        print(f"  {k:22s}: {v['resolved']:2d}/{v['n']:2d} ({v['rate_pct']:5.2f}%) | 95% CI: [{v['ci_95_lo_pct']:5.2f}%, {v['ci_95_hi_pct']:5.2f}%]")
 
     # --- 2. Paired Comparisons across 32 Primary Benchmark Tasks ---
-    # Filter to primary 32 tasks (Cohorts 1, 2, 3, 4; exclude rerun)
-    primary_df = df[df["cohort"].isin([
-        "Cohort 1 (Canonical)", "Cohort 2 (Stratified Random)",
-        "Cohort 3 (Stratified Disjoint)", "Cohort 4 (Stratified Disjoint)"
-    ])]
+    piv_resolved = p_df.pivot(index="instance_id", columns="config", values="resolved")
+    piv_prompt = p_df.pivot(index="instance_id", columns="config", values="cumulative_prompt_tokens")
+    piv_peak = p_df.pivot(index="instance_id", columns="config", values="peak_prompt_tokens")
+    piv_total = p_df.pivot(index="instance_id", columns="config", values="cumulative_total_tokens")
+    piv_dur = p_df.pivot(index="instance_id", columns="config", values="duration_seconds")
     
-    # Pivot by instance_id
-    piv_resolved = primary_df.pivot(index="instance_id", columns="config", values="resolved")
-    piv_prompt = primary_df.pivot(index="instance_id", columns="config", values="cumulative_prompt_tokens")
-    piv_peak = primary_df.pivot(index="instance_id", columns="config", values="peak_prompt_tokens")
-    piv_total = primary_df.pivot(index="instance_id", columns="config", values="cumulative_total_tokens")
-    piv_dur = primary_df.pivot(index="instance_id", columns="config", values="duration_seconds")
-    
-    # Assert 32 complete rows across all 3 primary configs
-    for piv in [piv_resolved, piv_prompt, piv_peak, piv_total, piv_dur]:
-        assert len(piv) == 32
-        assert set(piv.columns) >= {"flat_starter", "flat_controlled", "sfd"}
-        
     print("\n--- 2. McNemar's Exact Test for Resolution (n=32 paired tasks) ---")
     mcnemar_results = {}
     pairs = [
@@ -138,10 +190,16 @@ def main():
     ]
     for c1, c2 in pairs:
         b, c, pval = mcnemar_exact(piv_resolved[c1].tolist(), piv_resolved[c2].tolist())
-        mcnemar_results[f"{c1}_vs_{c2}"] = {"b_c1_only": b, "c_c2_only": c, "p_value": pval}
-        print(f"  {c1} vs {c2}: discordant=({b}, {c}) | exact p-value = {pval:.4f}")
+        mcnemar_results[f"{c1}_vs_{c2}"] = {
+            "c1_only_resolved (b)": b,
+            "c2_only_resolved (c)": c,
+            "mcnemar_exact_pvalue": pval,
+            "discordant_pairs": b + c
+        }
+        print(f"  {c1} vs {c2}: b={b}, c={c}, discordant={b+c}, exact two-sided p={pval:.4f}")
 
-    print("\n--- 3. Paired Differences: SFD vs Flat Baselines (n=32 paired tasks) ---")
+    # --- 3. Paired Differences & Non-Parametric Tests across 32 Tasks ---
+    print("\n--- 3. Paired Differences & Bootstrap CIs (n=32 tasks; exploratory without multiple-testing correction) ---")
     metric_results = {}
     for metric_name, piv_table in [
         ("cumulative_prompt_tokens", piv_prompt),
@@ -154,19 +212,15 @@ def main():
             sfd_vals = piv_table["sfd"].tolist()
             base_vals = piv_table[baseline].tolist()
             
-            # Wilcoxon signed-rank test
             try:
                 w_res = stats.wilcoxon(sfd_vals, base_vals, alternative="two-sided")
                 w_stat = float(w_res.statistic)
                 w_pval = float(w_res.pvalue)
-            except Exception as e:
+            except Exception:
                 w_stat = 0.0
                 w_pval = 1.0
                 
-            # Bootstrap CI on difference
             mean_diff, ci_lo, ci_hi = paired_bootstrap_diff_ci(sfd_vals, base_vals)
-            
-            # Sign test: how many tasks lower in SFD?
             sfd_lower = sum(1 for s, b in zip(sfd_vals, base_vals) if s < b)
             sfd_higher = sum(1 for s, b in zip(sfd_vals, base_vals) if s > b)
             
@@ -184,7 +238,7 @@ def main():
             print(f"    Mean Diff: {mean_diff:+,.1f} ({mean_diff/np.mean(base_vals)*100:+.1f}%) | 95% Bootstrap CI: [{ci_lo:+,.1f}, {ci_hi:+,.1f}]")
             print(f"    Wilcoxon signed-rank p-value: {w_pval:.4f} | Tasks SFD lower: {sfd_lower}/{32}")
 
-    # --- 4. Rerun Determinism Analysis (Cohort 1 Original vs Rerun) ---
+    # --- 4. Rerun Determinism Analysis on Cohort 1 (8 tasks x 2 configs = 16 pairs) ---
     print("\n--- 4. Rerun Determinism Audit on Cohort 1 (8 tasks x 2 configs = 16 pairs) ---")
     rerun_pairs = []
     c1_orig = df[df["cohort"] == "Cohort 1 (Canonical)"]
@@ -196,7 +250,7 @@ def main():
     }
     
     identical_exit_codes = 0
-    identical_patch_hashes = 0
+    identical_edit_hashes = 0
     token_differences = []
     
     for base_cfg, rerun_cfg in rerun_config_map.items():
@@ -204,18 +258,18 @@ def main():
             row_orig = c1_orig[(c1_orig["config"] == base_cfg) & (c1_orig["instance_id"] == iid)].iloc[0]
             row_rerun = c1_rerun[(c1_rerun["config"] == rerun_cfg) & (c1_rerun["instance_id"] == iid)].iloc[0]
             
-            orig_hash, orig_plen = get_trace_patch_hash(row_orig["dataset_trace_file"])
-            rerun_hash, rerun_plen = get_trace_patch_hash(row_rerun["dataset_trace_file"])
+            orig_hash, orig_edits_cnt = get_trace_edits_hash(row_orig["dataset_trace_file"])
+            rerun_hash, rerun_edits_cnt = get_trace_edits_hash(row_rerun["dataset_trace_file"])
             
             ec_match = (row_orig["test_exit_code"] == row_rerun["test_exit_code"])
-            hash_match = (orig_hash == rerun_hash and orig_hash != "NO_PATCH")
+            hash_match = (orig_hash == rerun_hash and orig_hash != "NO_EDITS")
             tok_diff = int(row_rerun["cumulative_total_tokens"] - row_orig["cumulative_total_tokens"])
             token_differences.append(abs(tok_diff))
             
             if ec_match:
                 identical_exit_codes += 1
             if hash_match:
-                identical_patch_hashes += 1
+                identical_edit_hashes += 1
                 
             rerun_pairs.append({
                 "instance_id": str(iid),
@@ -225,18 +279,40 @@ def main():
                 "exit_code_match": bool(ec_match),
                 "orig_resolved": bool(row_orig["resolved"]),
                 "rerun_resolved": bool(row_rerun["resolved"]),
-                "orig_patch_hash": str(orig_hash),
-                "rerun_patch_hash": str(rerun_hash),
-                "patch_hash_match": bool(hash_match),
+                "orig_edit_hash": str(orig_hash),
+                "rerun_edit_hash": str(rerun_hash),
+                "orig_edits_count": orig_edits_cnt,
+                "rerun_edits_count": rerun_edits_cnt,
+                "edit_hash_match": bool(hash_match),
                 "orig_total_tokens": int(row_orig["cumulative_total_tokens"]),
                 "rerun_total_tokens": int(row_rerun["cumulative_total_tokens"]),
                 "token_diff": int(tok_diff)
             })
             
     print(f"  Exit code consistency: {identical_exit_codes}/16 ({identical_exit_codes/16*100:.1f}%)")
-    print(f"  Exact patch hash match: {identical_patch_hashes}/16 ({identical_patch_hashes/16*100:.1f}%)")
+    print(f"  Exact edit hash match: {identical_edit_hashes}/16 ({identical_edit_hashes/16*100:.1f}%)")
     print(f"  Mean absolute token deviation: {np.mean(token_differences):,.1f} tokens")
     
+    # --- 5. Task-Level Concentration Analysis ---
+    print("\n--- 5. Task-Level Failure & Resolution Concentration (32 tasks) ---")
+    task_res = []
+    for iid, g in p_df.groupby("instance_id"):
+        n_res = int(g["resolved"].sum())
+        repo = g["repo"].iloc[0]
+        exit_codes = list(g["test_exit_code"])
+        env_inv = bool(g["env_invalid"].any())
+        task_res.append({
+            "instance_id": iid,
+            "repo": repo,
+            "resolved_runs": n_res,
+            "resolved_any": n_res > 0,
+            "exit_codes": exit_codes,
+            "has_env_invalid": env_inv
+        })
+    task_df = pd.DataFrame(task_res)
+    print(f"  Tasks with >=1 resolution: {task_df['resolved_any'].sum()} / {len(task_df)} ({task_df['resolved_any'].mean()*100:.1f}%)")
+    print(f"  Tasks with env_invalid runs: {task_df['has_env_invalid'].sum()} / {len(task_df)} ({task_df['has_env_invalid'].mean()*100:.1f}%)")
+
     # Save results
     stats_report = {
         "wilson_cis": wilson_results,
@@ -246,9 +322,14 @@ def main():
             "total_pairs": 16,
             "identical_exit_codes": identical_exit_codes,
             "exit_code_agreement_pct": round(identical_exit_codes / 16 * 100, 2),
-            "identical_patch_hashes": identical_patch_hashes,
-            "patch_hash_agreement_pct": round(identical_patch_hashes / 16 * 100, 2),
+            "identical_edit_hashes": identical_edit_hashes,
+            "edit_hash_agreement_pct": round(identical_edit_hashes / 16 * 100, 2),
             "mean_abs_token_diff": round(float(np.mean(token_differences)), 1)
+        },
+        "task_level_summary": {
+            "total_tasks": len(task_df),
+            "tasks_with_resolution": int(task_df["resolved_any"].sum()),
+            "tasks_with_env_invalid": int(task_df["has_env_invalid"].sum())
         }
     }
     (RESULTS_DIR / "stats_report.json").write_text(json.dumps(stats_report, indent=2), encoding="utf-8")

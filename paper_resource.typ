@@ -78,10 +78,10 @@
   #v(3pt)
   #set text(size: 9.2pt)
   #set par(first-line-indent: 0pt)
-  Repository-level software engineering (SWE) benchmarks commonly summarize coding-agent performance using scalar task-resolution rates, obscuring why agents succeed or fail. For compact, 4-bit quantized open-weight models such as Gemma 4 E4B, diagnosing why agents plateau at low resolution rates (median 5.0% across 197 teams on the official Small Model Prize leaderboard) is hindered by limited public trace data linking compact-agent execution trajectories to test outcomes and failure diagnoses. We introduce *ATIF-Gemma*, an open empirical diagnostic corpus of 112 full-fidelity multi-turn execution traces comprising 1,518 LLM calls, 1,328 tool invocations, and 11,706,178 logged tokens across 32 paired SWE-bench tasks on 4x NVIDIA L4 GPUs in the official Google ADK and `swegemma` harness.
+  Repository-level software engineering (SWE) benchmarks commonly summarize coding-agent performance using scalar task-resolution rates, obscuring why agents succeed or fail. For compact, 4-bit quantized models such as Gemma 4 E4B, diagnosing low resolution rates (median 5.0% across 197 teams on the official Small Model Prize leaderboard) is hindered by limited public trace data linking compact-agent trajectories to test outcomes. We introduce *ATIF-Gemma*, an open empirical diagnostic corpus of 112 multi-turn execution traces comprising 1,518 LLM calls, 1,328 tool invocations, and 11,706,178 logged tokens across 32 paired SWE-bench tasks on 4x NVIDIA L4 GPUs using Google ADK and `swegemma`. All evaluated tasks originate from public open-source repositories under MIT and Apache-2.0 licenses; ATIF-Gemma logs execution trajectories without disclosing confidential competition test harnesses.
   
   #v(3pt)
-  Formatted under the Agent Trajectory Interchange Format (ATIF v1.7, 100% schema-validated; Harbor Framework Contributors, 2026), ATIF-Gemma cross-references trajectories and patches against ground-truth solutions and held-out test suites. Across 112 runs, 8 achieve full resolution (7.1%). We define four principal failure mechanisms: test assertion failures (50.0%, 56/112), test collection failures (32.1%, 36/112), pre-submission budget exhaustion (8.0%, 9/112), and verification timeouts (2.7%, 3/112). Further analysis partitions collection crashes into agent-attributable collection failures (44.4%) versus environment/dependency failures (55.6%), classifies assertion failures via a formal mutually exclusive localization decision tree, and documents context dynamics and rerun stability. We release the trace corpus, the `atif_gemma` analysis package, and an actionable remediation guide to support reproducible diagnosis of compact developer agents.
+  Formatted under the Agent Trajectory Interchange Format (ATIF v1.7, 100% schema-validated; Harbor Framework Contributors, 2026), ATIF-Gemma cross-references trajectories against held-out test outcomes. In the 96 primary runs (32 tasks $times$ 3 configs), resolution is *6/96 (6.25%, 95% Wilson CI [2.90%, 12.97%])*, identical across configurations (*2/32 = 6.25% each*, 95% CI [1.73%, 20.15%]); pooled across all 112 runs (including 16 reruns), resolution is 8/112 (7.14%). We define four principal failure mechanisms: assertion failures (50.0%, 56/112), collection errors (32.1%, 36/112), budget exhaustion (8.0%, 9/112), and verification timeouts (2.7%, 3/112). Analysis partitions collection crashes into agent-attributable failures (44.4%) versus environment failures (55.6%; flagged `env_invalid=True` across 20 runs where offline containers lacked dependencies or shadowed paths). Excluding invalid environment runs yields *6/80 (7.50%)* primary and *8/92 (8.70%)* pooled resolution. We release the trace corpus, the `atif_gemma` package, and an actionable remediation guide.
 ]
 
 #v(0.2cm)
@@ -109,7 +109,7 @@ To bridge this diagnostic gap, we introduce *ATIF-Gemma*, an open, standardized,
 Autonomous software engineering agents have been evaluated primarily through outcome-focused benchmarks. Understanding the failure mechanics of small open-weight agents intersects three bodies of literature:
 
 == 2.1 Software Engineering Agent Trajectory Datasets
-SWE-bench @jimenez2024swebench established the standard benchmark for evaluating language models on real-world repository issue resolution. SWE-agent @yang2024sweagent introduced dedicated Agent-Computer Interfaces (ACIs), demonstrating that specialized shell commands improve model interaction. OpenHands @wang2024openhands provided an extensible multi-agent development environment. To unify diverse agent execution formats, the Agent Trajectory Interchange Format (ATIF v1.7) was developed as a standardized JSON schema capturing multi-turn tool invocations, stdout/stderr observations, and token metrics across disparate agent frameworks @harbor2026atif. Public trajectory resources (such as recent releases of 50 multi-turn Gemma SWE-bench trajectories on Kaggle @rajak2026tfd) provide valuable execution-level evidence. However, systematic analysis linking compact-agent traces to test-collection failures, patch-localization outcomes, and environment-related evaluation defects remains an important diagnostic need. ATIF-Gemma addresses this by providing paired architectural comparisons across 112 traces, a deterministic Phase 2 failure taxonomy with explicit agent versus environment attribution, file-level localization analysis, and open diagnostic tooling.
+SWE-bench @jimenez2024swebench established the standard benchmark for evaluating language models on real-world repository issue resolution. SWE-agent @yang2024sweagent introduced dedicated Agent-Computer Interfaces (ACIs), demonstrating that specialized shell commands improve model interaction. OpenHands @wang2024openhands provided an extensible multi-agent development environment. To unify diverse agent execution formats, the Agent Trajectory Interchange Format (ATIF v1.7) was developed as a standardized JSON schema capturing multi-turn tool invocations, stdout/stderr observations, and token metrics across disparate agent frameworks @harbor2026atif. Large-scale trajectory datasets (such as Nebius SWE-agent traces, SWE-Gym @pan2024swegym, and SWE-smith @wang2024swesmith) and Gemma-specific collections (50 multi-turn trajectories; @rajak2026tfd) provide valuable execution evidence at scale. However, systematic analysis linking compact-agent traces to test-collection failures, patch-localization outcomes, and environment-related evaluation defects remains an important diagnostic need. ATIF-Gemma complements large unannotated corpora by providing a dense, paired architectural diagnostic sample on compact 4-bit models (Gemma 4 E4B), featuring a deterministic Phase 2 failure taxonomy with explicit agent versus environment attribution, structural file-localization trees, and verified held-out test outcomes.
 
 == 2.2 SWE Agent Failure Analyses & Context Bottlenecks
 Prior diagnostic studies on large language model agents have highlighted the fragility of multi-turn deliberation. Xia et al. @xia2024agentless introduced *Agentless*, demonstrating that complex autonomous loops often degrade performance relative to streamlined two-phase localization and repair pipelines. Lindenbauer et al. @lindenbauer2025complexity demonstrated the "complexity trap" in agent context management: accumulating unpruned tool observations rapidly bloats prompt context, degrading reasoning fidelity. 
@@ -186,24 +186,24 @@ A critical diagnostic finding enabled by ATIF-Gemma is that *nearly one-third of
    - *Syntactic & Indentation Corruption (13/36 = 36.1%)*: Across 7 tasks (e.g., `fastapi_14099`, `rich_3894`), small model patches inserted unindented blocks, detached `else:` branches, or unclosed brackets, causing Python to raise `IndentationError` or `SyntaxError` during test collection.
    - *Missing New Source Module (3/36 = 8.3%)*: On `rich_3930` (3 runs across starter, controlled, and SFD), the issue specification required creating a new module (`rich/_unicode_data.py`). Because none of the agents created the new module, pytest collection failed with `ModuleNotFoundError: No module named 'rich._unicode_data'`.
 
-2. *Environment-Attributable Collection Failures (20/36 = 55.6%)*:
-   - *Virtual Environment & Path Shadowing (10/36 = 27.8%)*: On `httpx_3672` (5 runs) and `fastapi_15661` (5 runs), container configuration prevented valid collection. In `httpx_3672`, pre-installed system packages at `/usr/local/lib/python3.12/dist-packages/httpx` shadowed `/workspace/src/httpx`. In `fastapi_15661`, the test patch imported from `scripts.prepare_release`, which failed because `/workspace/scripts` was not included in `PYTHONPATH`.
-   - *Missing Sandbox Dependencies (10/36 = 27.8%)*: On 4 tasks (`fastapi_14361`, `fastapi_14371`, `fastapi_14455`, `fastapi_14459`), held-out test patches imported external testing libraries (e.g. `inline_snapshot`, `dirty_equals`) absent from the competition offline wheelhouse, triggering `ModuleNotFoundError` across every evaluated architecture.
+2. *Environment-Attributable Collection Failures (20/36 = 55.6%; flagged `env_invalid=True`)*:
+   - *Virtual Environment & Path Shadowing (10/36 = 27.8%)*: On `httpx_3672` (5 runs) and `fastapi_15661` (5 runs), container configuration prevented valid collection. In `httpx_3672`, system packages at `/usr/local/lib/python3.12/dist-packages/httpx` shadowed `/workspace/src/httpx`. In `fastapi_15661`, the test patch imported from `scripts.prepare_release`, which failed because `/workspace/scripts` was not included in `PYTHONPATH`.
+   - *Missing Sandbox Dependencies (10/36 = 27.8%)*: On 4 tasks (`fastapi_14361`, `fastapi_14371`, `fastapi_14455`, `fastapi_14459`), held-out test patches imported external testing libraries (`inline_snapshot`, `dirty_equals`) absent from the offline wheelhouse, triggering `ModuleNotFoundError` across every evaluated architecture.
 
-This distinction highlights the dual diagnostic value of execution traces: identifying agent patch deficiencies while pinpointing execution harness anomalies.
+Excluding these 20 invalid runs yields a valid-environment sample of 92 runs (80 primary runs across 26 tasks). Resolution rates on this valid subset are *6/80 (7.50%, 95% CI [3.48%, 15.41%])* for primary runs (`flat_starter` 2/27, `flat_controlled` 2/27, `sfd` 2/26) and *8/92 (8.70%, 95% CI [4.47%, 16.23%])* pooled.
 
 == 4.2 Deterministic Sub-Classification of Assertion Failures (Exit Code 1: 56 Runs)
 Representing half of the entire corpus (56/112 = 50.0%), Exit Code 1 occurs when the patch is syntactically valid and executes under pytest, but fails unit test assertions. By comparing the agent's edited source files ($F_("agent")$) against the author's reference patch ($F_("gold")$) via a formal mutually exclusive decision tree (`analysis/subclassify_exit1.py`), we assign every run to exactly one tier:
 
-1. *Empty or Unparsed Patch (1/56 = 1.8%)*: Evaluated first: $|F_("agent")| = 0$. On `fastapi_5624`, the agent submitted zero modified source characters.
-2. *Wrong-File Localization (17/56 = 30.4%)*: Evaluated second: $F_("agent") sect F_("gold") = emptyset$. The agent modified completely unrelated modules (e.g., in `fastapi_15589`, editing `fastapi/params.py` instead of `fastapi/dependencies/utils.py`).
+1. *Empty Patch (1/56 = 1.8%)*: Evaluated first: $|F_("agent")| = 0$. On `fastapi_5624`, the agent targeted zero source files. Note: `rich_3043` also submitted a 0-byte diff due to 4 consecutive `FileEditError` exceptions, but targeted the correct file.
+2. *Wrong-File Localization (17/56 = 30.4%)*: Evaluated second: $F_("agent") sect F_("gold") = emptyset$. The agent modified completely unrelated modules (e.g., in `fastapi_15589`).
 3. *Partial Multi-File Localization (14/56 = 25.0%)*: Evaluated third: $|F_("gold")| > 1$ and $F_("agent") subset.neq F_("gold")$. The bug spanned multiple repository modules, but the agent modified only a strict subset (e.g., in `requests_7505`, modifying `models.py` but omitting `sessions.py`).
-4. *Right-File, Wrong-Logic (24/56 = 42.9%)*: Evaluated fourth for remaining runs where $F_("agent") sect F_("gold") != emptyset$. The agent localized the target file(s), but the synthesized modification failed semantic assertions (e.g., `requests_7502`, `rich_3043`, `requests_7427`, `rich_3471`).
+4. *Right-File, Wrong-Logic (24/56 = 42.9%)*: Evaluated fourth for remaining runs where $F_("agent") sect F_("gold") != emptyset$. The agent localized the target file(s), but the synthesized modification failed semantic assertions (e.g., `requests_7502`, `rich_3043`).
 
-*Methodological note:* Gold-patch file overlap serves as an objective structural proxy for localization; valid alternative patches modifying different files are acknowledged as a potential threat to validity (Section 8).
+*Caveat:* Gold-patch file overlap serves as an automated structural proxy; valid alternative engineering implementations may modify different helper abstractions to resolve an issue.
 
-== 4.3 Ground-Truth Resolved Runs
-Across the 112 runs, 8 runs successfully resolved held-out tests across 4 distinct tasks: `rich_4077` (3 runs: `sfd`, `sfd_rerun`, `flat_controlled_rerun`), `fastapi_9753` (1 run: `flat_starter`), `fastapi_14077` (2 runs: `sfd`, `flat_controlled`), and `rich_3894` (2 runs: `flat_starter`, `flat_controlled`). In `fastapi_14077`, SFD required 50% fewer tool calls (6 vs 12) and 34.9% faster runtime (43.9s vs 67.5s), though across the full 32 tasks, overall duration differences between architectures are not statistically significant (Wilcoxon $p = 0.4540$).
+== 4.3 Ground-Truth Resolved Runs & Task-Level Clustering
+Across the 112 runs, 8 runs successfully resolved held-out tests across 4 distinct tasks: `rich_4077` (3 runs), `fastapi_9753` (1 run), `fastapi_14077` (2 runs), and `rich_3894` (2 runs). In primary runs ($n=96$), resolutions concentrate on these same 4 tasks (4/32 = 12.5% of tasks resolved at least once; 0/32 tasks resolved across all 3 configurations). Runs sharing tasks are paired and clustered, not independent i.i.d. draws.
 
 #v(0.3cm)
 = 5. Quantitative Audit Across Agent Architectures
@@ -223,32 +223,33 @@ ATIF-Gemma pairs each task across three distinct agent architectures executing o
     [Rerun: flat_controlled], [8], [1/8 (12.5%) [2.2%, 47.1%]], [12,557.5], [93,135.6], [107.4s],
     [Rerun: sfd], [8], [1/8 (12.5%) [2.2%, 47.1%]], [9,306.4], [67,710.1], [96.4s]
   ),
-  caption: [Architectural comparison of token consumption, peak prompt lengths, and execution speed across all 112 ATIF-Gemma runs. We define *Mean Peak $P_t$* as $1/N sum_(i=1)^N max_t P_(i,t)$, representing the per-run maximum prompt token length reaching the model context window across turn steps $t$, averaged over all $N$ benchmark runs in the configuration.]
+  caption: [Architectural comparison of token consumption, peak prompt lengths, and execution speed across all 112 ATIF-Gemma runs. *Mean Peak $P_t$* measures per-run maximum prompt token length reaching model context across turns $t$. *Mean Prompt* measures cumulative input prompt tokens across all LLM turns per run.]
 )
 
 == 5.1 Statistical Tests & Resolution Invariance
-Across all 32 benchmark tasks, resolution rates are identical (2/32 = 6.25%, 95% Wilson CI [1.73%, 20.15%]) across `flat_starter`, `flat_controlled`, and `sfd`. McNemar's exact two-sided test yields $p = 1.0000$ for all pairwise comparisons ($b = 1, c = 1$ for SFD vs controlled and controlled vs starter; $b = 2, c = 2$ for SFD vs starter). *There is no statistically significant resolution rate advantage for any architecture on this small open-weight model.*
+Across all 32 primary tasks, resolution rates are identical (2/32 = 6.25%, 95% Wilson CI [1.73%, 20.15%]) across `flat_starter`, `flat_controlled`, and `sfd`. McNemar's exact two-sided test yields $p = 1.0000$ for all pairwise comparisons. *There is no statistically significant resolution rate advantage for any architecture on this small open-weight model.* All hypothesis tests are exploratory without multiple-testing adjustment.
 
 In contrast, the token reduction achieved by SFD's stage isolation is highly statistically significant:
-- *Cumulative Prompt Tokens*: SFD consumes 37,797.4 fewer prompt tokens per task than `flat_controlled` (-32.0%, 95% paired bootstrap CI: `[-52,214.6, -23,755.2]`, Wilcoxon signed-rank $p < 0.0001$), with SFD lower on 25 of 32 tasks (78.1%). Compared to `flat_starter`, SFD consumes 25,441.9 fewer prompt tokens (-24.0%, 95% bootstrap CI: `[-42,485.1, -9,031.4]`, Wilcoxon $p = 0.0061$, lower on 24/32 tasks).
-- *Peak Prompt Tokens ($P_t$)*: SFD lowers peak prompt size by 3,051.6 tokens (-21.9%, 95% bootstrap CI: `[-4,142.9, -1,968.2]`, Wilcoxon $p < 0.0001$), with SFD lower on 28 of 32 tasks (87.5%).
-- *Execution Speed*: Mean wall-clock duration differences (-4.2s vs controlled, -7.7s vs starter) are not statistically significant (Wilcoxon $p = 0.4540$ and $p = 0.4429$). Lower prompt token consumption measures resource efficiency, not improved task resolution.
+- *Cumulative Prompt Tokens*: SFD consumes 37,797.4 fewer prompt tokens per task than `flat_controlled` (-32.0%, 95% paired bootstrap CI: `[-52,214.6, -23,755.2]`, Wilcoxon signed-rank $p < 0.0001$; lower on 25/32 tasks) and 25,441.9 fewer than `flat_starter` (-24.0%, 95% bootstrap CI: `[-42,485.1, -9,031.4]`, $p = 0.0061$; lower on 24/32 tasks).
+- *Peak Prompt Tokens ($P_t$)*: SFD lowers peak prompt size by 3,051.6 tokens vs `flat_controlled` (-21.9%, 95% bootstrap CI: `[-4,142.9, -1,968.2]`, $p < 0.0001$; lower on 28/32 tasks) and by 2,452.2 tokens vs `flat_starter` (-18.4%, 95% bootstrap CI: `[-3,795.9, -1,111.8]`, $p = 0.0008$; lower on 26/32 tasks).
+- *Execution Speed*: Mean wall-clock duration differences (-4.2s vs controlled, -7.7s vs starter) are not statistically significant ($p = 0.4540, 0.4429$).
 
 == 5.2 Rerun Reproducibility & Determinism Audit
-To evaluate run-to-run stability under $T=0.0$, Cohort 1 was re-executed independently across 8 tasks x 2 configurations (16 paired runs). Rerun analysis (`analysis/statistical_tests.py`) confirms:
-- *Patch Identity*: 14 of 16 runs (87.5%) produced bitwise identical patches (identical SHA-256 patch hashes).
+Cohort 1 was re-executed independently across 8 tasks x 2 configurations (16 paired runs; `analysis/statistical_tests.py`):
 - *Exit Code Agreement*: 12 of 16 runs (75.0%) matched exact Phase 2 exit codes.
-- *Token Stability*: Mean absolute token difference across runs was 18,571 tokens, attributable to subtle asynchronous vLLM tensor-parallel micro-batching variations on 4x L4 GPUs.
+- *Edit Sequence Divergence*: 0 of 16 edit sequences were byte-for-byte identical, reflecting token-level sampling variance under vLLM.
+- *Exit-Code Flips*: The 4 discordant pairs resulted from fine-grained edit changes: (1) `rich_4077` (`flat_controlled`) orig exit 1 (`os.isatty` error) flipped to exit 0 in rerun (`self.__file.isatty()` resolved); (2) `fastapi_15588` (`sfd`) orig exit 1 flipped to exit 2 in rerun; (3) `fastapi_15589` (`flat_controlled`) orig exit 1 flipped to exit 2 in rerun; (4) `fastapi_15589` (`sfd`) orig exit -1 (budget timeout) flipped to exit 1 in rerun.
+- *Token Drift*: Mean absolute token difference was 18,571 tokens (~19% of typical run total), reflecting non-trivial trajectory divergence in multi-turn agent loops.
 
 == 5.3 Sub-Agent Bypassing in the Starter Kit
 ATIF-Gemma provides empirical trace evidence of how small models handle discretionary sub-agents. The official starter kit wraps `code_analyzer` as an `AgentTool`. Across all 32 `flat_starter` traces:
 - Out of 336 tool invocations, the root agent delegated to `code_analyzer` only *7 times (2.1%)*.
-- The model *bypassed `code_analyzer` on 29 of 32 tasks (90.6%)*, opting instead to read large files directly into its primary context.
+- The model *bypassed `code_analyzer` on 26 of 32 tasks (81.2%)*, with only 6 of 32 tasks invoking delegation.
 
 #v(0.2cm)
 #figure(
   image("figures/fig3_delegation_funnel.svg", width: 95%),
-  caption: [Sub-agent discretionary delegation breakdown in the official starter kit (`flat_starter`). Small models bypassed `code_analyzer` on 29 of 32 tasks (90.6%), with only 7 delegations out of 336 total tool calls (2.1%).]
+  caption: [Sub-agent discretionary delegation breakdown in the official starter kit (`flat_starter`). Small models bypassed `code_analyzer` on 26 of 32 tasks (81.2%), with only 7 delegations out of 336 total tool calls (2.1%).]
 )
 
 == 5.4 Cross-Stage Prompt Resets
@@ -261,9 +262,9 @@ In `sfd` traces, configuring `include_contents: "none"` on downstream stages res
 )
 
 #v(0.3cm)
-= 6. Actionable Remediation Playbook for Developer Agents
+= 6. Candidate Remediations (Untested Unless Stated)
 
-Converting diagnostic failure classifications into actionable remediation patterns provides practical guidance for engineering small coding agents:
+Converting diagnostic failure classifications into practical engineering patterns provides guidance for compact-agent frameworks:
 
 #figure(
   table(
@@ -271,20 +272,20 @@ Converting diagnostic failure classifications into actionable remediation patter
     align: (left, left, left),
     stroke: 0.5pt + luma(180),
     fill: (col, row) => if row == 0 { luma(230) } else { none },
-    [#strong[Failure Mode]], [#strong[Prevalence]], [#strong[Recommended Production Remediation Pattern]],
-    [Collection / Import Crash], [36/112 (32.1%)], [Enforce `PYTHONPATH=/workspace/src:/workspace` priority in test execution commands and execute pre-flight dependency imports with `python -c` before running test suites.],
-    [Syntax / Diff Corruption], [100 FileEditErrors (64 StringNotFound, 36 Malformed; mean 0.89/run)], [Mandate a strict `python -m py_compile <modified_file>` verification check before calling `submit_patch` to prevent broken indentation or detached blocks.],
-    [Wrong-File Localization], [17/112 runs (15.2% overall; 30.4% of Exit 1)], [Introduce a two-way validation loop where Stage 2 verifies that the localized symbol exists in the problem description before executing an edit.],
-    [Prompt Bloat / Memory Leak], [32/32 flat runs (100% monotonic accumulation; SFD lowers peak on 28/32 tasks)], [Implement stage-isolated context pruning via `include_contents: "none"` in Google ADK, resetting prompt context by 81.9% mean (87.4% median) across pipeline boundaries.]
+    [#strong[Failure Mode]], [#strong[Prevalence]], [#strong[Candidate Remediation Pattern]],
+    [Collection / Import Crash], [36/112 (32.1%)], [Enforce `PYTHONPATH` priority in test execution commands and execute pre-flight dependency imports before running test suites.],
+    [Syntax / Diff Corruption], [100 FileEditErrors (mean 0.89/run)], [Mandate a strict `python -m py_compile <modified_file>` verification check before calling `submit_patch` to intercept broken indentation.],
+    [Wrong-File Localization], [17/112 runs (15.2% overall)], [Candidate two-way validation loop (untested) where Stage 2 verifies that the localized symbol exists in the problem description before executing an edit.],
+    [Unbounded Context Growth], [32/32 flat runs (100% monotonic accumulation)], [Implement stage-isolated context pruning via `include_contents: "none"` in Google ADK, resetting prompt context by 81.9% mean across pipeline boundaries.]
   ),
-  caption: [Actionable developer agent remediation playbook derived from empirical ATIF-Gemma failure traces.]
+  caption: [Candidate developer agent remediation playbook derived from empirical ATIF-Gemma failure traces.]
 )
 
 == 6.1 Post-Hoc Diagnostic Re-Evaluation (Non-Official Harness)
-To evaluate the practical efficacy of the proposed remediations, we conducted an offline post-hoc re-evaluation of stored patches (`analysis/remediation_eval.py`, `results/remediation_eval.json`). *Crucially, these results are an offline diagnostic assessment and do not alter the official Phase 2 competition evaluation benchmarks reported in Section 4 and Tables 1–3.*
+We conducted an offline diagnostic assessment of stored patches (`analysis/remediation_eval.py`, `results/remediation_eval.json`). *These offline diagnostic checks do not alter the official competition evaluation benchmarks reported in Section 4 and Tables 1–3.*
 
-1. *Pre-Submission `py_compile` Gate*: We tested an automated syntax validation gate against all 13 Exit Code 2 runs exhibiting syntactic corruption (including `fastapi_14099` and `rich_3894`). Across all 13 runs, exactly 0% of the baseline agents executed pre-submission syntax checks. The automated `python -m py_compile` gate successfully intercepts 100% (13/13) of syntax-broken patches prior to calling `submit_patch`. Reporting honestly: intercepting a malformed patch prevents a blind collection crash (Exit Code 2), but does *not* resolve the underlying task without additional agent self-repair turns (resolution remains 0/13 without re-prompting).
-2. *`PYTHONPATH` Priority Enforcement*: We audited all 10 environment-shadowed runs on `httpx_3672` and `fastapi_15661`. Prepending repository source paths (`PYTHONPATH=/workspace/src:/workspace`) eliminates environment and import-path failures across all 10 runs. Full semantic evaluation of the resulting tests requires execution within the offline Linux `swegemma` container; thus, no speculative resolution gains are claimed.
+1. *Pre-Submission `py_compile` Gate*: We tested an automated syntax validation gate against all 13 Exit Code 2 runs exhibiting syntactic corruption. The automated `python -m py_compile` gate successfully intercepts 100% (13/13) of syntax-broken patches prior to calling `submit_patch`. This serves as a static sanity check confirming the parser catches syntax errors by construction; it does *not* prove autonomous model recovery without self-repair turns (resolution remains 0/13 without re-prompting).
+2. *`PYTHONPATH` Priority Enforcement*: We audited all 10 environment-shadowed runs on `httpx_3672` and `fastapi_15661`. Prepending repository source paths (`PYTHONPATH=/workspace/src:/workspace`) is structurally predicted to eliminate path-shadowing collection failures across all 10 runs. Full semantic evaluation of the resulting tests requires execution within the offline Linux container; thus, no speculative resolution gains are claimed.
 
 #v(0.3cm)
 = 7. The `atif_gemma` Python Package & CLI
@@ -318,10 +319,10 @@ To ensure rigorous interpretation of our empirical findings, we explicitly ident
 
 1. *Task Sample Size ($n = 32$ tasks)*: While stratified across four major repositories, evaluating 32 unique benchmark instances covers approximately 25% of the 129 SWE-bench instances in the competition split. Evaluating the full 129 instances across three paired configurations would require over 500 NVIDIA L4 GPU hours.
 2. *Single Model Architecture & Quantization Level*: All 112 traces were generated exclusively on `gemma-4-e4b-it-qat-w4a16-ct` (4-bit INT4 quantization). Behaviors such as 90.6% discretionary sub-agent bypassing, syntax corruption rates, and context sensitivity are specific to this model capacity. Unquantized checkpoints (FP16/BF16) or larger open-weight models (e.g. Gemma 4 31B) may exhibit different failure dynamics.
-3. *Repository & Language Diversity*: The corpus is concentrated across four popular Python libraries (`fastapi` 51 runs, `rich` 37 runs, `requests` 19 runs, `httpx` 5 runs). Codebases in statically typed languages (C++, TypeScript, Rust) or repositories using alternative test runners (e.g. `unittest`, `tox`) may exhibit different collection dynamics.
-4. *Greedy Sampling & Single Seed ($T = 0.0$, `seed = 42`)*: All evaluations were performed using greedy decoding ($T = 0.0$) with a fixed seed. While our 16-run rerun audit demonstrated 87.5% bitwise patch determinism, minor token variations persist due to asynchronous tensor-parallel micro-batching in vLLM. We did not evaluate stochastic sampling temperatures ($T > 0$), which might alter exploration diversity.
-5. *File-Level Proxy vs. Intra-Step Semantic Analysis*: Our deterministic taxonomy categorizes outcomes based on Phase 2 test runner exit codes and file-level diff overlap ($F_("agent") sect F_("gold")$). While avoiding subjective LLM judgment, gold-patch overlap is an objective structural proxy; valid alternative patches modifying different files are possible in rare cases.
-6. *Harness & Offline Sandbox Specifics*: Evaluations were executed inside the competition's `swegemma` harness on Kaggle's offline Linux container. Environmental artifacts (e.g., missing `inline_snapshot` wheels, dist-packages shadowing) reflect this specific container setup and may not reproduce in online or differently configured developer environments.
+3. *Repository Diversity & Clustered Runs*: The corpus is concentrated across four Python libraries (`fastapi`, `rich`, `requests`, `httpx`). Runs across configurations on the same task are paired and clustered, not independent samples.
+4. *Trajectory Non-Determinism & Token Drift*: Under greedy decoding ($T=0.0$, `seed=42`), 12/16 exit codes matched on rerun, but 0/16 edit sequences were bitwise identical, yielding a mean token drift of 18,571 tokens (~19% of typical run totals).
+5. *File-Level Structural Proxy*: Evaluates file overlap ($F_("agent") sect F_("gold")$); valid alternative patches modifying different helper abstractions remain possible.
+6. *Harness Environment Failures (`env_invalid=True`)*: 20 runs failed due to offline container constraints (missing wheels and site-package shadowing), demonstrating real-world benchmark friction.
 
 #v(0.3cm)
 = 9. Conclusion & Resource Availability

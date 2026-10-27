@@ -214,8 +214,8 @@ def generate_fig3_delegation_funnel():
     # 336 total tool invocations in flat_starter
     # 304 non-submit tool calls
     # 7 delegations to code_analyzer (2.1% of tool calls)
-    # 3 tasks used code_analyzer (9.4%)
-    # 29 tasks completely bypassed code_analyzer (90.6%)
+    # 6 tasks used code_analyzer (18.8%)
+    # 26 tasks completely bypassed code_analyzer (81.2%)
     
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 3.5), gridspec_kw={"width_ratios": [1.4, 1.0]})
     
@@ -238,9 +238,9 @@ def generate_fig3_delegation_funnel():
         ax1.text(b.get_width() + 8, b.get_y() + b.get_height()/2, f"{c}", ha="left", va="center", fontweight="bold", fontsize=9)
         
     # Right: Task-level bypass donut
-    tasks_used = 3
-    tasks_bypassed = 29
-    labels = ["Bypassed (90.6%)\n29 / 32 Tasks", "Delegated (9.4%)\n3 / 32 Tasks"]
+    tasks_used = 6
+    tasks_bypassed = 26
+    labels = ["Bypassed (81.2%)\n26 / 32 Tasks", "Delegated (18.8%)\n6 / 32 Tasks"]
     pie_colors = [CB_VERMILION, CB_GREEN]
     wedges, texts, autotexts = ax2.pie(
         [tasks_bypassed, tasks_used],
