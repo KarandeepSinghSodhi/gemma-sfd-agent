@@ -1,12 +1,13 @@
 """
 subclassify_exit1.py: Deterministic Sub-Classification of all 56 Exit Code 1 Runs.
-Compares the agent's edited source files against the author's ground-truth reference patch.
+Compares the agent's successfully modified source files against the author's ground-truth reference patch.
 
-Classification Rules:
-1. EMPTY_PATCH: Agent submitted empty or zero source modifications.
-2. WRONG_FILE: Zero overlap between agent edited files and gold patch files (F_agent ∩ F_gold = ∅).
-3. PARTIAL_MULTI_FILE: Gold patch requires editing multiple files (|F_gold| > 1), but agent edited only a strict subset.
-4. RIGHT_FILE_WRONG_LOGIC: Agent edited the exact gold file(s), but the patch failed test assertions.
+Classification Rules (strictly based on submitted patch / working tree modifications):
+1. EMPTY_OR_UNPARSED_PATCH: Agent submitted a 0-byte diff (|F_agent| = 0 / patch_chars = 0)
+   because it either made 0 edit calls or all edit attempts failed (e.g. FileEditError, BudgetExceeded).
+2. WRONG_FILE_LOCALIZATION: Agent successfully modified files, but has zero overlap with gold patch (F_agent ∩ F_gold = ∅).
+3. PARTIAL_MULTI_FILE_LOCALIZATION: Gold patch spans multiple files (|F_gold| > 1), and agent edited only a strict subset (F_agent ⊊ F_gold).
+4. RIGHT_FILE_WRONG_LOGIC: Agent successfully modified the exact gold file(s), but the patch failed test assertions.
 """
 import csv
 import json
@@ -32,22 +33,28 @@ def extract_files_from_diff(diff_str: str) -> set:
                 files.add(p)
     return files
 
-def get_agent_edited_files(trace_file: str) -> set:
-    """Extract source files edited by agent from ATIF v1.7 JSON trace."""
+def get_successful_agent_edited_files(trace_file: str, patch_chars: int) -> set:
+    """Extract source files successfully modified by agent (returns empty set if patch_chars == 0)."""
+    if patch_chars == 0:
+        return set()
     p = TRACES_DIR / trace_file
     if not p.is_file():
         return set()
     data = json.loads(p.read_text(encoding="utf-8"))
     files = set()
     for s in data.get("steps", []):
+        obs = s.get("observation", {})
+        obs_content = obs.get("content", "")
         for tc in s.get("tool_calls", []):
             fn = tc.get("function_name")
             args = tc.get("arguments", {})
             if fn in ("edit_file", "write_file"):
-                fp = args.get("filepath") or args.get("file_path") or args.get("path") or ""
-                fp_clean = fp.replace("/workspace/", "").lstrip("/")
-                if fp_clean and not fp_clean.startswith(("tests/", "test_", "tmp/", "repro")):
-                    files.add(fp_clean)
+                # Only register file if tool execution succeeded
+                if '"status": "ok"' in obs_content:
+                    fp = args.get("filepath") or args.get("file_path") or args.get("path") or ""
+                    fp_clean = fp.replace("/workspace/", "").lstrip("/")
+                    if fp_clean and not fp_clean.startswith(("tests/", "test_", "tmp/", "repro", ".pre-commit-config.yaml")):
+                        files.add(fp_clean)
             elif fn == "submit_patch":
                 patch_str = args.get("patch", "")
                 diff_files = extract_files_from_diff(patch_str)
@@ -70,16 +77,17 @@ def main():
         iid = row["instance_id"]
         cfg = row["config"]
         cohort = row["cohort"]
+        patch_chars = int(row.get("patch_chars", 0))
         t = tasks.get(iid, {})
         gold_diff = t.get("patch", "")
         gold_files = extract_files_from_diff(gold_diff)
         
-        agent_files = get_agent_edited_files(row["dataset_trace_file"])
+        agent_files = get_successful_agent_edited_files(row["dataset_trace_file"], patch_chars)
         
-        # Classification logic
-        if len(agent_files) == 0:
+        # Classification logic strictly based on submitted patch / modified working tree
+        if patch_chars == 0 or len(agent_files) == 0:
             mech = "EMPTY_OR_UNPARSED_PATCH"
-            reason = "Agent submitted empty patch or only edited temporary scratch files"
+            reason = "Agent submitted empty patch (0 bytes) due to failed edit operations or zero edit calls; tested clean repo"
         elif len(gold_files) > 0 and len(agent_files.intersection(gold_files)) == 0:
             mech = "WRONG_FILE_LOCALIZATION"
             reason = f"Agent edited {list(agent_files)}, but gold patch requires {list(gold_files)}"

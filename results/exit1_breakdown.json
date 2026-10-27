@@ -1,10 +1,10 @@
 {
   "total_exit1_runs": 56,
   "mechanism_counts": {
-    "RIGHT_FILE_WRONG_LOGIC": 24,
-    "WRONG_FILE_LOCALIZATION": 17,
+    "RIGHT_FILE_WRONG_LOGIC": 21,
+    "WRONG_FILE_LOCALIZATION": 15,
     "PARTIAL_MULTI_FILE_LOCALIZATION": 14,
-    "EMPTY_OR_UNPARSED_PATCH": 1
+    "EMPTY_OR_UNPARSED_PATCH": 6
   },
   "task_breakdown": {
     "fastapi_15588": {
@@ -17,7 +17,8 @@
       "PARTIAL_MULTI_FILE_LOCALIZATION": 5
     },
     "requests_7502": {
-      "RIGHT_FILE_WRONG_LOGIC": 5
+      "RIGHT_FILE_WRONG_LOGIC": 4,
+      "EMPTY_OR_UNPARSED_PATCH": 1
     },
     "rich_4070": {
       "PARTIAL_MULTI_FILE_LOCALIZATION": 4
@@ -26,10 +27,12 @@
       "RIGHT_FILE_WRONG_LOGIC": 1
     },
     "rich_3043": {
-      "RIGHT_FILE_WRONG_LOGIC": 3
+      "RIGHT_FILE_WRONG_LOGIC": 2,
+      "EMPTY_OR_UNPARSED_PATCH": 1
     },
     "rich_3944": {
-      "WRONG_FILE_LOCALIZATION": 3
+      "EMPTY_OR_UNPARSED_PATCH": 1,
+      "WRONG_FILE_LOCALIZATION": 2
     },
     "rich_4076": {
       "WRONG_FILE_LOCALIZATION": 3
@@ -41,7 +44,7 @@
       "RIGHT_FILE_WRONG_LOGIC": 3
     },
     "fastapi_14372": {
-      "WRONG_FILE_LOCALIZATION": 1
+      "EMPTY_OR_UNPARSED_PATCH": 1
     },
     "rich_3471": {
       "RIGHT_FILE_WRONG_LOGIC": 3
@@ -51,7 +54,8 @@
     },
     "requests_7315": {
       "WRONG_FILE_LOCALIZATION": 1,
-      "RIGHT_FILE_WRONG_LOGIC": 2
+      "EMPTY_OR_UNPARSED_PATCH": 1,
+      "RIGHT_FILE_WRONG_LOGIC": 1
     },
     "fastapi_5624": {
       "WRONG_FILE_LOCALIZATION": 1,
@@ -70,18 +74,20 @@
   "config_breakdown": {
     "flat_starter": {
       "RIGHT_FILE_WRONG_LOGIC": 6,
-      "WRONG_FILE_LOCALIZATION": 7,
-      "PARTIAL_MULTI_FILE_LOCALIZATION": 2
+      "WRONG_FILE_LOCALIZATION": 5,
+      "PARTIAL_MULTI_FILE_LOCALIZATION": 2,
+      "EMPTY_OR_UNPARSED_PATCH": 2
     },
     "flat_controlled": {
-      "RIGHT_FILE_WRONG_LOGIC": 8,
+      "RIGHT_FILE_WRONG_LOGIC": 7,
       "WRONG_FILE_LOCALIZATION": 5,
       "PARTIAL_MULTI_FILE_LOCALIZATION": 4,
-      "EMPTY_OR_UNPARSED_PATCH": 1
+      "EMPTY_OR_UNPARSED_PATCH": 2
     },
     "sfd": {
-      "RIGHT_FILE_WRONG_LOGIC": 7,
+      "RIGHT_FILE_WRONG_LOGIC": 6,
       "PARTIAL_MULTI_FILE_LOCALIZATION": 4,
+      "EMPTY_OR_UNPARSED_PATCH": 1,
       "WRONG_FILE_LOCALIZATION": 4
     },
     "flat_controlled_rerun": {
@@ -91,7 +97,7 @@
     "sfd_rerun": {
       "WRONG_FILE_LOCALIZATION": 1,
       "PARTIAL_MULTI_FILE_LOCALIZATION": 2,
-      "RIGHT_FILE_WRONG_LOGIC": 1
+      "EMPTY_OR_UNPARSED_PATCH": 1
     }
   },
   "classified_runs": [
@@ -153,7 +159,7 @@
       "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
       "agent_files": "src/requests/models.py",
       "gold_files": "src/requests/_types.py;src/requests/models.py",
-      "reason": "Bug spans 2 files (['src/requests/_types.py', 'src/requests/models.py']), but agent only modified 1 file(s)"
+      "reason": "Bug spans 2 files (['src/requests/models.py', 'src/requests/_types.py']), but agent only modified 1 file(s)"
     },
     {
       "cohort": "Cohort 1 (Canonical)",
@@ -163,7 +169,7 @@
       "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
       "agent_files": "src/requests/models.py",
       "gold_files": "src/requests/_types.py;src/requests/models.py",
-      "reason": "Bug spans 2 files (['src/requests/_types.py', 'src/requests/models.py']), but agent only modified 1 file(s)"
+      "reason": "Bug spans 2 files (['src/requests/models.py', 'src/requests/_types.py']), but agent only modified 1 file(s)"
     },
     {
       "cohort": "Cohort 1 (Canonical)",
@@ -173,7 +179,7 @@
       "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
       "agent_files": "src/requests/models.py",
       "gold_files": "src/requests/_types.py;src/requests/models.py",
-      "reason": "Bug spans 2 files (['src/requests/_types.py', 'src/requests/models.py']), but agent only modified 1 file(s)"
+      "reason": "Bug spans 2 files (['src/requests/models.py', 'src/requests/_types.py']), but agent only modified 1 file(s)"
     },
     {
       "cohort": "Cohort 1 (Canonical)",
@@ -213,7 +219,7 @@
       "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
       "agent_files": "rich/console.py;rich/logging.py",
       "gold_files": "rich/_emoji_replace.py;rich/console.py;rich/emoji.py;rich/logging.py;rich/protocol.py;rich/repr.py;rich/segment.py;rich/syntax.py;rich/theme.py",
-      "reason": "Bug spans 9 files (['rich/logging.py', 'rich/protocol.py', 'rich/repr.py', 'rich/_emoji_replace.py', 'rich/syntax.py', 'rich/theme.py', 'rich/emoji.py', 'rich/console.py', 'rich/segment.py']), but agent only modified 2 file(s)"
+      "reason": "Bug spans 9 files (['rich/logging.py', 'rich/emoji.py', 'rich/syntax.py', 'rich/console.py', 'rich/protocol.py', 'rich/repr.py', 'rich/segment.py', 'rich/theme.py', 'rich/_emoji_replace.py']), but agent only modified 2 file(s)"
     },
     {
       "cohort": "Cohort 1 (Canonical)",
@@ -223,7 +229,7 @@
       "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
       "agent_files": "rich/logging.py",
       "gold_files": "rich/_emoji_replace.py;rich/console.py;rich/emoji.py;rich/logging.py;rich/protocol.py;rich/repr.py;rich/segment.py;rich/syntax.py;rich/theme.py",
-      "reason": "Bug spans 9 files (['rich/logging.py', 'rich/protocol.py', 'rich/repr.py', 'rich/_emoji_replace.py', 'rich/syntax.py', 'rich/theme.py', 'rich/emoji.py', 'rich/console.py', 'rich/segment.py']), but agent only modified 1 file(s)"
+      "reason": "Bug spans 9 files (['rich/logging.py', 'rich/emoji.py', 'rich/syntax.py', 'rich/console.py', 'rich/protocol.py', 'rich/repr.py', 'rich/segment.py', 'rich/theme.py', 'rich/_emoji_replace.py']), but agent only modified 1 file(s)"
     },
     {
       "cohort": "Cohort 1 (Canonical)",
@@ -241,7 +247,7 @@
       "repo": "Textualize/rich",
       "config": "flat_starter",
       "mechanism": "RIGHT_FILE_WRONG_LOGIC",
-      "agent_files": ".pre-commit-config.yaml;rich/_export_format.py",
+      "agent_files": "rich/_export_format.py",
       "gold_files": "rich/_export_format.py",
       "reason": "Agent localized correct file(s) (['rich/_export_format.py']), but patch failed unit test assertions"
     },
@@ -251,7 +257,7 @@
       "repo": "Textualize/rich",
       "config": "flat_controlled",
       "mechanism": "RIGHT_FILE_WRONG_LOGIC",
-      "agent_files": ".pre-commit-config.yaml;rich/_export_format.py",
+      "agent_files": "rich/_export_format.py",
       "gold_files": "rich/_export_format.py",
       "reason": "Agent localized correct file(s) (['rich/_export_format.py']), but patch failed unit test assertions"
     },
@@ -260,20 +266,20 @@
       "instance_id": "rich_3043",
       "repo": "Textualize/rich",
       "config": "sfd",
-      "mechanism": "RIGHT_FILE_WRONG_LOGIC",
-      "agent_files": "rich/_export_format.py",
+      "mechanism": "EMPTY_OR_UNPARSED_PATCH",
+      "agent_files": "",
       "gold_files": "rich/_export_format.py",
-      "reason": "Agent localized correct file(s) (['rich/_export_format.py']), but patch failed unit test assertions"
+      "reason": "Agent submitted empty patch (0 bytes) due to failed edit operations or zero edit calls; tested clean repo"
     },
     {
       "cohort": "Cohort 2 (Stratified Random)",
       "instance_id": "rich_3944",
       "repo": "Textualize/rich",
       "config": "flat_starter",
-      "mechanism": "WRONG_FILE_LOCALIZATION",
-      "agent_files": "rich/table.py",
+      "mechanism": "EMPTY_OR_UNPARSED_PATCH",
+      "agent_files": "",
       "gold_files": "rich/cells.py",
-      "reason": "Agent edited ['rich/table.py'], but gold patch requires ['rich/cells.py']"
+      "reason": "Agent submitted empty patch (0 bytes) due to failed edit operations or zero edit calls; tested clean repo"
     },
     {
       "cohort": "Cohort 2 (Stratified Random)",
@@ -403,7 +409,7 @@
       "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
       "agent_files": "src/requests/models.py",
       "gold_files": "src/requests/_types.py;src/requests/models.py",
-      "reason": "Bug spans 2 files (['src/requests/_types.py', 'src/requests/models.py']), but agent only modified 1 file(s)"
+      "reason": "Bug spans 2 files (['src/requests/models.py', 'src/requests/_types.py']), but agent only modified 1 file(s)"
     },
     {
       "cohort": "Cohort 1 Rerun (Reproducibility)",
@@ -413,7 +419,7 @@
       "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
       "agent_files": "src/requests/models.py",
       "gold_files": "src/requests/_types.py;src/requests/models.py",
-      "reason": "Bug spans 2 files (['src/requests/_types.py', 'src/requests/models.py']), but agent only modified 1 file(s)"
+      "reason": "Bug spans 2 files (['src/requests/models.py', 'src/requests/_types.py']), but agent only modified 1 file(s)"
     },
     {
       "cohort": "Cohort 1 Rerun (Reproducibility)",
@@ -430,10 +436,10 @@
       "instance_id": "requests_7502",
       "repo": "psf/requests",
       "config": "sfd_rerun",
-      "mechanism": "RIGHT_FILE_WRONG_LOGIC",
-      "agent_files": "src/requests/models.py",
+      "mechanism": "EMPTY_OR_UNPARSED_PATCH",
+      "agent_files": "",
       "gold_files": "src/requests/models.py",
-      "reason": "Agent localized correct file(s) (['src/requests/models.py']), but patch failed unit test assertions"
+      "reason": "Agent submitted empty patch (0 bytes) due to failed edit operations or zero edit calls; tested clean repo"
     },
     {
       "cohort": "Cohort 1 Rerun (Reproducibility)",
@@ -443,7 +449,7 @@
       "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
       "agent_files": "rich/console.py;rich/logging.py;rich/theme.py",
       "gold_files": "rich/_emoji_replace.py;rich/console.py;rich/emoji.py;rich/logging.py;rich/protocol.py;rich/repr.py;rich/segment.py;rich/syntax.py;rich/theme.py",
-      "reason": "Bug spans 9 files (['rich/logging.py', 'rich/protocol.py', 'rich/repr.py', 'rich/_emoji_replace.py', 'rich/syntax.py', 'rich/theme.py', 'rich/emoji.py', 'rich/console.py', 'rich/segment.py']), but agent only modified 3 file(s)"
+      "reason": "Bug spans 9 files (['rich/logging.py', 'rich/emoji.py', 'rich/syntax.py', 'rich/console.py', 'rich/protocol.py', 'rich/repr.py', 'rich/segment.py', 'rich/theme.py', 'rich/_emoji_replace.py']), but agent only modified 3 file(s)"
     },
     {
       "cohort": "Cohort 1 Rerun (Reproducibility)",
@@ -453,17 +459,17 @@
       "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
       "agent_files": "rich/logging.py",
       "gold_files": "rich/_emoji_replace.py;rich/console.py;rich/emoji.py;rich/logging.py;rich/protocol.py;rich/repr.py;rich/segment.py;rich/syntax.py;rich/theme.py",
-      "reason": "Bug spans 9 files (['rich/logging.py', 'rich/protocol.py', 'rich/repr.py', 'rich/_emoji_replace.py', 'rich/syntax.py', 'rich/theme.py', 'rich/emoji.py', 'rich/console.py', 'rich/segment.py']), but agent only modified 1 file(s)"
+      "reason": "Bug spans 9 files (['rich/logging.py', 'rich/emoji.py', 'rich/syntax.py', 'rich/console.py', 'rich/protocol.py', 'rich/repr.py', 'rich/segment.py', 'rich/theme.py', 'rich/_emoji_replace.py']), but agent only modified 1 file(s)"
     },
     {
       "cohort": "Cohort 3 (Stratified Disjoint)",
       "instance_id": "fastapi_14372",
       "repo": "fastapi/fastapi",
       "config": "flat_starter",
-      "mechanism": "WRONG_FILE_LOCALIZATION",
-      "agent_files": "fastapi/dependencies/models.py",
+      "mechanism": "EMPTY_OR_UNPARSED_PATCH",
+      "agent_files": "",
       "gold_files": "fastapi/dependencies/utils.py;fastapi/params.py",
-      "reason": "Agent edited ['fastapi/dependencies/models.py'], but gold patch requires ['fastapi/params.py', 'fastapi/dependencies/utils.py']"
+      "reason": "Agent submitted empty patch (0 bytes) due to failed edit operations or zero edit calls; tested clean repo"
     },
     {
       "cohort": "Cohort 3 (Stratified Disjoint)",
@@ -503,7 +509,7 @@
       "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
       "agent_files": "rich/cells.py",
       "gold_files": "rich/cells.py;rich/segment.py",
-      "reason": "Bug spans 2 files (['rich/cells.py', 'rich/segment.py']), but agent only modified 1 file(s)"
+      "reason": "Bug spans 2 files (['rich/segment.py', 'rich/cells.py']), but agent only modified 1 file(s)"
     },
     {
       "cohort": "Cohort 3 (Stratified Disjoint)",
@@ -513,7 +519,7 @@
       "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
       "agent_files": "rich/cells.py",
       "gold_files": "rich/cells.py;rich/segment.py",
-      "reason": "Bug spans 2 files (['rich/cells.py', 'rich/segment.py']), but agent only modified 1 file(s)"
+      "reason": "Bug spans 2 files (['rich/segment.py', 'rich/cells.py']), but agent only modified 1 file(s)"
     },
     {
       "cohort": "Cohort 3 (Stratified Disjoint)",
@@ -530,10 +536,10 @@
       "instance_id": "requests_7315",
       "repo": "psf/requests",
       "config": "flat_controlled",
-      "mechanism": "RIGHT_FILE_WRONG_LOGIC",
-      "agent_files": "src/requests/adapters.py",
+      "mechanism": "EMPTY_OR_UNPARSED_PATCH",
+      "agent_files": "",
       "gold_files": "src/requests/adapters.py",
-      "reason": "Agent localized correct file(s) (['src/requests/adapters.py']), but patch failed unit test assertions"
+      "reason": "Agent submitted empty patch (0 bytes) due to failed edit operations or zero edit calls; tested clean repo"
     },
     {
       "cohort": "Cohort 3 (Stratified Disjoint)",
@@ -563,7 +569,7 @@
       "mechanism": "EMPTY_OR_UNPARSED_PATCH",
       "agent_files": "",
       "gold_files": "fastapi/dependencies/utils.py",
-      "reason": "Agent submitted empty patch or only edited temporary scratch files"
+      "reason": "Agent submitted empty patch (0 bytes) due to failed edit operations or zero edit calls; tested clean repo"
     },
     {
       "cohort": "Cohort 4 (Stratified Disjoint)",
@@ -573,7 +579,7 @@
       "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
       "agent_files": "fastapi/dependencies/models.py",
       "gold_files": "fastapi/dependencies/models.py;fastapi/dependencies/utils.py",
-      "reason": "Bug spans 2 files (['fastapi/dependencies/utils.py', 'fastapi/dependencies/models.py']), but agent only modified 1 file(s)"
+      "reason": "Bug spans 2 files (['fastapi/dependencies/models.py', 'fastapi/dependencies/utils.py']), but agent only modified 1 file(s)"
     },
     {
       "cohort": "Cohort 4 (Stratified Disjoint)",
@@ -583,7 +589,7 @@
       "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
       "agent_files": "fastapi/dependencies/models.py",
       "gold_files": "fastapi/dependencies/models.py;fastapi/dependencies/utils.py",
-      "reason": "Bug spans 2 files (['fastapi/dependencies/utils.py', 'fastapi/dependencies/models.py']), but agent only modified 1 file(s)"
+      "reason": "Bug spans 2 files (['fastapi/dependencies/models.py', 'fastapi/dependencies/utils.py']), but agent only modified 1 file(s)"
     },
     {
       "cohort": "Cohort 4 (Stratified Disjoint)",
@@ -593,7 +599,7 @@
       "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
       "agent_files": "fastapi/dependencies/models.py",
       "gold_files": "fastapi/dependencies/models.py;fastapi/dependencies/utils.py",
-      "reason": "Bug spans 2 files (['fastapi/dependencies/utils.py', 'fastapi/dependencies/models.py']), but agent only modified 1 file(s)"
+      "reason": "Bug spans 2 files (['fastapi/dependencies/models.py', 'fastapi/dependencies/utils.py']), but agent only modified 1 file(s)"
     },
     {
       "cohort": "Cohort 4 (Stratified Disjoint)",

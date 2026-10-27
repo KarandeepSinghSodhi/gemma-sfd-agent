@@ -1,0 +1,47 @@
+ATIF-Gemma Diagnostic Corpus & Failure Taxonomy
+Copyright (c) 2026 The Authors.
+
+This dataset package contains trajectory traces, metadata, and diagnostic analysis
+tools licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0)
+license and the Apache License 2.0.
+
+THIRD-PARTY SOFTWARE AND CONTENT NOTICES:
+The trajectory traces in this dataset contain excerpts of third-party source code,
+commit diffs, and issue descriptions extracted during evaluation on open-source
+Python repositories. All third-party content retains its original upstream licenses:
+
+1. encode/httpx
+   - License: BSD-3-Clause License
+   - Copyright (c) 2019 Encode OSS Ltd.
+   - https://github.com/encode/httpx
+
+2. fastapi/fastapi
+   - License: MIT License
+   - Copyright (c) 2018 Sebastián Ramírez
+   - https://github.com/fastapi/fastapi
+
+3. psf/requests
+   - License: Apache License, Version 2.0
+   - Copyright (c) 2019 Kenneth Reitz
+   - https://github.com/psf/requests
+
+4. Textualize/rich
+   - License: MIT License
+   - Copyright (c) 2020 Will McGugan
+   - https://github.com/Textualize/rich
+
+5. SWE-bench Benchmark Tasks
+   - Problem statements and ground-truth reference patches originate from the
+     SWE-bench benchmark suite (Jimenez et al., 2024; ICLR 2024).
+   - License: MIT License
+   - Copyright (c) 2023 Carlos E. Jimenez, John Yang, Alexander Wettig, Shunyu Yao,
+     Kexin Pei, Ofir Press, Karthik Narasimhan.
+   - https://github.com/princeton-nlp/SWE-bench
+
+COMPETITION DATA GOVERNANCE:
+All tasks analyzed in this corpus originate from publicly accessible SWE-bench issue
+descriptions and open-source pull requests. The released traces contain only agent-generated
+trajectories and public problem statements; no confidential competition evaluation harnesses
+or held-out test patch suites (`test_patch`) are disclosed.
+Model outputs were generated using Google Gemma 4 (gemma-4-e4b-it) in accordance with the
+Gemma Terms of Use.
