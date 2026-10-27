@@ -154,3 +154,23 @@ Format:
   4. Rebuilt `paper_resource.pdf` (11 pages, 0 errors).
 - **Evidence Files**: `KAGGLE_WRITEUP_RESOURCE.md`, `paper_resource.typ`, `paper_resource.pdf`.
 - **Numbers Before / After**: 3-sentence limitations paragraph -> 6 detailed structural limitations; 0 local links remaining.
+---
+
+## [T11 Complete] 2026-10-27 23:20 UTC
+- **Task ID**: T11 (Hostile-Reviewer Feedback Remediation & Camera-Ready Submission Polish)
+- **What Changed**:
+  1. **Audit Trail & README Discrepancy**: Clarified relationship between 64-trace SFD ablation ($n=16$ tasks) and 112-trace ATIF-Gemma diagnostic corpus ($n=32$ unique tasks across 5 cohorts) in `README.md` with direct links to manifests and scripts.
+  2. **ATIF v1.7 Schema Conformance**: Standardized schema definition in `dataset_resource/atif_schema_v1_7.json`; verified 112/112 traces (100.0%) pass formal Draft-07 `jsonschema` validation (`results/schema_validation_report.json`). Accurately documented trace structure (`message` contains thinking text under `extra.event_type: "thinking"`, `final_metrics` captures cumulative tokens and steps).
+  3. **Related Work & References**: Removed all `[CITATION NEEDED]` placeholders. Added complete references to `references_gemma.bib` (`chen2021codex`, `austin2021mbpp`, `atif2024schema`, `holbrook2026leaderboard`, `gebru2021datasheets`). Adopted defensible novelty phrasing.
+  4. **Kaggle Word Limit Compliance**: Trimmed `KAGGLE_WRITEUP_RESOURCE.md` from 3,588 prose words / 4,068 raw words down to 2,828 cleaned prose words (strictly compliant with Kaggle's <3,000 word limit, verified by `analysis/count_words.py`).
+  5. **Taxonomy Precedence & Decision Tree**: Reframed terminology to "four principal failure mechanisms and resolution as a separate outcome". Formalized a mutually exclusive decision tree for Exit Code 1 (empty patch -> wrong file -> partial multi-file -> right file wrong logic).
+  6. **Agent vs. Environment Failure Attribution**: Partitioned Exit Code 2 into Agent-Attributable (16/36 = 44.4%: 13 syntax corruption, 3 missing module) vs. Environment-Attributable (20/36 = 55.6%: 10 venv shadowing, 10 missing wheels), highlighting the dual diagnostic role of execution traces.
+  7. **Package Installation Verified**: Documented exact, reproducible install command (`pip install git+https://github.com/KarandeepSinghSodhi/gemma-sfd-agent.git` and `pip install -e .`).
+  8. **Editorial Polish & PDF Build**: Renamed "Camera-Ready Paper" to "Manuscript PDF"; adopted structured abstract; noted that 40 cohort entries span 32 unique benchmark tasks. Recompiled `paper_resource.pdf` (0 errors).
+- **Evidence Files**: `KAGGLE_WRITEUP_RESOURCE.md`, `paper_resource.typ`, `paper_resource.pdf`, `README.md`, `dataset_resource/atif_schema_v1_7.json`, `references_gemma.bib`, `results/schema_validation_report.json`.
+- **Numbers Before / After**:
+  - Prose word count: 3,588 words -> 2,828 words (compliant with <3,000 word limit)
+  - Missing citations: 2 `[CITATION NEEDED]` -> 0 placeholders; 5 new complete references
+  - Schema validation: unvalidated claim -> 112/112 (100.0%) verified passing
+  - Exit 2 classification: monolithic collection crash -> 44.4% agent-attributable / 55.6% environment-attributable
+  - Exit 1 classification: overlapping definitions -> strict mutually exclusive decision tree (1 empty, 17 wrong file, 14 partial multi-file, 24 right file wrong logic).

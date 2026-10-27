@@ -1,21 +1,21 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "AgentTrajectoryInterchangeFormat_v1_7",
-  "description": "Standardized schema for multi-turn software engineering agent trajectories (ATIF v1.7)",
+  "description": "Standardized schema for ATIF-Gemma multi-turn developer agent execution traces (ATIF v1.7)",
   "type": "object",
   "required": ["schema_version", "agent", "steps", "final_metrics"],
   "properties": {
     "schema_version": {
       "type": "string",
-      "enum": ["1.7", "v1.7"]
+      "enum": ["ATIF-v1.7", "1.7", "v1.7"]
     },
     "agent": {
       "type": "object",
-      "required": ["name", "model_name"],
+      "required": ["name"],
       "properties": {
         "name": { "type": "string" },
-        "model_name": { "type": "string" },
-        "config": { "type": "object" }
+        "version": { "type": "string" },
+        "model_name": { "type": "string" }
       }
     },
     "steps": {
@@ -27,7 +27,8 @@
           "step_id": { "type": "integer" },
           "source": { "type": "string", "enum": ["system", "user", "agent", "tool"] },
           "message": { "type": "string" },
-          "thought": { "type": "string" },
+          "model_name": { "type": "string" },
+          "llm_call_count": { "type": "integer" },
           "tool_calls": {
             "type": "array",
             "items": {
@@ -63,15 +64,13 @@
     },
     "final_metrics": {
       "type": "object",
-      "required": ["cumulative_total_tokens", "resolved"],
+      "required": ["total_prompt_tokens", "total_completion_tokens", "total_tokens", "total_steps"],
       "properties": {
-        "total_duration_seconds": { "type": "number" },
-        "cumulative_prompt_tokens": { "type": "integer" },
-        "cumulative_completion_tokens": { "type": "integer" },
-        "cumulative_total_tokens": { "type": "integer" },
-        "peak_prompt_tokens": { "type": "integer" },
-        "resolved": { "type": "boolean" },
-        "test_exit_code": { "type": "integer" }
+        "total_prompt_tokens": { "type": "integer" },
+        "total_completion_tokens": { "type": "integer" },
+        "total_cached_tokens": { "type": "integer" },
+        "total_tokens": { "type": "integer" },
+        "total_steps": { "type": "integer" }
       }
     }
   }

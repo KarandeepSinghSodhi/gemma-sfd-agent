@@ -1,0 +1,11 @@
+{
+  "total_traces": 112,
+  "passed": 112,
+  "failed": 0,
+  "validation_rate_pct": 100.0,
+  "schema_version": [
+    "ATIF-v1.7",
+    "1.7",
+    "v1.7"
+  ]
+}

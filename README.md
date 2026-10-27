@@ -12,7 +12,37 @@
 ---
 
 ## Corrections & Scientific Integrity Note
-> **Notice:** Earlier drafts of this repository and writeup contained preliminary results produced by an analytical simulation (`simulate_benchmark.py`) and a mock smoke-test script (`smoke_test.py`). Those synthetic files have been retracted and quarantined to `_retracted_simulation/`. Every result reported in `paper.typ`, `paper.pdf`, `paper.tex`, `KAGGLE_WRITEUP.md`, and `results/summary.json` is computed by `scripts/aggregate.py` directly from real two-phase `swegemma` + `vLLM` execution traces (`traces/`).
+> **Notice:** Earlier drafts of this repository and writeup contained preliminary results produced by an analytical simulation (`simulate_benchmark.py`) and a mock smoke-test script (`smoke_test.py`). Those synthetic files have been retracted and quarantined to `_retracted_simulation/`. Every result reported in this repository is computed strictly from real two-phase `swegemma` + `vLLM` execution traces.
+
+---
+
+## Repository Guide & Audit Trail: Two Distinct Research Artifacts
+
+To assist reviewers in verifying our experiments, this repository maintains an explicit distinction between two connected research artifacts:
+
+### Artifact 1: SFD Architecture Paper (Methods Track)
+- **Manuscripts:** [`paper.typ`](paper.typ), [`paper.pdf`](paper.pdf), and [`KAGGLE_WRITEUP.md`](KAGGLE_WRITEUP.md).
+- **Scope:** 64 total GPU runs across 16 tasks (Cohort 1 Canonical + Cohort 2 Random, 48 paired primary runs + 16 rerun reproducibility runs).
+- **Core Focus:** Evaluates the declarative 3-stage `SequentialAgent` context management mechanism (`include_contents: "none"`).
+- **Raw Traces:** Stored in [`traces/eval_results/`](traces/eval_results/) and [`traces/rerun_results/`](traces/rerun_results/).
+- **Aggregation Pipeline:** Produced by [`scripts/aggregate.py`](scripts/aggregate.py) into [`results/summary.json`](results/summary.json).
+
+### Artifact 2: ATIF-Gemma Diagnostic Corpus (Best New Resource Track)
+- **Manuscripts:** [`paper_resource.typ`](paper_resource.typ), [`paper_resource.pdf`](paper_resource.pdf), and [`KAGGLE_WRITEUP_RESOURCE.md`](KAGGLE_WRITEUP_RESOURCE.md).
+- **Scope:** **112 total GPU runs across 32 unique benchmark tasks** spanning 5 cohorts on 4x NVIDIA L4 GPUs (1,518 LLM turns, 1,328 tool calls, 11,706,178 logged tokens).
+- **Core Focus:** An open empirical diagnostic corpus and Phase 2 exit code failure taxonomy for small open-weight developer agents (`gemma-4-e4b-it-qat-w4a16-ct`), accompanied by an Actionable Remediation Playbook and the `atif_gemma` Python toolkit.
+- **Dataset Manifest:** [`dataset_resource/corpus_metadata.csv`](dataset_resource/corpus_metadata.csv) (complete index of all 112 runs: task ID, repo, config, cohort, exit code, tokens, duration).
+- **Raw ATIF v1.7 Traces:** Stored in [`dataset_resource/traces/`](dataset_resource/traces/) (112 standardized JSON traces, 100% schema validated).
+- **Documentation & Hygiene:** [`dataset_resource/datasheet.md`](dataset_resource/datasheet.md) (Gebru et al. standard), [`dataset_resource/atif_schema_v1_7.json`](dataset_resource/atif_schema_v1_7.json), and [`dataset_resource/checksums.sha256`](dataset_resource/checksums.sha256).
+- **Reproduction Pipeline:** Standalone scripts in [`analysis/`](analysis/) generate all tables, metrics, and vector figures:
+  - `analysis/reproduce_tables.py` $	o$ Tables 1–3 (`results/table*.csv`, `results/summary_metrics.json`)
+  - `analysis/classify_exit2.py` $	o$ Exit Code 2 breakdown (`results/exit2_breakdown.json`)
+  - `analysis/subclassify_exit1.py` $	o$ Exit Code 1 assertion failure taxonomy (`results/exit1_breakdown.json`)
+  - `analysis/statistical_tests.py` $	o$ Wilson CIs, bootstrap CIs, Wilcoxon & McNemar tests (`results/stats_report.json`)
+  - `analysis/claim_audit.py` $	o$ Tool errors & stage prompt reset distributions (`results/tool_errors_breakdown.json`)
+  - `analysis/figures.py` $	o$ Publication vector graphics (`figures/fig*.svg`)
+  - `scripts/check_consistency_resource.py` $	o$ 7/7 automated assertion checks pass.
+- **Companion Diagnostic Toolkit:** Installable directly via `pip install git+https://github.com/KarandeepSinghSodhi/gemma-sfd-agent.git`. Unit test suite in [`tests/test_taxonomy.py`](tests/test_taxonomy.py) (5/5 passed).
 
 ---
 
@@ -93,6 +123,15 @@ python scripts/render_paper.py
 # 3. Verify consistency and confirm zero synthetic/placeholder strings remain:
 python scripts/check_consistency.py
 
-# 4. Compile the PDF manuscript:
+# 4. Compile the PDF manuscript (Methods Track):
 typst compile paper.typ paper.pdf
+
+# 5. Reproduce all 112-trace ATIF-Gemma tables, figures, schema validation, and consistency checks (Resource Track):
+python analysis/reproduce_tables.py
+python analysis/classify_exit2.py
+python analysis/subclassify_exit1.py
+python analysis/statistical_tests.py
+python analysis/validate_atif_schema.py
+python scripts/check_consistency_resource.py
+typst compile paper_resource.typ paper_resource.pdf
 ```
