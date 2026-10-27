@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-ROOT = Path(r"d:\AI Research\gemma_paper")
+ROOT = Path(__file__).resolve().parents[1]
 writeup_path = ROOT / "KAGGLE_WRITEUP.md"
 writeup = writeup_path.read_text(encoding="utf-8")
 

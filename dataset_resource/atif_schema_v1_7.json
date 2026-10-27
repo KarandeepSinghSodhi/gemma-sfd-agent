@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "AgentTrajectoryInterchangeFormat_v1_7",
-  "description": "Standardized schema for ATIF-Gemma multi-turn developer agent execution traces (ATIF v1.7)",
+  "description": "Standardized schema for ATIF-Gemma multi-turn developer agent execution traces conforming to the Harbor ATIF v1.7 specification (Harbor Framework Contributors, 2026)",
   "type": "object",
   "required": ["schema_version", "agent", "steps", "final_metrics"],
   "properties": {

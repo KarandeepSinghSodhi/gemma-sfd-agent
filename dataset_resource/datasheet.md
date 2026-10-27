@@ -7,7 +7,7 @@ Following the *Datasheets for Datasets* standard (Gebru et al., 2021).
 ## 1. Motivation
 
 - **For what purpose was the dataset created?**  
-  Current software engineering (SWE) agent benchmarks report scalar pass/fail resolution rates, obscuring the multi-turn dynamics of agent failure. For small, quantized open-weight models (e.g. `gemma-4-e4b-it-qat-w4a16-ct`), understanding why agents plateau at low resolution rates (median 5.0% across 197 teams on the official Small Model Prize leaderboard) was hindered by a complete absence of publicly available, fine-grained execution trace data. ATIF-Gemma was created to provide an open, standardized empirical diagnostic corpus and failure taxonomy.
+  Current software engineering (SWE) agent benchmarks report scalar pass/fail resolution rates, obscuring the multi-turn dynamics of agent failure. For small, quantized open-weight models (e.g. `gemma-4-e4b-it-qat-w4a16-ct`), understanding why agents plateau at low resolution rates (median 5.0% across 197 teams on the official Small Model Prize leaderboard) was hindered by limited publicly available trace data linking compact-agent execution trajectories to test outcomes and failure diagnoses. ATIF-Gemma was created to provide an open, standardized empirical diagnostic corpus and failure taxonomy.
 
 - **Who created the dataset and on behalf of which entity?**  
   Karandeep Singh Sodhi, as an open scientific resource submission for the Kaggle Gemma 4 Developer Agent Competition (Paper Track: Best New Resource).
@@ -62,7 +62,7 @@ Following the *Datasheets for Datasets* standard (Gebru et al., 2021).
 ## 4. Preprocessing and Cleaning
 
 - **What preprocessing was performed?**  
-  Traces were validated against the Agent Trajectory Interchange Format (ATIF v1.7) JSON schema. All timestamps, durations, exit codes, and token metrics were extracted and compiled into `corpus_metadata.csv` with zero hand-typed values.
+  Traces were validated against the Agent Trajectory Interchange Format (ATIF v1.7) JSON schema, conforming to the Harbor ATIF v1.7 specification (Harbor Framework Contributors, 2026). All timestamps, durations, exit codes, and token metrics were extracted and compiled into `corpus_metadata.csv` with zero hand-typed values.
 
 ---
 

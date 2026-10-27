@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-ROOT = Path(r"d:\AI Research\gemma_paper")
+ROOT = Path(__file__).resolve().parents[1]
 kernel_dir = ROOT / "kaggle_kernel_resource"
 kernel_dir.mkdir(parents=True, exist_ok=True)
 

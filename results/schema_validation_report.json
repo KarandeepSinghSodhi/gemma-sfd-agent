@@ -1,14 +1,17 @@
 {
+  "specification": "Harbor ATIF Specification v1.7 (Harbor Framework Contributors, 2026)",
+  "specification_url": "https://github.com/harbor-framework/harbor",
+  "pinned_version": "ATIF-v1.7",
+  "schema_path": "dataset_resource/atif_schema_v1_7.json",
   "total_traces": 112,
-  "concrete_schema_passed": 112,
-  "concrete_schema_pass_rate_pct": 100.0,
-  "upstream_atif_interoperability_passed": 112,
-  "upstream_atif_pass_rate_pct": 100.0,
+  "schema_passed": 112,
+  "schema_pass_rate_pct": 100.0,
   "total_steps_audited": 1942,
   "deliberative_reasoning_steps": 1503,
-  "provenance_mapping": {
+  "tool_calls_audited": 1328,
+  "v1_7_extra_metadata_verified": 2656,
+  "provenance_structure": {
     "model_reasoning_field": "message (with extra.event_type == 'thinking')",
-    "upstream_standard_field": "reasoning_content",
-    "extensions_storage": "extra block (timestamp, elapsed_s, author)"
+    "extensions_storage": "extra block on tool_calls, observations, and steps"
   }
 }

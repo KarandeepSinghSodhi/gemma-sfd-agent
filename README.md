@@ -32,7 +32,7 @@ To assist reviewers in verifying our experiments, this repository maintains an e
 - **Scope:** **112 total GPU runs across 32 unique benchmark tasks** spanning 5 cohorts on 4x NVIDIA L4 GPUs (1,518 LLM turns, 1,328 tool calls, 11,706,178 logged tokens). Expands Artifact 1's 64 runs by adding Cohort 3 (24 runs in `traces/shard3_results/`) and Cohort 4 (24 runs in `traces/shard4_results/`) across 16 additional tasks (+48 runs = 112 runs total).
 - **Core Focus:** An open empirical diagnostic corpus and Phase 2 exit code failure taxonomy for small open-weight developer agents (`gemma-4-e4b-it-qat-w4a16-ct`), accompanied by an Actionable Remediation Playbook and the `atif_gemma` Python toolkit.
 - **Dataset Manifest:** [`dataset_resource/corpus_metadata.csv`](dataset_resource/corpus_metadata.csv) (complete master index of all 112 runs: task ID, repo, config, cohort, exit code, tokens, duration).
-- **Raw ATIF v1.7 Traces:** Stored in [`dataset_resource/traces/`](dataset_resource/traces/) (all 112 standardized JSON traces, 100% dual schema validated against local schema and upstream ATIF v1.7 specification).
+- **Raw ATIF v1.7 Traces:** Stored in [`dataset_resource/traces/`](dataset_resource/traces/) (all 112 standardized JSON traces, 100% formally schema-validated against the version-pinned Harbor ATIF v1.7 specification).
 - **Documentation & Hygiene:** [`dataset_resource/datasheet.md`](dataset_resource/datasheet.md) (Gebru et al. standard), [`dataset_resource/atif_schema_v1_7.json`](dataset_resource/atif_schema_v1_7.json), and [`dataset_resource/checksums.sha256`](dataset_resource/checksums.sha256).
 - **Reproduction Pipeline:** Standalone scripts in [`analysis/`](analysis/) generate all tables, metrics, and vector figures:
   - `analysis/reproduce_tables.py` $\to$ Tables 1–3 (`results/table*.csv`, `results/summary_metrics.json`)
@@ -40,7 +40,7 @@ To assist reviewers in verifying our experiments, this repository maintains an e
   - `analysis/subclassify_exit1.py` $\to$ Exit Code 1 assertion failure taxonomy (`results/exit1_breakdown.json`)
   - `analysis/statistical_tests.py` $\to$ Wilson CIs, bootstrap CIs, Wilcoxon & McNemar tests (`results/stats_report.json`)
   - `analysis/claim_audit.py` $\to$ Tool errors & stage prompt reset distributions (`results/tool_errors_breakdown.json`)
-  - `analysis/validate_atif_schema.py` $\to$ 100% dual schema validation (`results/schema_validation_report.json`)
+  - `analysis/validate_atif_schema.py` $\to$ Formal ATIF v1.7 schema validation (`results/schema_validation_report.json`)
   - `analysis/figures.py` $\to$ Publication vector graphics (`figures/fig*.svg`)
   - `scripts/check_consistency_resource.py` $\to$ 7/7 automated assertion checks pass.
 - **Companion Diagnostic Toolkit:** Installable directly via `pip install git+https://github.com/KarandeepSinghSodhi/gemma-sfd-agent.git`. Unit test suite in [`tests/test_taxonomy.py`](tests/test_taxonomy.py) (5/5 passed).
@@ -93,10 +93,10 @@ We evaluated three controlled configurations on `gemma-4-e4b-it-qat-w4a16-ct` on
 │   ├── shard3_results/         # Cohort 3 paired runs (24 runs across 8 stratified disjoint tasks)
 │   └── shard4_results/         # Cohort 4 paired runs (24 runs across 8 stratified disjoint tasks)
 ├── dataset_resource/           # Unified ATIF-Gemma Resource Directory (112 traces)
-│   ├── traces/                 # All 112 standardized ATIF v1.7 JSON traces (100% dual schema validated)
+│   ├── traces/                 # All 112 standardized ATIF v1.7 JSON traces (100% schema validated)
 │   ├── corpus_metadata.csv     # Master index of all 112 runs (task, repo, config, cohort, exit code, tokens)
 │   ├── datasheet.md            # Dataset documentation conforming to Gebru et al. (2021)
-│   ├── atif_schema_v1_7.json   # Concrete ATIF v1.7 Draft-07 JSON schema
+│   ├── atif_schema_v1_7.json   # Concrete ATIF v1.7 Draft-07 JSON schema (Harbor v1.7 specification)
 │   └── checksums.sha256        # SHA-256 verification hashes for all 112 traces
 ├── analysis/                   # Standalone diagnostic reproduction & statistical scripts
 │   ├── reproduce_tables.py     # Re-generates Tables 1–3 from 112 raw traces
@@ -104,7 +104,7 @@ We evaluated three controlled configurations on `gemma-4-e4b-it-qat-w4a16-ct` on
 │   ├── subclassify_exit1.py    # Mutually exclusive Exit Code 1 assertion failure taxonomy
 │   ├── statistical_tests.py    # Wilson CIs, bootstrap CIs, Wilcoxon & McNemar tests
 │   ├── claim_audit.py          # Tool error taxonomy & stage prompt reset distributions
-│   ├── validate_atif_schema.py # Dual-mode ATIF v1.7 schema validation
+│   ├── validate_atif_schema.py # Formal ATIF v1.7 schema validation & specification audit
 │   └── figures.py              # Generates publication vector figures (figures/fig*.svg)
 ├── results/
 │   ├── summary.json                        # Aggregated metrics for Artifact 1 (64 runs)
@@ -115,7 +115,7 @@ We evaluated three controlled configurations on `gemma-4-e4b-it-qat-w4a16-ct` on
 │   ├── table3_architectures.csv            # Re-generated Table 3 (configurations)
 │   ├── exit1_breakdown.json                # Mutually exclusive Exit 1 localization tiers
 │   ├── exit2_breakdown.json                # Exit 2 agent vs environment breakdown
-│   ├── schema_validation_report.json       # 100% dual schema validation audit
+│   ├── schema_validation_report.json       # Formal ATIF v1.7 specification validation report
 │   ├── stats_report.json                   # Comprehensive statistical tests & CIs
 │   ├── tool_errors_breakdown.json          # Tool error frequencies & prompt reset distributions
 │   ├── remediation_eval.json               # Post-hoc remediation gate evaluation

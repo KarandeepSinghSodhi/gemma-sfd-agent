@@ -13,7 +13,7 @@ from pathlib import Path
 from collections import defaultdict
 import pandas as pd
 
-ROOT = Path(r"d:\AI Research\gemma_paper")
+ROOT = Path(__file__).resolve().parents[1]
 TASKS_PATH = ROOT / "dataset_resource" / "tasks_reference.jsonl"
 METADATA_PATH = ROOT / "dataset_resource" / "corpus_metadata.csv"
 RESULTS_DIR = ROOT / "results"

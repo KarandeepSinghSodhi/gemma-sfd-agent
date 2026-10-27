@@ -46,7 +46,7 @@ CB_SKY = "#56B4E9"
 CB_GRAY = "#7F7F7F"
 CB_DARK = "#333333"
 
-ROOT = Path(r"d:\AI Research\gemma_paper")
+ROOT = Path(__file__).resolve().parents[1]
 TRACES_DIR = ROOT / "dataset_resource" / "traces"
 METADATA_PATH = ROOT / "dataset_resource" / "corpus_metadata.csv"
 FIG_DIR = ROOT / "figures"

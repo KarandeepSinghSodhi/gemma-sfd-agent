@@ -11,7 +11,7 @@ import json
 from pathlib import Path
 import pandas as pd
 
-ROOT = Path(r"d:\AI Research\gemma_paper")
+ROOT = Path(__file__).resolve().parents[1]
 TRACES_DIR = ROOT / "dataset_resource" / "traces"
 METADATA_PATH = ROOT / "dataset_resource" / "corpus_metadata.csv"
 RESULTS_DIR = ROOT / "results"

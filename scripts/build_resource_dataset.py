@@ -5,7 +5,7 @@ from pathlib import Path
 from collections import defaultdict
 import sys
 
-ROOT = Path(r"d:\AI Research\gemma_paper")
+ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 from aggregate import parse_atif_trace, classify_failure
 

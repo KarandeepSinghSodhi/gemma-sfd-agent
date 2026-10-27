@@ -6,7 +6,7 @@ in dataset_resource/ and writes dataset_resource/checksums.sha256.
 import hashlib
 from pathlib import Path
 
-ROOT = Path(r"d:\AI Research\gemma_paper")
+ROOT = Path(__file__).resolve().parents[1]
 DATASET_DIR = ROOT / "dataset_resource"
 
 def main():

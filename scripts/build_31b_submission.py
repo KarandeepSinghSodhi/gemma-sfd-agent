@@ -3,7 +3,7 @@ import shutil
 import zipfile
 from pathlib import Path
 
-ROOT = Path(r"d:\AI Research\gemma_paper")
+ROOT = Path(__file__).resolve().parents[1]
 src_dir = ROOT / "agent_sfd"
 out_dir = ROOT / "agent_sfd_31b_v2"
 out_dir.mkdir(parents=True, exist_ok=True)

@@ -9,7 +9,7 @@ from pathlib import Path
 from collections import defaultdict
 from typing import Dict, Any, List, Tuple
 
-ROOT = Path(r"d:\AI Research\gemma_paper")
+ROOT = Path(__file__).resolve().parents[1]
 TRACES_DIR = ROOT / "traces"
 RESULTS_DIR = ROOT / "results"
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)

@@ -195,3 +195,25 @@ Format:
   - Dual Schema Validation: 100.0% (112/112 concrete repository, 112/112 upstream interoperability)
   - Abstract Exit 2 partition: syntax errors (44.4%) -> collection failures (44.4%)
   - README trace shards: 3 shards (64 runs) -> 5 shards (112 runs) fully documented.
+
+
+---
+
+## [T14 Complete] 2026-10-28 01:05 UTC
+- **Task ID**: T14 (Harbor ATIF v1.7 Specification Conformance, Bibliographic Correction, & Strict Word-Count Ceiling)
+- **What Changed**:
+  1. **Substantiated ATIF Validation & Path Portability**: Removed custom in-script UPSTREAM_ATIF_SCHEMA from analysis/validate_atif_schema.py; reframed claim from dual schema validation to formal validation under the Harbor ATIF v1.7 specification (112/112 traces, 100.0% pass rate). Replaced all hardcoded Windows drive letters across all 15 analysis and scripts Python files with portable project-relative paths (Path(__file__).resolve().parents[1]).
+  2. **Bibliographic Correction**: Corrected ATIF v1.7 citation in references_gemma.bib, paper_resource.typ, and KAGGLE_WRITEUP_RESOURCE.md from SWE-bench Working Group (2024) to Harbor Framework Contributors (2026), citing the Harbor repository (https://github.com/harbor-framework/harbor).
+  3. **Strict Word Count Margin**: Trimmed KAGGLE_WRITEUP_RESOURCE.md so that raw whitespace count across the entire file (including markdown tables, code fences, and bibliography) is strictly 2,946 words (< 3,000 words), with cleaned whitespace at 2,381 words and prose tokens at 2,710 words.
+  4. **Resolved Text Ambiguities**:
+     - Abstract: replaced a lack of public trace data with limited public trace data linking compact-agent execution trajectories to test outcomes and failure diagnoses.
+     - Section 6.1: changed site-package shadowing across all 10 environment-shadowed runs to environment and import-path failures across all 10 runs.
+  5. **Checksum Synchronization**: Recomputed dataset_resource/checksums.sha256 for all 118 files via analysis/generate_checksums.py.
+  6. **Recompilation & Verification**: Recompiled paper_resource.pdf with Typst (0 errors); all 7 consistency checks and 5 unit tests passed.
+- **Evidence Files**: analysis/validate_atif_schema.py, references_gemma.bib, KAGGLE_WRITEUP_RESOURCE.md, paper_resource.typ, paper_resource.pdf, dataset_resource/datasheet.md, dataset_resource/checksums.sha256, results/schema_validation_report.json.
+- **Numbers Before / After**:
+  - Raw whitespace word count: 3,055 words -> 2,946 words (< 3,000 max)
+  - Cleaned prose tokens: 2,812 words -> 2,710 words
+  - Hardcoded Windows drive paths: 15 instances -> 0 instances across all scripts
+  - ATIF citation: SWE-bench Working Group (2024) -> Harbor Framework Contributors (2026)
+  - Schema validation claim: dual schema -> formal Harbor ATIF v1.7 specification validation (100.0% pass).

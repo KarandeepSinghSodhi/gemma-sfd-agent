@@ -1,123 +1,102 @@
 """
-analysis/validate_atif_schema.py: Dual-mode schema validation for ATIF-Gemma traces.
-1. Concrete Repository Schema: Validates 100% of traces against dataset_resource/atif_schema_v1_7.json.
-2. Upstream Specification Interoperability: Audits conformance to standard upstream ATIF v1.7 fields,
-   verifying reasoning representation (message + extra.event_type: "thinking") and tool call structures.
+analysis/validate_atif_schema.py: Formal schema validation and specification audit for ATIF-Gemma traces.
+
+Validates all 112 multi-turn execution traces against the version-pinned ATIF v1.7 specification
+(Harbor Framework Contributors, 2026; https://github.com/harbor-framework/harbor) using the formal
+Draft 2020-12 / Draft-07 JSON Schema at dataset_resource/atif_schema_v1_7.json.
 """
+
+from __future__ import annotations
 
 import json
 from pathlib import Path
 import jsonschema
 
-ROOT = Path(r"d:\AI Research\gemma_paper")
+ROOT = Path(__file__).resolve().parents[1]
 SCHEMA_PATH = ROOT / "dataset_resource" / "atif_schema_v1_7.json"
 TRACES_DIR = ROOT / "dataset_resource" / "traces"
+REPORT_PATH = ROOT / "results" / "schema_validation_report.json"
 
-# Upstream standard ATIF v1.7 reference schema (Draft-07)
-UPSTREAM_ATIF_SCHEMA = {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Upstream ATIF v1.7 Interoperability Schema",
-    "type": "object",
-    "required": ["schema_version", "agent", "steps", "final_metrics"],
-    "properties": {
-        "schema_version": {"type": "string"},
-        "agent": {
-            "type": "object",
-            "required": ["name"],
-            "properties": {
-                "name": {"type": "string"},
-                "model_name": {"type": "string"}
-            }
-        },
-        "steps": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "required": ["step_id", "source"],
-                "properties": {
-                    "step_id": {"type": "integer"},
-                    "source": {"type": "string", "enum": ["system", "user", "agent"]},
-                    "message": {"type": "string"},
-                    "reasoning_content": {"type": ["string", "null"]},
-                    "tool_calls": {"type": "array"},
-                    "observation": {"type": "object"},
-                    "metrics": {"type": "object"},
-                    "extra": {"type": "object"}
-                }
-            }
-        },
-        "final_metrics": {
-            "type": "object",
-            "required": ["total_tokens", "total_prompt_tokens", "total_completion_tokens"],
-            "properties": {
-                "total_tokens": {"type": "integer"},
-                "total_prompt_tokens": {"type": "integer"},
-                "total_completion_tokens": {"type": "integer"},
-                "total_steps": {"type": "integer"},
-                "total_duration_seconds": {"type": "number"}
-            }
-        }
-    }
-}
 
 def main():
-    concrete_schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
+    schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
     traces = sorted(list(TRACES_DIR.glob("*.json")))
     assert len(traces) == 112, f"Expected 112 traces, found {len(traces)}"
-    
-    concrete_passed = 0
-    upstream_passed = 0
-    reasoning_steps_found = 0
+
+    passed_count = 0
     total_steps_audited = 0
-    
+    deliberative_reasoning_steps = 0
+    tool_calls_audited = 0
+    v1_7_extra_metadata_verified = 0
+
     for t in traces:
         data = json.loads(t.read_text(encoding="utf-8"))
-        
-        # 1. Concrete schema validation
-        jsonschema.validate(instance=data, schema=concrete_schema)
-        concrete_passed += 1
-        
-        # 2. Upstream schema interoperability validation
-        # Map extra.event_type == 'thinking' to upstream reasoning_content representation
-        upstream_data = json.loads(json.dumps(data))
-        for step in upstream_data.get("steps", []):
+
+        # 1. Formal JSON Schema Validation
+        jsonschema.validate(instance=data, schema=schema)
+        passed_count += 1
+
+        # 2. Specification Audit: ATIF v1.7 Core Properties
+        assert data.get("schema_version") in ("ATIF-v1.7", "1.7", "v1.7"), (
+            f"Invalid schema_version in {t.name}: {data.get('schema_version')}"
+        )
+        assert "agent" in data and "name" in data["agent"], f"Missing agent block in {t.name}"
+        assert "final_metrics" in data, f"Missing final_metrics in {t.name}"
+
+        steps = data.get("steps", [])
+        for step in steps:
             total_steps_audited += 1
+            assert "step_id" in step, f"Missing step_id in {t.name} step {step}"
+            assert "source" in step, f"Missing source in {t.name} step {step}"
+
             extra = step.get("extra", {})
             if extra.get("event_type") == "thinking":
-                step["reasoning_content"] = step.get("message", "")
-                reasoning_steps_found += 1
-            else:
-                step["reasoning_content"] = None
-                
-        jsonschema.validate(instance=upstream_data, schema=UPSTREAM_ATIF_SCHEMA)
-        upstream_passed += 1
-            
-    print("=" * 65)
-    print("  DUAL ATIF v1.7 SCHEMA VALIDATION & INTEROPERABILITY REPORT")
-    print("=" * 65)
-    print(f"Total Traces Evaluated: {len(traces)}")
-    print(f"Concrete Repository Schema Pass: {concrete_passed} / {len(traces)} (100.0%)")
-    print(f"Upstream ATIF v1.7 Interoperability Pass: {upstream_passed} / {len(traces)} (100.0%)")
-    print(f"Total Steps Audited: {total_steps_audited}")
-    print(f"Deliberative Reasoning Turns Verified: {reasoning_steps_found}")
-    print("=" * 65)
-    
-    out_report = {
+                deliberative_reasoning_steps += 1
+
+            for tc in step.get("tool_calls", []):
+                tool_calls_audited += 1
+                assert "function_name" in tc, f"Missing function_name in {t.name} tool call"
+                assert "arguments" in tc, f"Missing arguments in {t.name} tool call"
+                if "extra" in tc:
+                    v1_7_extra_metadata_verified += 1
+
+            obs = step.get("observation", {})
+            if isinstance(obs, dict) and "extra" in obs:
+                v1_7_extra_metadata_verified += 1
+
+    print("=" * 70)
+    print("  ATIF v1.7 FORMAL SCHEMA VALIDATION & SPECIFICATION AUDIT")
+    print("=" * 70)
+    print(f"Specification: Harbor ATIF v1.7 (Harbor Framework Contributors, 2026)")
+    print(f"Schema File:   dataset_resource/atif_schema_v1_7.json")
+    print(f"Traces Evaluated:           {len(traces)}")
+    print(f"Formal Schema Validation:   {passed_count} / {len(traces)} (100.0% PASS)")
+    print(f"Total Steps Audited:        {total_steps_audited}")
+    print(f"Deliberative Reasoning:     {deliberative_reasoning_steps} turns")
+    print(f"Tool Calls Audited:         {tool_calls_audited}")
+    print(f"v1.7 Extra Metadata Blocks: {v1_7_extra_metadata_verified}")
+    print("=" * 70)
+
+    report = {
+        "specification": "Harbor ATIF Specification v1.7 (Harbor Framework Contributors, 2026)",
+        "specification_url": "https://github.com/harbor-framework/harbor",
+        "pinned_version": "ATIF-v1.7",
+        "schema_path": "dataset_resource/atif_schema_v1_7.json",
         "total_traces": len(traces),
-        "concrete_schema_passed": concrete_passed,
-        "concrete_schema_pass_rate_pct": 100.0,
-        "upstream_atif_interoperability_passed": upstream_passed,
-        "upstream_atif_pass_rate_pct": 100.0,
+        "schema_passed": passed_count,
+        "schema_pass_rate_pct": 100.0,
         "total_steps_audited": total_steps_audited,
-        "deliberative_reasoning_steps": reasoning_steps_found,
-        "provenance_mapping": {
+        "deliberative_reasoning_steps": deliberative_reasoning_steps,
+        "tool_calls_audited": tool_calls_audited,
+        "v1_7_extra_metadata_verified": v1_7_extra_metadata_verified,
+        "provenance_structure": {
             "model_reasoning_field": "message (with extra.event_type == 'thinking')",
-            "upstream_standard_field": "reasoning_content",
-            "extensions_storage": "extra block (timestamp, elapsed_s, author)"
+            "extensions_storage": "extra block on tool_calls, observations, and steps"
         }
     }
-    (ROOT / "results" / "schema_validation_report.json").write_text(json.dumps(out_report, indent=2), encoding="utf-8")
-    print("Report written to results/schema_validation_report.json")
+    REPORT_PATH.write_text(json.dumps(report, indent=2), encoding="utf-8")
+    print(f"Report successfully saved to {REPORT_PATH.relative_to(ROOT)}")
+
 
 if __name__ == "__main__":
     main()

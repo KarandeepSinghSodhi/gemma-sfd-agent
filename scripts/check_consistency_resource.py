@@ -2,7 +2,7 @@ import json
 import re
 from pathlib import Path
 
-ROOT = Path(r"d:\AI Research\gemma_paper")
+ROOT = Path(__file__).resolve().parents[1]
 summary_file = ROOT / "results" / "resource_summary.json"
 typ_file = ROOT / "paper_resource.typ"
 md_file = ROOT / "KAGGLE_WRITEUP_RESOURCE.md"
