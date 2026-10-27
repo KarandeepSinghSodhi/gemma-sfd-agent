@@ -1,0 +1,18 @@
+{
+  "id": "karandeepsinghsodhi/atif-gemma-diagnostic-exploration",
+  "title": "ATIF-Gemma: Diagnostic Exploration",
+  "code_file": "atif_gemma_exploration.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": false,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "dataset_sources": [
+    "karandeepsinghsodhi/atif-gemma-swe-agent-traces"
+  ],
+  "competition_sources": [
+    "gemma-4-developer-agent"
+  ],
+  "kernel_sources": []
+}
