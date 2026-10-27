@@ -1,0 +1,659 @@
+{
+  "total_exit1_runs": 56,
+  "mechanism_counts": {
+    "RIGHT_FILE_WRONG_LOGIC": 24,
+    "WRONG_FILE_LOCALIZATION": 17,
+    "PARTIAL_MULTI_FILE_LOCALIZATION": 14,
+    "EMPTY_OR_UNPARSED_PATCH": 1
+  },
+  "task_breakdown": {
+    "fastapi_15588": {
+      "RIGHT_FILE_WRONG_LOGIC": 4
+    },
+    "fastapi_15589": {
+      "WRONG_FILE_LOCALIZATION": 3
+    },
+    "requests_7505": {
+      "PARTIAL_MULTI_FILE_LOCALIZATION": 5
+    },
+    "requests_7502": {
+      "RIGHT_FILE_WRONG_LOGIC": 5
+    },
+    "rich_4070": {
+      "PARTIAL_MULTI_FILE_LOCALIZATION": 4
+    },
+    "rich_4077": {
+      "RIGHT_FILE_WRONG_LOGIC": 1
+    },
+    "rich_3043": {
+      "RIGHT_FILE_WRONG_LOGIC": 3
+    },
+    "rich_3944": {
+      "WRONG_FILE_LOCALIZATION": 3
+    },
+    "rich_4076": {
+      "WRONG_FILE_LOCALIZATION": 3
+    },
+    "fastapi_9753": {
+      "WRONG_FILE_LOCALIZATION": 2
+    },
+    "requests_7427": {
+      "RIGHT_FILE_WRONG_LOGIC": 3
+    },
+    "fastapi_14372": {
+      "WRONG_FILE_LOCALIZATION": 1
+    },
+    "rich_3471": {
+      "RIGHT_FILE_WRONG_LOGIC": 3
+    },
+    "rich_3535": {
+      "PARTIAL_MULTI_FILE_LOCALIZATION": 2
+    },
+    "requests_7315": {
+      "WRONG_FILE_LOCALIZATION": 1,
+      "RIGHT_FILE_WRONG_LOGIC": 2
+    },
+    "fastapi_5624": {
+      "WRONG_FILE_LOCALIZATION": 1,
+      "EMPTY_OR_UNPARSED_PATCH": 1
+    },
+    "fastapi_14419": {
+      "PARTIAL_MULTI_FILE_LOCALIZATION": 3
+    },
+    "rich_3938": {
+      "WRONG_FILE_LOCALIZATION": 3
+    },
+    "requests_7205": {
+      "RIGHT_FILE_WRONG_LOGIC": 3
+    }
+  },
+  "config_breakdown": {
+    "flat_starter": {
+      "RIGHT_FILE_WRONG_LOGIC": 6,
+      "WRONG_FILE_LOCALIZATION": 7,
+      "PARTIAL_MULTI_FILE_LOCALIZATION": 2
+    },
+    "flat_controlled": {
+      "RIGHT_FILE_WRONG_LOGIC": 8,
+      "WRONG_FILE_LOCALIZATION": 5,
+      "PARTIAL_MULTI_FILE_LOCALIZATION": 4,
+      "EMPTY_OR_UNPARSED_PATCH": 1
+    },
+    "sfd": {
+      "RIGHT_FILE_WRONG_LOGIC": 7,
+      "PARTIAL_MULTI_FILE_LOCALIZATION": 4,
+      "WRONG_FILE_LOCALIZATION": 4
+    },
+    "flat_controlled_rerun": {
+      "RIGHT_FILE_WRONG_LOGIC": 2,
+      "PARTIAL_MULTI_FILE_LOCALIZATION": 2
+    },
+    "sfd_rerun": {
+      "WRONG_FILE_LOCALIZATION": 1,
+      "PARTIAL_MULTI_FILE_LOCALIZATION": 2,
+      "RIGHT_FILE_WRONG_LOGIC": 1
+    }
+  },
+  "classified_runs": [
+    {
+      "cohort": "Cohort 1 (Canonical)",
+      "instance_id": "fastapi_15588",
+      "repo": "fastapi/fastapi",
+      "config": "flat_starter",
+      "mechanism": "RIGHT_FILE_WRONG_LOGIC",
+      "agent_files": "fastapi/sse.py",
+      "gold_files": "fastapi/sse.py",
+      "reason": "Agent localized correct file(s) (['fastapi/sse.py']), but patch failed unit test assertions"
+    },
+    {
+      "cohort": "Cohort 1 (Canonical)",
+      "instance_id": "fastapi_15588",
+      "repo": "fastapi/fastapi",
+      "config": "flat_controlled",
+      "mechanism": "RIGHT_FILE_WRONG_LOGIC",
+      "agent_files": "fastapi/sse.py",
+      "gold_files": "fastapi/sse.py",
+      "reason": "Agent localized correct file(s) (['fastapi/sse.py']), but patch failed unit test assertions"
+    },
+    {
+      "cohort": "Cohort 1 (Canonical)",
+      "instance_id": "fastapi_15588",
+      "repo": "fastapi/fastapi",
+      "config": "sfd",
+      "mechanism": "RIGHT_FILE_WRONG_LOGIC",
+      "agent_files": "fastapi/sse.py",
+      "gold_files": "fastapi/sse.py",
+      "reason": "Agent localized correct file(s) (['fastapi/sse.py']), but patch failed unit test assertions"
+    },
+    {
+      "cohort": "Cohort 1 (Canonical)",
+      "instance_id": "fastapi_15589",
+      "repo": "fastapi/fastapi",
+      "config": "flat_starter",
+      "mechanism": "WRONG_FILE_LOCALIZATION",
+      "agent_files": "fastapi/params.py",
+      "gold_files": "fastapi/dependencies/utils.py",
+      "reason": "Agent edited ['fastapi/params.py'], but gold patch requires ['fastapi/dependencies/utils.py']"
+    },
+    {
+      "cohort": "Cohort 1 (Canonical)",
+      "instance_id": "fastapi_15589",
+      "repo": "fastapi/fastapi",
+      "config": "flat_controlled",
+      "mechanism": "WRONG_FILE_LOCALIZATION",
+      "agent_files": "fastapi/params.py",
+      "gold_files": "fastapi/dependencies/utils.py",
+      "reason": "Agent edited ['fastapi/params.py'], but gold patch requires ['fastapi/dependencies/utils.py']"
+    },
+    {
+      "cohort": "Cohort 1 (Canonical)",
+      "instance_id": "requests_7505",
+      "repo": "psf/requests",
+      "config": "flat_starter",
+      "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
+      "agent_files": "src/requests/models.py",
+      "gold_files": "src/requests/_types.py;src/requests/models.py",
+      "reason": "Bug spans 2 files (['src/requests/_types.py', 'src/requests/models.py']), but agent only modified 1 file(s)"
+    },
+    {
+      "cohort": "Cohort 1 (Canonical)",
+      "instance_id": "requests_7505",
+      "repo": "psf/requests",
+      "config": "flat_controlled",
+      "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
+      "agent_files": "src/requests/models.py",
+      "gold_files": "src/requests/_types.py;src/requests/models.py",
+      "reason": "Bug spans 2 files (['src/requests/_types.py', 'src/requests/models.py']), but agent only modified 1 file(s)"
+    },
+    {
+      "cohort": "Cohort 1 (Canonical)",
+      "instance_id": "requests_7505",
+      "repo": "psf/requests",
+      "config": "sfd",
+      "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
+      "agent_files": "src/requests/models.py",
+      "gold_files": "src/requests/_types.py;src/requests/models.py",
+      "reason": "Bug spans 2 files (['src/requests/_types.py', 'src/requests/models.py']), but agent only modified 1 file(s)"
+    },
+    {
+      "cohort": "Cohort 1 (Canonical)",
+      "instance_id": "requests_7502",
+      "repo": "psf/requests",
+      "config": "flat_starter",
+      "mechanism": "RIGHT_FILE_WRONG_LOGIC",
+      "agent_files": "src/requests/models.py",
+      "gold_files": "src/requests/models.py",
+      "reason": "Agent localized correct file(s) (['src/requests/models.py']), but patch failed unit test assertions"
+    },
+    {
+      "cohort": "Cohort 1 (Canonical)",
+      "instance_id": "requests_7502",
+      "repo": "psf/requests",
+      "config": "flat_controlled",
+      "mechanism": "RIGHT_FILE_WRONG_LOGIC",
+      "agent_files": "src/requests/models.py",
+      "gold_files": "src/requests/models.py",
+      "reason": "Agent localized correct file(s) (['src/requests/models.py']), but patch failed unit test assertions"
+    },
+    {
+      "cohort": "Cohort 1 (Canonical)",
+      "instance_id": "requests_7502",
+      "repo": "psf/requests",
+      "config": "sfd",
+      "mechanism": "RIGHT_FILE_WRONG_LOGIC",
+      "agent_files": "src/requests/models.py",
+      "gold_files": "src/requests/models.py",
+      "reason": "Agent localized correct file(s) (['src/requests/models.py']), but patch failed unit test assertions"
+    },
+    {
+      "cohort": "Cohort 1 (Canonical)",
+      "instance_id": "rich_4070",
+      "repo": "Textualize/rich",
+      "config": "flat_controlled",
+      "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
+      "agent_files": "rich/console.py;rich/logging.py",
+      "gold_files": "rich/_emoji_replace.py;rich/console.py;rich/emoji.py;rich/logging.py;rich/protocol.py;rich/repr.py;rich/segment.py;rich/syntax.py;rich/theme.py",
+      "reason": "Bug spans 9 files (['rich/logging.py', 'rich/protocol.py', 'rich/repr.py', 'rich/_emoji_replace.py', 'rich/syntax.py', 'rich/theme.py', 'rich/emoji.py', 'rich/console.py', 'rich/segment.py']), but agent only modified 2 file(s)"
+    },
+    {
+      "cohort": "Cohort 1 (Canonical)",
+      "instance_id": "rich_4070",
+      "repo": "Textualize/rich",
+      "config": "sfd",
+      "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
+      "agent_files": "rich/logging.py",
+      "gold_files": "rich/_emoji_replace.py;rich/console.py;rich/emoji.py;rich/logging.py;rich/protocol.py;rich/repr.py;rich/segment.py;rich/syntax.py;rich/theme.py",
+      "reason": "Bug spans 9 files (['rich/logging.py', 'rich/protocol.py', 'rich/repr.py', 'rich/_emoji_replace.py', 'rich/syntax.py', 'rich/theme.py', 'rich/emoji.py', 'rich/console.py', 'rich/segment.py']), but agent only modified 1 file(s)"
+    },
+    {
+      "cohort": "Cohort 1 (Canonical)",
+      "instance_id": "rich_4077",
+      "repo": "Textualize/rich",
+      "config": "flat_controlled",
+      "mechanism": "RIGHT_FILE_WRONG_LOGIC",
+      "agent_files": "rich/file_proxy.py",
+      "gold_files": "rich/file_proxy.py",
+      "reason": "Agent localized correct file(s) (['rich/file_proxy.py']), but patch failed unit test assertions"
+    },
+    {
+      "cohort": "Cohort 2 (Stratified Random)",
+      "instance_id": "rich_3043",
+      "repo": "Textualize/rich",
+      "config": "flat_starter",
+      "mechanism": "RIGHT_FILE_WRONG_LOGIC",
+      "agent_files": ".pre-commit-config.yaml;rich/_export_format.py",
+      "gold_files": "rich/_export_format.py",
+      "reason": "Agent localized correct file(s) (['rich/_export_format.py']), but patch failed unit test assertions"
+    },
+    {
+      "cohort": "Cohort 2 (Stratified Random)",
+      "instance_id": "rich_3043",
+      "repo": "Textualize/rich",
+      "config": "flat_controlled",
+      "mechanism": "RIGHT_FILE_WRONG_LOGIC",
+      "agent_files": ".pre-commit-config.yaml;rich/_export_format.py",
+      "gold_files": "rich/_export_format.py",
+      "reason": "Agent localized correct file(s) (['rich/_export_format.py']), but patch failed unit test assertions"
+    },
+    {
+      "cohort": "Cohort 2 (Stratified Random)",
+      "instance_id": "rich_3043",
+      "repo": "Textualize/rich",
+      "config": "sfd",
+      "mechanism": "RIGHT_FILE_WRONG_LOGIC",
+      "agent_files": "rich/_export_format.py",
+      "gold_files": "rich/_export_format.py",
+      "reason": "Agent localized correct file(s) (['rich/_export_format.py']), but patch failed unit test assertions"
+    },
+    {
+      "cohort": "Cohort 2 (Stratified Random)",
+      "instance_id": "rich_3944",
+      "repo": "Textualize/rich",
+      "config": "flat_starter",
+      "mechanism": "WRONG_FILE_LOCALIZATION",
+      "agent_files": "rich/table.py",
+      "gold_files": "rich/cells.py",
+      "reason": "Agent edited ['rich/table.py'], but gold patch requires ['rich/cells.py']"
+    },
+    {
+      "cohort": "Cohort 2 (Stratified Random)",
+      "instance_id": "rich_3944",
+      "repo": "Textualize/rich",
+      "config": "flat_controlled",
+      "mechanism": "WRONG_FILE_LOCALIZATION",
+      "agent_files": "rich/style.py",
+      "gold_files": "rich/cells.py",
+      "reason": "Agent edited ['rich/style.py'], but gold patch requires ['rich/cells.py']"
+    },
+    {
+      "cohort": "Cohort 2 (Stratified Random)",
+      "instance_id": "rich_3944",
+      "repo": "Textualize/rich",
+      "config": "sfd",
+      "mechanism": "WRONG_FILE_LOCALIZATION",
+      "agent_files": "rich/_win32_console.py",
+      "gold_files": "rich/cells.py",
+      "reason": "Agent edited ['rich/_win32_console.py'], but gold patch requires ['rich/cells.py']"
+    },
+    {
+      "cohort": "Cohort 2 (Stratified Random)",
+      "instance_id": "rich_4076",
+      "repo": "Textualize/rich",
+      "config": "flat_starter",
+      "mechanism": "WRONG_FILE_LOCALIZATION",
+      "agent_files": "rich/syntax.py",
+      "gold_files": "rich/ansi.py",
+      "reason": "Agent edited ['rich/syntax.py'], but gold patch requires ['rich/ansi.py']"
+    },
+    {
+      "cohort": "Cohort 2 (Stratified Random)",
+      "instance_id": "rich_4076",
+      "repo": "Textualize/rich",
+      "config": "flat_controlled",
+      "mechanism": "WRONG_FILE_LOCALIZATION",
+      "agent_files": "rich/text.py",
+      "gold_files": "rich/ansi.py",
+      "reason": "Agent edited ['rich/text.py'], but gold patch requires ['rich/ansi.py']"
+    },
+    {
+      "cohort": "Cohort 2 (Stratified Random)",
+      "instance_id": "rich_4076",
+      "repo": "Textualize/rich",
+      "config": "sfd",
+      "mechanism": "WRONG_FILE_LOCALIZATION",
+      "agent_files": "rich/text.py",
+      "gold_files": "rich/ansi.py",
+      "reason": "Agent edited ['rich/text.py'], but gold patch requires ['rich/ansi.py']"
+    },
+    {
+      "cohort": "Cohort 2 (Stratified Random)",
+      "instance_id": "fastapi_9753",
+      "repo": "fastapi/fastapi",
+      "config": "flat_controlled",
+      "mechanism": "WRONG_FILE_LOCALIZATION",
+      "agent_files": "fastapi/dependencies/utils.py",
+      "gold_files": "fastapi/dependencies/models.py",
+      "reason": "Agent edited ['fastapi/dependencies/utils.py'], but gold patch requires ['fastapi/dependencies/models.py']"
+    },
+    {
+      "cohort": "Cohort 2 (Stratified Random)",
+      "instance_id": "fastapi_9753",
+      "repo": "fastapi/fastapi",
+      "config": "sfd",
+      "mechanism": "WRONG_FILE_LOCALIZATION",
+      "agent_files": "fastapi/dependencies/utils.py",
+      "gold_files": "fastapi/dependencies/models.py",
+      "reason": "Agent edited ['fastapi/dependencies/utils.py'], but gold patch requires ['fastapi/dependencies/models.py']"
+    },
+    {
+      "cohort": "Cohort 2 (Stratified Random)",
+      "instance_id": "requests_7427",
+      "repo": "psf/requests",
+      "config": "flat_starter",
+      "mechanism": "RIGHT_FILE_WRONG_LOGIC",
+      "agent_files": "src/requests/utils.py",
+      "gold_files": "src/requests/utils.py",
+      "reason": "Agent localized correct file(s) (['src/requests/utils.py']), but patch failed unit test assertions"
+    },
+    {
+      "cohort": "Cohort 2 (Stratified Random)",
+      "instance_id": "requests_7427",
+      "repo": "psf/requests",
+      "config": "flat_controlled",
+      "mechanism": "RIGHT_FILE_WRONG_LOGIC",
+      "agent_files": "src/requests/utils.py",
+      "gold_files": "src/requests/utils.py",
+      "reason": "Agent localized correct file(s) (['src/requests/utils.py']), but patch failed unit test assertions"
+    },
+    {
+      "cohort": "Cohort 2 (Stratified Random)",
+      "instance_id": "requests_7427",
+      "repo": "psf/requests",
+      "config": "sfd",
+      "mechanism": "RIGHT_FILE_WRONG_LOGIC",
+      "agent_files": "src/requests/utils.py",
+      "gold_files": "src/requests/utils.py",
+      "reason": "Agent localized correct file(s) (['src/requests/utils.py']), but patch failed unit test assertions"
+    },
+    {
+      "cohort": "Cohort 1 Rerun (Reproducibility)",
+      "instance_id": "fastapi_15588",
+      "repo": "fastapi/fastapi",
+      "config": "flat_controlled_rerun",
+      "mechanism": "RIGHT_FILE_WRONG_LOGIC",
+      "agent_files": "fastapi/sse.py",
+      "gold_files": "fastapi/sse.py",
+      "reason": "Agent localized correct file(s) (['fastapi/sse.py']), but patch failed unit test assertions"
+    },
+    {
+      "cohort": "Cohort 1 Rerun (Reproducibility)",
+      "instance_id": "fastapi_15589",
+      "repo": "fastapi/fastapi",
+      "config": "sfd_rerun",
+      "mechanism": "WRONG_FILE_LOCALIZATION",
+      "agent_files": "fastapi/params.py",
+      "gold_files": "fastapi/dependencies/utils.py",
+      "reason": "Agent edited ['fastapi/params.py'], but gold patch requires ['fastapi/dependencies/utils.py']"
+    },
+    {
+      "cohort": "Cohort 1 Rerun (Reproducibility)",
+      "instance_id": "requests_7505",
+      "repo": "psf/requests",
+      "config": "flat_controlled_rerun",
+      "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
+      "agent_files": "src/requests/models.py",
+      "gold_files": "src/requests/_types.py;src/requests/models.py",
+      "reason": "Bug spans 2 files (['src/requests/_types.py', 'src/requests/models.py']), but agent only modified 1 file(s)"
+    },
+    {
+      "cohort": "Cohort 1 Rerun (Reproducibility)",
+      "instance_id": "requests_7505",
+      "repo": "psf/requests",
+      "config": "sfd_rerun",
+      "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
+      "agent_files": "src/requests/models.py",
+      "gold_files": "src/requests/_types.py;src/requests/models.py",
+      "reason": "Bug spans 2 files (['src/requests/_types.py', 'src/requests/models.py']), but agent only modified 1 file(s)"
+    },
+    {
+      "cohort": "Cohort 1 Rerun (Reproducibility)",
+      "instance_id": "requests_7502",
+      "repo": "psf/requests",
+      "config": "flat_controlled_rerun",
+      "mechanism": "RIGHT_FILE_WRONG_LOGIC",
+      "agent_files": "src/requests/models.py",
+      "gold_files": "src/requests/models.py",
+      "reason": "Agent localized correct file(s) (['src/requests/models.py']), but patch failed unit test assertions"
+    },
+    {
+      "cohort": "Cohort 1 Rerun (Reproducibility)",
+      "instance_id": "requests_7502",
+      "repo": "psf/requests",
+      "config": "sfd_rerun",
+      "mechanism": "RIGHT_FILE_WRONG_LOGIC",
+      "agent_files": "src/requests/models.py",
+      "gold_files": "src/requests/models.py",
+      "reason": "Agent localized correct file(s) (['src/requests/models.py']), but patch failed unit test assertions"
+    },
+    {
+      "cohort": "Cohort 1 Rerun (Reproducibility)",
+      "instance_id": "rich_4070",
+      "repo": "Textualize/rich",
+      "config": "flat_controlled_rerun",
+      "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
+      "agent_files": "rich/console.py;rich/logging.py;rich/theme.py",
+      "gold_files": "rich/_emoji_replace.py;rich/console.py;rich/emoji.py;rich/logging.py;rich/protocol.py;rich/repr.py;rich/segment.py;rich/syntax.py;rich/theme.py",
+      "reason": "Bug spans 9 files (['rich/logging.py', 'rich/protocol.py', 'rich/repr.py', 'rich/_emoji_replace.py', 'rich/syntax.py', 'rich/theme.py', 'rich/emoji.py', 'rich/console.py', 'rich/segment.py']), but agent only modified 3 file(s)"
+    },
+    {
+      "cohort": "Cohort 1 Rerun (Reproducibility)",
+      "instance_id": "rich_4070",
+      "repo": "Textualize/rich",
+      "config": "sfd_rerun",
+      "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
+      "agent_files": "rich/logging.py",
+      "gold_files": "rich/_emoji_replace.py;rich/console.py;rich/emoji.py;rich/logging.py;rich/protocol.py;rich/repr.py;rich/segment.py;rich/syntax.py;rich/theme.py",
+      "reason": "Bug spans 9 files (['rich/logging.py', 'rich/protocol.py', 'rich/repr.py', 'rich/_emoji_replace.py', 'rich/syntax.py', 'rich/theme.py', 'rich/emoji.py', 'rich/console.py', 'rich/segment.py']), but agent only modified 1 file(s)"
+    },
+    {
+      "cohort": "Cohort 3 (Stratified Disjoint)",
+      "instance_id": "fastapi_14372",
+      "repo": "fastapi/fastapi",
+      "config": "flat_starter",
+      "mechanism": "WRONG_FILE_LOCALIZATION",
+      "agent_files": "fastapi/dependencies/models.py",
+      "gold_files": "fastapi/dependencies/utils.py;fastapi/params.py",
+      "reason": "Agent edited ['fastapi/dependencies/models.py'], but gold patch requires ['fastapi/params.py', 'fastapi/dependencies/utils.py']"
+    },
+    {
+      "cohort": "Cohort 3 (Stratified Disjoint)",
+      "instance_id": "rich_3471",
+      "repo": "Textualize/rich",
+      "config": "flat_starter",
+      "mechanism": "RIGHT_FILE_WRONG_LOGIC",
+      "agent_files": "rich/text.py",
+      "gold_files": "rich/text.py",
+      "reason": "Agent localized correct file(s) (['rich/text.py']), but patch failed unit test assertions"
+    },
+    {
+      "cohort": "Cohort 3 (Stratified Disjoint)",
+      "instance_id": "rich_3471",
+      "repo": "Textualize/rich",
+      "config": "flat_controlled",
+      "mechanism": "RIGHT_FILE_WRONG_LOGIC",
+      "agent_files": "rich/text.py",
+      "gold_files": "rich/text.py",
+      "reason": "Agent localized correct file(s) (['rich/text.py']), but patch failed unit test assertions"
+    },
+    {
+      "cohort": "Cohort 3 (Stratified Disjoint)",
+      "instance_id": "rich_3471",
+      "repo": "Textualize/rich",
+      "config": "sfd",
+      "mechanism": "RIGHT_FILE_WRONG_LOGIC",
+      "agent_files": "rich/text.py",
+      "gold_files": "rich/text.py",
+      "reason": "Agent localized correct file(s) (['rich/text.py']), but patch failed unit test assertions"
+    },
+    {
+      "cohort": "Cohort 3 (Stratified Disjoint)",
+      "instance_id": "rich_3535",
+      "repo": "Textualize/rich",
+      "config": "flat_controlled",
+      "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
+      "agent_files": "rich/cells.py",
+      "gold_files": "rich/cells.py;rich/segment.py",
+      "reason": "Bug spans 2 files (['rich/cells.py', 'rich/segment.py']), but agent only modified 1 file(s)"
+    },
+    {
+      "cohort": "Cohort 3 (Stratified Disjoint)",
+      "instance_id": "rich_3535",
+      "repo": "Textualize/rich",
+      "config": "sfd",
+      "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
+      "agent_files": "rich/cells.py",
+      "gold_files": "rich/cells.py;rich/segment.py",
+      "reason": "Bug spans 2 files (['rich/cells.py', 'rich/segment.py']), but agent only modified 1 file(s)"
+    },
+    {
+      "cohort": "Cohort 3 (Stratified Disjoint)",
+      "instance_id": "requests_7315",
+      "repo": "psf/requests",
+      "config": "flat_starter",
+      "mechanism": "WRONG_FILE_LOCALIZATION",
+      "agent_files": "src/requests/models.py",
+      "gold_files": "src/requests/adapters.py",
+      "reason": "Agent edited ['src/requests/models.py'], but gold patch requires ['src/requests/adapters.py']"
+    },
+    {
+      "cohort": "Cohort 3 (Stratified Disjoint)",
+      "instance_id": "requests_7315",
+      "repo": "psf/requests",
+      "config": "flat_controlled",
+      "mechanism": "RIGHT_FILE_WRONG_LOGIC",
+      "agent_files": "src/requests/adapters.py",
+      "gold_files": "src/requests/adapters.py",
+      "reason": "Agent localized correct file(s) (['src/requests/adapters.py']), but patch failed unit test assertions"
+    },
+    {
+      "cohort": "Cohort 3 (Stratified Disjoint)",
+      "instance_id": "requests_7315",
+      "repo": "psf/requests",
+      "config": "sfd",
+      "mechanism": "RIGHT_FILE_WRONG_LOGIC",
+      "agent_files": "src/requests/adapters.py",
+      "gold_files": "src/requests/adapters.py",
+      "reason": "Agent localized correct file(s) (['src/requests/adapters.py']), but patch failed unit test assertions"
+    },
+    {
+      "cohort": "Cohort 4 (Stratified Disjoint)",
+      "instance_id": "fastapi_5624",
+      "repo": "fastapi/fastapi",
+      "config": "flat_starter",
+      "mechanism": "WRONG_FILE_LOCALIZATION",
+      "agent_files": "fastapi/security/oauth2.py",
+      "gold_files": "fastapi/dependencies/utils.py",
+      "reason": "Agent edited ['fastapi/security/oauth2.py'], but gold patch requires ['fastapi/dependencies/utils.py']"
+    },
+    {
+      "cohort": "Cohort 4 (Stratified Disjoint)",
+      "instance_id": "fastapi_5624",
+      "repo": "fastapi/fastapi",
+      "config": "flat_controlled",
+      "mechanism": "EMPTY_OR_UNPARSED_PATCH",
+      "agent_files": "",
+      "gold_files": "fastapi/dependencies/utils.py",
+      "reason": "Agent submitted empty patch or only edited temporary scratch files"
+    },
+    {
+      "cohort": "Cohort 4 (Stratified Disjoint)",
+      "instance_id": "fastapi_14419",
+      "repo": "fastapi/fastapi",
+      "config": "flat_starter",
+      "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
+      "agent_files": "fastapi/dependencies/models.py",
+      "gold_files": "fastapi/dependencies/models.py;fastapi/dependencies/utils.py",
+      "reason": "Bug spans 2 files (['fastapi/dependencies/utils.py', 'fastapi/dependencies/models.py']), but agent only modified 1 file(s)"
+    },
+    {
+      "cohort": "Cohort 4 (Stratified Disjoint)",
+      "instance_id": "fastapi_14419",
+      "repo": "fastapi/fastapi",
+      "config": "flat_controlled",
+      "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
+      "agent_files": "fastapi/dependencies/models.py",
+      "gold_files": "fastapi/dependencies/models.py;fastapi/dependencies/utils.py",
+      "reason": "Bug spans 2 files (['fastapi/dependencies/utils.py', 'fastapi/dependencies/models.py']), but agent only modified 1 file(s)"
+    },
+    {
+      "cohort": "Cohort 4 (Stratified Disjoint)",
+      "instance_id": "fastapi_14419",
+      "repo": "fastapi/fastapi",
+      "config": "sfd",
+      "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
+      "agent_files": "fastapi/dependencies/models.py",
+      "gold_files": "fastapi/dependencies/models.py;fastapi/dependencies/utils.py",
+      "reason": "Bug spans 2 files (['fastapi/dependencies/utils.py', 'fastapi/dependencies/models.py']), but agent only modified 1 file(s)"
+    },
+    {
+      "cohort": "Cohort 4 (Stratified Disjoint)",
+      "instance_id": "rich_3938",
+      "repo": "Textualize/rich",
+      "config": "flat_starter",
+      "mechanism": "WRONG_FILE_LOCALIZATION",
+      "agent_files": "rich/_wrap.py",
+      "gold_files": "rich/console.py;rich/segment.py",
+      "reason": "Agent edited ['rich/_wrap.py'], but gold patch requires ['rich/console.py', 'rich/segment.py']"
+    },
+    {
+      "cohort": "Cohort 4 (Stratified Disjoint)",
+      "instance_id": "rich_3938",
+      "repo": "Textualize/rich",
+      "config": "flat_controlled",
+      "mechanism": "WRONG_FILE_LOCALIZATION",
+      "agent_files": "rich/_wrap.py",
+      "gold_files": "rich/console.py;rich/segment.py",
+      "reason": "Agent edited ['rich/_wrap.py'], but gold patch requires ['rich/console.py', 'rich/segment.py']"
+    },
+    {
+      "cohort": "Cohort 4 (Stratified Disjoint)",
+      "instance_id": "rich_3938",
+      "repo": "Textualize/rich",
+      "config": "sfd",
+      "mechanism": "WRONG_FILE_LOCALIZATION",
+      "agent_files": "rich/_wrap.py",
+      "gold_files": "rich/console.py;rich/segment.py",
+      "reason": "Agent edited ['rich/_wrap.py'], but gold patch requires ['rich/console.py', 'rich/segment.py']"
+    },
+    {
+      "cohort": "Cohort 4 (Stratified Disjoint)",
+      "instance_id": "requests_7205",
+      "repo": "psf/requests",
+      "config": "flat_starter",
+      "mechanism": "RIGHT_FILE_WRONG_LOGIC",
+      "agent_files": "src/requests/utils.py",
+      "gold_files": "src/requests/utils.py",
+      "reason": "Agent localized correct file(s) (['src/requests/utils.py']), but patch failed unit test assertions"
+    },
+    {
+      "cohort": "Cohort 4 (Stratified Disjoint)",
+      "instance_id": "requests_7205",
+      "repo": "psf/requests",
+      "config": "flat_controlled",
+      "mechanism": "RIGHT_FILE_WRONG_LOGIC",
+      "agent_files": "src/requests/utils.py",
+      "gold_files": "src/requests/utils.py",
+      "reason": "Agent localized correct file(s) (['src/requests/utils.py']), but patch failed unit test assertions"
+    },
+    {
+      "cohort": "Cohort 4 (Stratified Disjoint)",
+      "instance_id": "requests_7205",
+      "repo": "psf/requests",
+      "config": "sfd",
+      "mechanism": "RIGHT_FILE_WRONG_LOGIC",
+      "agent_files": "src/requests/utils.py",
+      "gold_files": "src/requests/utils.py",
+      "reason": "Agent localized correct file(s) (['src/requests/utils.py']), but patch failed unit test assertions"
+    }
+  ]
+}

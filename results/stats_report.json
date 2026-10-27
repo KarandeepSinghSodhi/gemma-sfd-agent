@@ -1,0 +1,185 @@
+{
+  "wilson_cis": {
+    "flat_starter": {
+      "resolved": 2,
+      "n": 32,
+      "rate_pct": 6.25,
+      "ci_95_lo_pct": 1.73,
+      "ci_95_hi_pct": 20.15
+    },
+    "flat_controlled": {
+      "resolved": 2,
+      "n": 32,
+      "rate_pct": 6.25,
+      "ci_95_lo_pct": 1.73,
+      "ci_95_hi_pct": 20.15
+    },
+    "sfd": {
+      "resolved": 2,
+      "n": 32,
+      "rate_pct": 6.25,
+      "ci_95_lo_pct": 1.73,
+      "ci_95_hi_pct": 20.15
+    },
+    "flat_controlled_rerun": {
+      "resolved": 1,
+      "n": 8,
+      "rate_pct": 12.5,
+      "ci_95_lo_pct": 2.24,
+      "ci_95_hi_pct": 47.09
+    },
+    "sfd_rerun": {
+      "resolved": 1,
+      "n": 8,
+      "rate_pct": 12.5,
+      "ci_95_lo_pct": 2.24,
+      "ci_95_hi_pct": 47.09
+    },
+    "ALL": {
+      "resolved": 8,
+      "n": 112,
+      "rate_pct": 7.14,
+      "ci_95_lo_pct": 3.66,
+      "ci_95_hi_pct": 13.46
+    }
+  },
+  "mcnemar_exact": {
+    "sfd_vs_flat_controlled": {
+      "b_c1_only": 1,
+      "c_c2_only": 1,
+      "p_value": 1.0
+    },
+    "sfd_vs_flat_starter": {
+      "b_c1_only": 2,
+      "c_c2_only": 2,
+      "p_value": 1.0
+    },
+    "flat_controlled_vs_flat_starter": {
+      "b_c1_only": 1,
+      "c_c2_only": 1,
+      "p_value": 1.0
+    }
+  },
+  "metric_comparisons_n32": {
+    "cumulative_prompt_tokens": {
+      "sfd_vs_flat_controlled": {
+        "mean_diff": -37797.38,
+        "diff_pct_of_baseline": -31.98,
+        "bootstrap_ci_95": [
+          -52214.55,
+          -23755.17
+        ],
+        "wilcoxon_stat": 55.0,
+        "wilcoxon_pvalue": 0.0,
+        "tasks_sfd_lower": 25,
+        "tasks_sfd_higher": 7,
+        "n_tasks": 32
+      },
+      "sfd_vs_flat_starter": {
+        "mean_diff": -25441.94,
+        "diff_pct_of_baseline": -24.04,
+        "bootstrap_ci_95": [
+          -42485.12,
+          -9031.36
+        ],
+        "wilcoxon_stat": 120.0,
+        "wilcoxon_pvalue": 0.0061,
+        "tasks_sfd_lower": 24,
+        "tasks_sfd_higher": 8,
+        "n_tasks": 32
+      }
+    },
+    "peak_prompt_tokens": {
+      "sfd_vs_flat_controlled": {
+        "mean_diff": -3051.56,
+        "diff_pct_of_baseline": -21.86,
+        "bootstrap_ci_95": [
+          -4142.87,
+          -1968.17
+        ],
+        "wilcoxon_stat": 44.0,
+        "wilcoxon_pvalue": 0.0,
+        "tasks_sfd_lower": 28,
+        "tasks_sfd_higher": 4,
+        "n_tasks": 32
+      },
+      "sfd_vs_flat_starter": {
+        "mean_diff": -2452.19,
+        "diff_pct_of_baseline": -18.36,
+        "bootstrap_ci_95": [
+          -3795.94,
+          -1111.84
+        ],
+        "wilcoxon_stat": 92.0,
+        "wilcoxon_pvalue": 0.0008,
+        "tasks_sfd_lower": 26,
+        "tasks_sfd_higher": 6,
+        "n_tasks": 32
+      }
+    },
+    "cumulative_total_tokens": {
+      "sfd_vs_flat_controlled": {
+        "mean_diff": -36786.31,
+        "diff_pct_of_baseline": -29.71,
+        "bootstrap_ci_95": [
+          -51715.4,
+          -22346.36
+        ],
+        "wilcoxon_stat": 60.0,
+        "wilcoxon_pvalue": 0.0,
+        "tasks_sfd_lower": 26,
+        "tasks_sfd_higher": 6,
+        "n_tasks": 32
+      },
+      "sfd_vs_flat_starter": {
+        "mean_diff": -24585.28,
+        "diff_pct_of_baseline": -22.03,
+        "bootstrap_ci_95": [
+          -41948.34,
+          -8026.93
+        ],
+        "wilcoxon_stat": 123.0,
+        "wilcoxon_pvalue": 0.0073,
+        "tasks_sfd_lower": 23,
+        "tasks_sfd_higher": 9,
+        "n_tasks": 32
+      }
+    },
+    "duration_seconds": {
+      "sfd_vs_flat_controlled": {
+        "mean_diff": -4.23,
+        "diff_pct_of_baseline": -4.66,
+        "bootstrap_ci_95": [
+          -15.5,
+          6.96
+        ],
+        "wilcoxon_stat": 223.0,
+        "wilcoxon_pvalue": 0.454,
+        "tasks_sfd_lower": 17,
+        "tasks_sfd_higher": 15,
+        "n_tasks": 32
+      },
+      "sfd_vs_flat_starter": {
+        "mean_diff": -7.65,
+        "diff_pct_of_baseline": -8.12,
+        "bootstrap_ci_95": [
+          -20.53,
+          4.6
+        ],
+        "wilcoxon_stat": 222.0,
+        "wilcoxon_pvalue": 0.4429,
+        "tasks_sfd_lower": 17,
+        "tasks_sfd_higher": 15,
+        "n_tasks": 32
+      }
+    }
+  },
+  "rerun_summary": {
+    "total_pairs": 16,
+    "identical_exit_codes": 12,
+    "exit_code_agreement_pct": 75.0,
+    "identical_patch_hashes": 14,
+    "patch_hash_agreement_pct": 87.5,
+    "mean_abs_token_diff": 18571.0
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AgentTrajectoryInterchangeFormat_v1_7",
+  "description": "Standardized schema for multi-turn software engineering agent trajectories (ATIF v1.7)",
+  "type": "object",
+  "required": ["schema_version", "agent", "steps", "final_metrics"],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": ["1.7", "v1.7"]
+    },
+    "agent": {
+      "type": "object",
+      "required": ["name", "model_name"],
+      "properties": {
+        "name": { "type": "string" },
+        "model_name": { "type": "string" },
+        "config": { "type": "object" }
+      }
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["step_id", "source"],
+        "properties": {
+          "step_id": { "type": "integer" },
+          "source": { "type": "string", "enum": ["system", "user", "agent", "tool"] },
+          "message": { "type": "string" },
+          "thought": { "type": "string" },
+          "tool_calls": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["function_name", "arguments"],
+              "properties": {
+                "tool_call_id": { "type": "string" },
+                "function_name": { "type": "string" },
+                "arguments": { "type": "object" },
+                "extra": { "type": "object" }
+              }
+            }
+          },
+          "observation": {
+            "type": "object",
+            "properties": {
+              "content": { "type": "string" },
+              "extra": { "type": "object" }
+            }
+          },
+          "metrics": {
+            "type": "object",
+            "properties": {
+              "prompt_tokens": { "type": "integer" },
+              "completion_tokens": { "type": "integer" },
+              "cached_tokens": { "type": "integer" },
+              "total_tokens": { "type": "integer" }
+            }
+          },
+          "extra": { "type": "object" }
+        }
+      }
+    },
+    "final_metrics": {
+      "type": "object",
+      "required": ["cumulative_total_tokens", "resolved"],
+      "properties": {
+        "total_duration_seconds": { "type": "number" },
+        "cumulative_prompt_tokens": { "type": "integer" },
+        "cumulative_completion_tokens": { "type": "integer" },
+        "cumulative_total_tokens": { "type": "integer" },
+        "peak_prompt_tokens": { "type": "integer" },
+        "resolved": { "type": "boolean" },
+        "test_exit_code": { "type": "integer" }
+      }
+    }
+  }
+}

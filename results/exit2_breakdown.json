@@ -1,0 +1,407 @@
+{
+  "total_exit2_runs": 36,
+  "mechanism_counts": {
+    "VENV_OR_PATH_SHADOWING": 10,
+    "MISSING_SANDBOX_DEPENDENCY": 10,
+    "SYNTAX_OR_INDENTATION_CORRUPTION": 13,
+    "MISSING_NEW_SOURCE_MODULE": 3
+  },
+  "task_breakdown": {
+    "fastapi_15661": {
+      "VENV_OR_PATH_SHADOWING": 5
+    },
+    "httpx_3672": {
+      "VENV_OR_PATH_SHADOWING": 5
+    },
+    "fastapi_14361": {
+      "MISSING_SANDBOX_DEPENDENCY": 3
+    },
+    "fastapi_14459": {
+      "MISSING_SANDBOX_DEPENDENCY": 2
+    },
+    "fastapi_14099": {
+      "SYNTAX_OR_INDENTATION_CORRUPTION": 3
+    },
+    "fastapi_15588": {
+      "SYNTAX_OR_INDENTATION_CORRUPTION": 1
+    },
+    "fastapi_15589": {
+      "SYNTAX_OR_INDENTATION_CORRUPTION": 1
+    },
+    "fastapi_15280": {
+      "SYNTAX_OR_INDENTATION_CORRUPTION": 3
+    },
+    "fastapi_14077": {
+      "SYNTAX_OR_INDENTATION_CORRUPTION": 1
+    },
+    "fastapi_14371": {
+      "MISSING_SANDBOX_DEPENDENCY": 2
+    },
+    "rich_3894": {
+      "SYNTAX_OR_INDENTATION_CORRUPTION": 1
+    },
+    "fastapi_14455": {
+      "MISSING_SANDBOX_DEPENDENCY": 3
+    },
+    "fastapi_15785": {
+      "SYNTAX_OR_INDENTATION_CORRUPTION": 3
+    },
+    "rich_3930": {
+      "MISSING_NEW_SOURCE_MODULE": 3
+    }
+  },
+  "config_breakdown": {
+    "flat_starter": {
+      "VENV_OR_PATH_SHADOWING": 2,
+      "MISSING_SANDBOX_DEPENDENCY": 3,
+      "SYNTAX_OR_INDENTATION_CORRUPTION": 4,
+      "MISSING_NEW_SOURCE_MODULE": 1
+    },
+    "flat_controlled": {
+      "VENV_OR_PATH_SHADOWING": 2,
+      "MISSING_SANDBOX_DEPENDENCY": 3,
+      "SYNTAX_OR_INDENTATION_CORRUPTION": 3,
+      "MISSING_NEW_SOURCE_MODULE": 1
+    },
+    "sfd": {
+      "VENV_OR_PATH_SHADOWING": 2,
+      "MISSING_SANDBOX_DEPENDENCY": 4,
+      "SYNTAX_OR_INDENTATION_CORRUPTION": 4,
+      "MISSING_NEW_SOURCE_MODULE": 1
+    },
+    "flat_controlled_rerun": {
+      "VENV_OR_PATH_SHADOWING": 2,
+      "SYNTAX_OR_INDENTATION_CORRUPTION": 1
+    },
+    "sfd_rerun": {
+      "VENV_OR_PATH_SHADOWING": 2,
+      "SYNTAX_OR_INDENTATION_CORRUPTION": 1
+    }
+  },
+  "classified_runs": [
+    {
+      "cohort": "Cohort 1 (Canonical)",
+      "instance_id": "fastapi_15661",
+      "repo": "fastapi/fastapi",
+      "config": "flat_starter",
+      "mechanism": "VENV_OR_PATH_SHADOWING",
+      "reason": "Test patch imports from scripts.prepare_release which requires workspace scripts/ on PYTHONPATH",
+      "patch_chars": 539
+    },
+    {
+      "cohort": "Cohort 1 (Canonical)",
+      "instance_id": "fastapi_15661",
+      "repo": "fastapi/fastapi",
+      "config": "flat_controlled",
+      "mechanism": "VENV_OR_PATH_SHADOWING",
+      "reason": "Test patch imports from scripts.prepare_release which requires workspace scripts/ on PYTHONPATH",
+      "patch_chars": 1961
+    },
+    {
+      "cohort": "Cohort 1 (Canonical)",
+      "instance_id": "fastapi_15661",
+      "repo": "fastapi/fastapi",
+      "config": "sfd",
+      "mechanism": "VENV_OR_PATH_SHADOWING",
+      "reason": "Test patch imports from scripts.prepare_release which requires workspace scripts/ on PYTHONPATH",
+      "patch_chars": 660
+    },
+    {
+      "cohort": "Cohort 1 (Canonical)",
+      "instance_id": "httpx_3672",
+      "repo": "encode/httpx",
+      "config": "flat_starter",
+      "mechanism": "VENV_OR_PATH_SHADOWING",
+      "reason": "System dist-packages/httpx shadows workspace src/httpx",
+      "patch_chars": 1764
+    },
+    {
+      "cohort": "Cohort 1 (Canonical)",
+      "instance_id": "httpx_3672",
+      "repo": "encode/httpx",
+      "config": "flat_controlled",
+      "mechanism": "VENV_OR_PATH_SHADOWING",
+      "reason": "System dist-packages/httpx shadows workspace src/httpx",
+      "patch_chars": 1343
+    },
+    {
+      "cohort": "Cohort 1 (Canonical)",
+      "instance_id": "httpx_3672",
+      "repo": "encode/httpx",
+      "config": "sfd",
+      "mechanism": "VENV_OR_PATH_SHADOWING",
+      "reason": "System dist-packages/httpx shadows workspace src/httpx",
+      "patch_chars": 630
+    },
+    {
+      "cohort": "Cohort 2 (Stratified Random)",
+      "instance_id": "fastapi_14361",
+      "repo": "fastapi/fastapi",
+      "config": "flat_starter",
+      "mechanism": "MISSING_SANDBOX_DEPENDENCY",
+      "reason": "Held-out test patch imports external dependencies (inline_snapshot / dirty_equals) missing from offline wheelhouse.",
+      "patch_chars": 598
+    },
+    {
+      "cohort": "Cohort 2 (Stratified Random)",
+      "instance_id": "fastapi_14361",
+      "repo": "fastapi/fastapi",
+      "config": "flat_controlled",
+      "mechanism": "MISSING_SANDBOX_DEPENDENCY",
+      "reason": "Held-out test patch imports external dependencies (inline_snapshot / dirty_equals) missing from offline wheelhouse.",
+      "patch_chars": 530
+    },
+    {
+      "cohort": "Cohort 2 (Stratified Random)",
+      "instance_id": "fastapi_14361",
+      "repo": "fastapi/fastapi",
+      "config": "sfd",
+      "mechanism": "MISSING_SANDBOX_DEPENDENCY",
+      "reason": "Held-out test patch imports external dependencies (inline_snapshot / dirty_equals) missing from offline wheelhouse.",
+      "patch_chars": 383
+    },
+    {
+      "cohort": "Cohort 2 (Stratified Random)",
+      "instance_id": "fastapi_14459",
+      "repo": "fastapi/fastapi",
+      "config": "flat_starter",
+      "mechanism": "MISSING_SANDBOX_DEPENDENCY",
+      "reason": "Held-out test patch imports external dependencies (inline_snapshot / dirty_equals) missing from offline wheelhouse.",
+      "patch_chars": 573
+    },
+    {
+      "cohort": "Cohort 2 (Stratified Random)",
+      "instance_id": "fastapi_14459",
+      "repo": "fastapi/fastapi",
+      "config": "sfd",
+      "mechanism": "MISSING_SANDBOX_DEPENDENCY",
+      "reason": "Held-out test patch imports external dependencies (inline_snapshot / dirty_equals) missing from offline wheelhouse.",
+      "patch_chars": 783
+    },
+    {
+      "cohort": "Cohort 2 (Stratified Random)",
+      "instance_id": "fastapi_14099",
+      "repo": "fastapi/fastapi",
+      "config": "flat_starter",
+      "mechanism": "SYNTAX_OR_INDENTATION_CORRUPTION",
+      "reason": "Detached else block and unindented loop inserted by PatchAgent",
+      "patch_chars": 1108
+    },
+    {
+      "cohort": "Cohort 2 (Stratified Random)",
+      "instance_id": "fastapi_14099",
+      "repo": "fastapi/fastapi",
+      "config": "flat_controlled",
+      "mechanism": "SYNTAX_OR_INDENTATION_CORRUPTION",
+      "reason": "Detached else block and unindented loop inserted by PatchAgent",
+      "patch_chars": 0
+    },
+    {
+      "cohort": "Cohort 2 (Stratified Random)",
+      "instance_id": "fastapi_14099",
+      "repo": "fastapi/fastapi",
+      "config": "sfd",
+      "mechanism": "SYNTAX_OR_INDENTATION_CORRUPTION",
+      "reason": "Detached else block and unindented loop inserted by PatchAgent",
+      "patch_chars": 588
+    },
+    {
+      "cohort": "Cohort 1 Rerun (Reproducibility)",
+      "instance_id": "fastapi_15661",
+      "repo": "fastapi/fastapi",
+      "config": "flat_controlled_rerun",
+      "mechanism": "VENV_OR_PATH_SHADOWING",
+      "reason": "Test patch imports from scripts.prepare_release which requires workspace scripts/ on PYTHONPATH",
+      "patch_chars": 938
+    },
+    {
+      "cohort": "Cohort 1 Rerun (Reproducibility)",
+      "instance_id": "fastapi_15661",
+      "repo": "fastapi/fastapi",
+      "config": "sfd_rerun",
+      "mechanism": "VENV_OR_PATH_SHADOWING",
+      "reason": "Test patch imports from scripts.prepare_release which requires workspace scripts/ on PYTHONPATH",
+      "patch_chars": 655
+    },
+    {
+      "cohort": "Cohort 1 Rerun (Reproducibility)",
+      "instance_id": "fastapi_15588",
+      "repo": "fastapi/fastapi",
+      "config": "sfd_rerun",
+      "mechanism": "SYNTAX_OR_INDENTATION_CORRUPTION",
+      "reason": "Malformed type annotations in fastapi/sse.py causing syntax error",
+      "patch_chars": 864
+    },
+    {
+      "cohort": "Cohort 1 Rerun (Reproducibility)",
+      "instance_id": "fastapi_15589",
+      "repo": "fastapi/fastapi",
+      "config": "flat_controlled_rerun",
+      "mechanism": "SYNTAX_OR_INDENTATION_CORRUPTION",
+      "reason": "Malformed BaseModel extra configuration in query cookie header model",
+      "patch_chars": 23711
+    },
+    {
+      "cohort": "Cohort 1 Rerun (Reproducibility)",
+      "instance_id": "httpx_3672",
+      "repo": "encode/httpx",
+      "config": "flat_controlled_rerun",
+      "mechanism": "VENV_OR_PATH_SHADOWING",
+      "reason": "System dist-packages/httpx shadows workspace src/httpx",
+      "patch_chars": 1564
+    },
+    {
+      "cohort": "Cohort 1 Rerun (Reproducibility)",
+      "instance_id": "httpx_3672",
+      "repo": "encode/httpx",
+      "config": "sfd_rerun",
+      "mechanism": "VENV_OR_PATH_SHADOWING",
+      "reason": "System dist-packages/httpx shadows workspace src/httpx",
+      "patch_chars": 1115
+    },
+    {
+      "cohort": "Cohort 3 (Stratified Disjoint)",
+      "instance_id": "fastapi_15280",
+      "repo": "fastapi/fastapi",
+      "config": "flat_starter",
+      "mechanism": "SYNTAX_OR_INDENTATION_CORRUPTION",
+      "reason": "Unmatched quote / syntax corruption in exception handler patch",
+      "patch_chars": 186459
+    },
+    {
+      "cohort": "Cohort 3 (Stratified Disjoint)",
+      "instance_id": "fastapi_15280",
+      "repo": "fastapi/fastapi",
+      "config": "flat_controlled",
+      "mechanism": "SYNTAX_OR_INDENTATION_CORRUPTION",
+      "reason": "Unmatched quote / syntax corruption in exception handler patch",
+      "patch_chars": 3028
+    },
+    {
+      "cohort": "Cohort 3 (Stratified Disjoint)",
+      "instance_id": "fastapi_15280",
+      "repo": "fastapi/fastapi",
+      "config": "sfd",
+      "mechanism": "SYNTAX_OR_INDENTATION_CORRUPTION",
+      "reason": "Unmatched quote / syntax corruption in exception handler patch",
+      "patch_chars": 86847
+    },
+    {
+      "cohort": "Cohort 3 (Stratified Disjoint)",
+      "instance_id": "fastapi_14077",
+      "repo": "fastapi/fastapi",
+      "config": "flat_starter",
+      "mechanism": "SYNTAX_OR_INDENTATION_CORRUPTION",
+      "reason": "Patch syntax error in flat_starter run",
+      "patch_chars": 1898
+    },
+    {
+      "cohort": "Cohort 3 (Stratified Disjoint)",
+      "instance_id": "fastapi_14371",
+      "repo": "fastapi/fastapi",
+      "config": "flat_controlled",
+      "mechanism": "MISSING_SANDBOX_DEPENDENCY",
+      "reason": "Held-out test patch imports external dependencies (inline_snapshot / dirty_equals) missing from offline wheelhouse.",
+      "patch_chars": 477
+    },
+    {
+      "cohort": "Cohort 3 (Stratified Disjoint)",
+      "instance_id": "fastapi_14371",
+      "repo": "fastapi/fastapi",
+      "config": "sfd",
+      "mechanism": "MISSING_SANDBOX_DEPENDENCY",
+      "reason": "Held-out test patch imports external dependencies (inline_snapshot / dirty_equals) missing from offline wheelhouse.",
+      "patch_chars": 0
+    },
+    {
+      "cohort": "Cohort 3 (Stratified Disjoint)",
+      "instance_id": "rich_3894",
+      "repo": "Textualize/rich",
+      "config": "sfd",
+      "mechanism": "SYNTAX_OR_INDENTATION_CORRUPTION",
+      "reason": "Unindented if-statement inserted into rich/_inspect.py",
+      "patch_chars": 621
+    },
+    {
+      "cohort": "Cohort 4 (Stratified Disjoint)",
+      "instance_id": "fastapi_14455",
+      "repo": "fastapi/fastapi",
+      "config": "flat_starter",
+      "mechanism": "MISSING_SANDBOX_DEPENDENCY",
+      "reason": "Held-out test patch imports external dependencies (inline_snapshot / dirty_equals) missing from offline wheelhouse.",
+      "patch_chars": 490
+    },
+    {
+      "cohort": "Cohort 4 (Stratified Disjoint)",
+      "instance_id": "fastapi_14455",
+      "repo": "fastapi/fastapi",
+      "config": "flat_controlled",
+      "mechanism": "MISSING_SANDBOX_DEPENDENCY",
+      "reason": "Held-out test patch imports external dependencies (inline_snapshot / dirty_equals) missing from offline wheelhouse.",
+      "patch_chars": 490
+    },
+    {
+      "cohort": "Cohort 4 (Stratified Disjoint)",
+      "instance_id": "fastapi_14455",
+      "repo": "fastapi/fastapi",
+      "config": "sfd",
+      "mechanism": "MISSING_SANDBOX_DEPENDENCY",
+      "reason": "Held-out test patch imports external dependencies (inline_snapshot / dirty_equals) missing from offline wheelhouse.",
+      "patch_chars": 592
+    },
+    {
+      "cohort": "Cohort 4 (Stratified Disjoint)",
+      "instance_id": "fastapi_15785",
+      "repo": "fastapi/fastapi",
+      "config": "flat_starter",
+      "mechanism": "SYNTAX_OR_INDENTATION_CORRUPTION",
+      "reason": "Syntax error in security OpenAPI schema patch",
+      "patch_chars": 0
+    },
+    {
+      "cohort": "Cohort 4 (Stratified Disjoint)",
+      "instance_id": "fastapi_15785",
+      "repo": "fastapi/fastapi",
+      "config": "flat_controlled",
+      "mechanism": "SYNTAX_OR_INDENTATION_CORRUPTION",
+      "reason": "Syntax error in security OpenAPI schema patch",
+      "patch_chars": 887
+    },
+    {
+      "cohort": "Cohort 4 (Stratified Disjoint)",
+      "instance_id": "fastapi_15785",
+      "repo": "fastapi/fastapi",
+      "config": "sfd",
+      "mechanism": "SYNTAX_OR_INDENTATION_CORRUPTION",
+      "reason": "Syntax error in security OpenAPI schema patch",
+      "patch_chars": 788
+    },
+    {
+      "cohort": "Cohort 4 (Stratified Disjoint)",
+      "instance_id": "rich_3930",
+      "repo": "Textualize/rich",
+      "config": "flat_starter",
+      "mechanism": "MISSING_NEW_SOURCE_MODULE",
+      "reason": "Issue requires creating rich/_unicode_data.py; absent module causes ModuleNotFoundError during test collection",
+      "patch_chars": 10573
+    },
+    {
+      "cohort": "Cohort 4 (Stratified Disjoint)",
+      "instance_id": "rich_3930",
+      "repo": "Textualize/rich",
+      "config": "flat_controlled",
+      "mechanism": "MISSING_NEW_SOURCE_MODULE",
+      "reason": "Issue requires creating rich/_unicode_data.py; absent module causes ModuleNotFoundError during test collection",
+      "patch_chars": 3435
+    },
+    {
+      "cohort": "Cohort 4 (Stratified Disjoint)",
+      "instance_id": "rich_3930",
+      "repo": "Textualize/rich",
+      "config": "sfd",
+      "mechanism": "MISSING_NEW_SOURCE_MODULE",
+      "reason": "Issue requires creating rich/_unicode_data.py; absent module causes ModuleNotFoundError during test collection",
+      "patch_chars": 0
+    }
+  ]
+}

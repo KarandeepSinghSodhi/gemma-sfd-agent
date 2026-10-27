@@ -1,0 +1,47 @@
+{
+  "total_runs": 112,
+  "error_counts": {
+    "CommandError: NonZeroExit": 100,
+    "FileEditError: StringNotFound": 64,
+    "FileEditError: Other": 36,
+    "FileReadError: PathNotFound": 4
+  },
+  "total_tool_errors": 204,
+  "mean_errors_per_run": 1.82,
+  "error_by_config": {
+    "flat_controlled": {
+      "CommandError: NonZeroExit": 31,
+      "FileEditError: Other": 9,
+      "FileReadError: PathNotFound": 1,
+      "FileEditError: StringNotFound": 10
+    },
+    "sfd": {
+      "FileEditError: StringNotFound": 24,
+      "CommandError: NonZeroExit": 30,
+      "FileEditError: Other": 6,
+      "FileReadError: PathNotFound": 2
+    },
+    "flat_starter": {
+      "FileEditError: StringNotFound": 14,
+      "FileEditError: Other": 14,
+      "CommandError: NonZeroExit": 20,
+      "FileReadError: PathNotFound": 1
+    },
+    "flat_controlled_rerun": {
+      "CommandError: NonZeroExit": 11,
+      "FileEditError: Other": 6,
+      "FileEditError: StringNotFound": 3
+    },
+    "sfd_rerun": {
+      "FileEditError: StringNotFound": 13,
+      "CommandError: NonZeroExit": 8,
+      "FileEditError: Other": 1
+    }
+  },
+  "runs_affected_pct": {
+    "CommandError: NonZeroExit": 63.4,
+    "FileEditError: StringNotFound": 25.0,
+    "FileEditError: Other": 12.5,
+    "FileReadError: PathNotFound": 3.6
+  }
+}

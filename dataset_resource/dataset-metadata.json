@@ -3,9 +3,9 @@
   "id": "karandeepsinghsodhi/atif-gemma-swe-agent-traces",
   "licenses": [
     {
-      "name": "CC0-1.0"
+      "name": "CC-BY-4.0"
     }
   ],
-  "description": "ATIF-Gemma is an open empirical diagnostic corpus containing 64 full-fidelity ATIF v1.7 execution traces of small open-weight coding agents (gemma-4-e4b-it-qat-w4a16-ct) across 16 paired SWE-bench tasks on 4x NVIDIA L4 GPUs. It includes ground-truth reference patches, test patches, prompt token growth logs, tool error counts, and Phase 2 exit code classifications (exit codes -1, 0, 1, 2).",
+  "description": "ATIF-Gemma is an open empirical diagnostic corpus containing 112 full-fidelity ATIF v1.7 execution traces of small open-weight coding agents (gemma-4-e4b-it-qat-w4a16-ct) across 32 paired SWE-bench tasks on 4x NVIDIA L4 GPUs. It includes ground-truth reference patches, test patches, prompt token growth logs, tool error counts, and Phase 2 exit code classifications (exit codes -1, 0, 1, 2, 124).",
   "isPrivate": false
 }

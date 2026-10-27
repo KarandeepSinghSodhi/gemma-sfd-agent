@@ -1,0 +1,157 @@
+{
+  "total_traces": 112,
+  "total_unique_tasks": 32,
+  "total_llm_calls": 1518,
+  "total_tool_calls": 1328,
+  "total_tokens": 11706178,
+  "total_prompt_tokens": 11026487,
+  "total_completion_tokens": 679691,
+  "exit_code_counts": {
+    "2": 36,
+    "1": 56,
+    "-1": 9,
+    "0": 8,
+    "124": 3
+  },
+  "table1": [
+    {
+      "Corpus Partition": "Cohort 1 (Canonical Paired)",
+      "Traces": 24,
+      "Tasks": 8,
+      "LLM Calls": 304,
+      "Tool Calls": 265,
+      "Total Tokens": 2270463,
+      "Prompt Tokens": 2135291,
+      "Completion Tokens": 135172
+    },
+    {
+      "Corpus Partition": "Cohort 2 (Stratified Random)",
+      "Traces": 24,
+      "Tasks": 8,
+      "LLM Calls": 339,
+      "Tool Calls": 298,
+      "Total Tokens": 2720322,
+      "Prompt Tokens": 2562065,
+      "Completion Tokens": 158257
+    },
+    {
+      "Corpus Partition": "Cohort 1 Rerun (Reproducibility)",
+      "Traces": 16,
+      "Tasks": 8,
+      "LLM Calls": 204,
+      "Tool Calls": 172,
+      "Total Tokens": 1387758,
+      "Prompt Tokens": 1286766,
+      "Completion Tokens": 100992
+    },
+    {
+      "Corpus Partition": "Cohort 3 (Stratified Disjoint)",
+      "Traces": 24,
+      "Tasks": 8,
+      "LLM Calls": 349,
+      "Tool Calls": 309,
+      "Total Tokens": 2771960,
+      "Prompt Tokens": 2628353,
+      "Completion Tokens": 143607
+    },
+    {
+      "Corpus Partition": "Cohort 4 (Stratified Disjoint)",
+      "Traces": 24,
+      "Tasks": 8,
+      "LLM Calls": 322,
+      "Tool Calls": 284,
+      "Total Tokens": 2555675,
+      "Prompt Tokens": 2414012,
+      "Completion Tokens": 141663
+    }
+  ],
+  "table2": [
+    {
+      "Category": "Resolved",
+      "Exit Code": 0,
+      "Count": 8,
+      "Percentage (%)": 7.1,
+      "Empirical Mechanism": "Patch passes all Phase 2 held-out unit tests with zero regressions."
+    },
+    {
+      "Category": "Assertion Failure",
+      "Exit Code": 1,
+      "Count": 56,
+      "Percentage (%)": 50.0,
+      "Empirical Mechanism": "Patch syntactically valid and executes under pytest, but fails assertions due to wrong logic or incomplete multi-file edits."
+    },
+    {
+      "Category": "Collection Error",
+      "Exit Code": 2,
+      "Count": 36,
+      "Percentage (%)": 32.1,
+      "Empirical Mechanism": "Pytest crashes during test collection prior to assertion evaluation (ModuleNotFoundError, SyntaxError, venv shadowing)."
+    },
+    {
+      "Category": "Budget / Timeout",
+      "Exit Code": -1,
+      "Count": 9,
+      "Percentage (%)": 8.0,
+      "Empirical Mechanism": "Agent exhausted 15 tool calls or 2.5 min wall time; 0 patch characters submitted."
+    },
+    {
+      "Category": "Verification Timeout",
+      "Exit Code": 124,
+      "Count": 3,
+      "Percentage (%)": 2.7,
+      "Empirical Mechanism": "Verification harness timed out (120s limit) due to daemon process or infinite loop in test runner."
+    }
+  ],
+  "table3": [
+    {
+      "Configuration": "flat_starter",
+      "Runs": 32,
+      "Resolved": "2/32 (6.2%)",
+      "Resolved Count": 2,
+      "Mean Peak Pt": 13359.7,
+      "Mean Prompt Tokens": 105817.6,
+      "Mean Total Tokens": 111611.6,
+      "Mean Duration (s)": 94.2
+    },
+    {
+      "Configuration": "flat_controlled",
+      "Runs": 32,
+      "Resolved": "2/32 (6.2%)",
+      "Resolved Count": 2,
+      "Mean Peak Pt": 13959.0,
+      "Mean Prompt Tokens": 118173.0,
+      "Mean Total Tokens": 123812.7,
+      "Mean Duration (s)": 90.8
+    },
+    {
+      "Configuration": "sfd",
+      "Runs": 32,
+      "Resolved": "2/32 (6.2%)",
+      "Resolved Count": 2,
+      "Mean Peak Pt": 10907.5,
+      "Mean Prompt Tokens": 80375.7,
+      "Mean Total Tokens": 87026.3,
+      "Mean Duration (s)": 86.6
+    },
+    {
+      "Configuration": "flat_controlled_rerun",
+      "Runs": 8,
+      "Resolved": "1/8 (12.5%)",
+      "Resolved Count": 1,
+      "Mean Peak Pt": 12557.5,
+      "Mean Prompt Tokens": 93135.6,
+      "Mean Total Tokens": 98712.6,
+      "Mean Duration (s)": 107.4
+    },
+    {
+      "Configuration": "sfd_rerun",
+      "Runs": 8,
+      "Resolved": "1/8 (12.5%)",
+      "Resolved Count": 1,
+      "Mean Peak Pt": 9306.4,
+      "Mean Prompt Tokens": 67710.1,
+      "Mean Total Tokens": 74757.1,
+      "Mean Duration (s)": 96.4
+    }
+  ]
+}

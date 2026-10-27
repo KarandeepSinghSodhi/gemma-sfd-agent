@@ -1,0 +1,6 @@
+Configuration,Runs,Resolved,Resolved Count,Mean Peak Pt,Mean Prompt Tokens,Mean Total Tokens,Mean Duration (s)
+flat_starter,32,2/32 (6.2%),2,13359.7,105817.6,111611.6,94.2
+flat_controlled,32,2/32 (6.2%),2,13959.0,118173.0,123812.7,90.8
+sfd,32,2/32 (6.2%),2,10907.5,80375.7,87026.3,86.6
+flat_controlled_rerun,8,1/8 (12.5%),1,12557.5,93135.6,98712.6,107.4
+sfd_rerun,8,1/8 (12.5%),1,9306.4,67710.1,74757.1,96.4

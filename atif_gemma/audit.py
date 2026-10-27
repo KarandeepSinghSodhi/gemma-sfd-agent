@@ -64,7 +64,7 @@ def parse_trace_file(trace_path: Union[str, Path]) -> Dict[str, Any]:
 def audit_corpus(traces_dir: Union[str, Path]) -> Dict[str, Any]:
     """Scan a directory of ATIF v1.7 trace files and compute corpus-wide summary statistics."""
     root = Path(traces_dir)
-    trace_files = list(root.rglob("trace_*.json"))
+    trace_files = [f for f in root.rglob("*.json") if not f.name.endswith(("-metadata.json", "schema.json"))]
     
     parsed = [parse_trace_file(f) for f in trace_files]
     

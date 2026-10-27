@@ -1,0 +1,30 @@
+{
+  "primary_sfd_n32": {
+    "n_measured": 32,
+    "mean_reset_pct": 81.95,
+    "median_reset_pct": 87.43,
+    "std_reset_pct": 11.2,
+    "q25_reset_pct": 75.72,
+    "q75_reset_pct": 89.46,
+    "min_reset_pct": 44.95,
+    "max_reset_pct": 92.49,
+    "mean_triage_peak": 10473.9,
+    "median_triage_peak": 10374.5,
+    "mean_patch_entry": 1536.9,
+    "median_patch_entry": 1444.5
+  },
+  "all_sfd_n40": {
+    "n_measured": 40,
+    "mean_reset_pct": 80.72,
+    "median_reset_pct": 86.81,
+    "std_reset_pct": 11.73,
+    "q25_reset_pct": 74.44,
+    "q75_reset_pct": 89.24,
+    "min_reset_pct": 44.95,
+    "max_reset_pct": 92.49,
+    "mean_triage_peak": 10050.9,
+    "median_triage_peak": 9863.0,
+    "mean_patch_entry": 1563.1,
+    "median_patch_entry": 1503.0
+  }
+}

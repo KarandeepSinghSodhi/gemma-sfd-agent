@@ -21,7 +21,7 @@ All 112 execution traces were generated on Kaggle's 4x NVIDIA L4 GPU environment
 ## Summary Statistics
 - **Total Traces**: 112
 - **Total LLM Calls**: 1,518
-- **Total Tool Invocations**: 1,182
+- **Total Tool Invocations**: 1,328
 - **Total Logged Tokens**: 11,706,178 (Prompt: 11,026,487; Completion: 679,691)
 - **Total 4x L4 GPU Wall-Clock Time**: 10,319.4 seconds (2.87 hours)
 - **Phase 2 Exit Code Distribution**:
@@ -37,6 +37,9 @@ All 112 execution traces were generated on Kaggle's 4x NVIDIA L4 GPU environment
 - `traces/`: 112 individual ATIF v1.7 JSON trace files detailing every prompt, thought block, tool call, and observation.
 - `corpus_metadata.csv`: Structured index of all 112 traces with task IDs, repositories, configs, durations, tokens, and exit codes.
 - `tasks_reference.jsonl`: Ground-truth reference patches, problem statements, and test patches for all evaluated SWE-bench instances.
+- `datasheet.md`: Standardized dataset documentation following Gebru et al. (2021).
+- `atif_schema_v1_7.json`: Official JSON Schema definition for ATIF v1.7.
+- `checksums.sha256`: SHA-256 cryptographic hashes and byte counts for all 118 files.
 
 ---
 
@@ -54,8 +57,9 @@ python -m atif_gemma.cli playbook
 
 ---
 
-## Citation & License
-This dataset is released under the Creative Commons Attribution 4.0 International (CC BY 4.0) license.
+## Attribution & License
+- **Dataset License:** Creative Commons Attribution 4.0 International (CC BY 4.0).
+- **SWE-bench Attribution:** Evaluated instances, problem descriptions, and reference test patches originate from SWE-bench (Jimenez et al., ICLR 2024), licensed under MIT/Apache.
 ```bibtex
 @misc{sodhi2026atifgemma,
   author = {Sodhi, Karandeep Singh},

@@ -1,0 +1,7 @@
+Corpus Partition,Traces,Tasks,LLM Calls,Tool Calls,Total Tokens,Prompt Tokens,Completion Tokens
+Cohort 1 (Canonical Paired),24,8,304,265,2270463,2135291,135172
+Cohort 2 (Stratified Random),24,8,339,298,2720322,2562065,158257
+Cohort 1 Rerun (Reproducibility),16,8,204,172,1387758,1286766,100992
+Cohort 3 (Stratified Disjoint),24,8,349,309,2771960,2628353,143607
+Cohort 4 (Stratified Disjoint),24,8,322,284,2555675,2414012,141663
+Total ATIF-Gemma Corpus,112,32,1518,1328,11706178,11026487,679691

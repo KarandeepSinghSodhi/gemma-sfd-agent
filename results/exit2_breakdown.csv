@@ -1,0 +1,37 @@
+cohort,instance_id,repo,config,mechanism,reason,patch_chars
+Cohort 1 (Canonical),fastapi_15661,fastapi/fastapi,flat_starter,VENV_OR_PATH_SHADOWING,Test patch imports from scripts.prepare_release which requires workspace scripts/ on PYTHONPATH,539
+Cohort 1 (Canonical),fastapi_15661,fastapi/fastapi,flat_controlled,VENV_OR_PATH_SHADOWING,Test patch imports from scripts.prepare_release which requires workspace scripts/ on PYTHONPATH,1961
+Cohort 1 (Canonical),fastapi_15661,fastapi/fastapi,sfd,VENV_OR_PATH_SHADOWING,Test patch imports from scripts.prepare_release which requires workspace scripts/ on PYTHONPATH,660
+Cohort 1 (Canonical),httpx_3672,encode/httpx,flat_starter,VENV_OR_PATH_SHADOWING,System dist-packages/httpx shadows workspace src/httpx,1764
+Cohort 1 (Canonical),httpx_3672,encode/httpx,flat_controlled,VENV_OR_PATH_SHADOWING,System dist-packages/httpx shadows workspace src/httpx,1343
+Cohort 1 (Canonical),httpx_3672,encode/httpx,sfd,VENV_OR_PATH_SHADOWING,System dist-packages/httpx shadows workspace src/httpx,630
+Cohort 2 (Stratified Random),fastapi_14361,fastapi/fastapi,flat_starter,MISSING_SANDBOX_DEPENDENCY,Held-out test patch imports external dependencies (inline_snapshot / dirty_equals) missing from offline wheelhouse.,598
+Cohort 2 (Stratified Random),fastapi_14361,fastapi/fastapi,flat_controlled,MISSING_SANDBOX_DEPENDENCY,Held-out test patch imports external dependencies (inline_snapshot / dirty_equals) missing from offline wheelhouse.,530
+Cohort 2 (Stratified Random),fastapi_14361,fastapi/fastapi,sfd,MISSING_SANDBOX_DEPENDENCY,Held-out test patch imports external dependencies (inline_snapshot / dirty_equals) missing from offline wheelhouse.,383
+Cohort 2 (Stratified Random),fastapi_14459,fastapi/fastapi,flat_starter,MISSING_SANDBOX_DEPENDENCY,Held-out test patch imports external dependencies (inline_snapshot / dirty_equals) missing from offline wheelhouse.,573
+Cohort 2 (Stratified Random),fastapi_14459,fastapi/fastapi,sfd,MISSING_SANDBOX_DEPENDENCY,Held-out test patch imports external dependencies (inline_snapshot / dirty_equals) missing from offline wheelhouse.,783
+Cohort 2 (Stratified Random),fastapi_14099,fastapi/fastapi,flat_starter,SYNTAX_OR_INDENTATION_CORRUPTION,Detached else block and unindented loop inserted by PatchAgent,1108
+Cohort 2 (Stratified Random),fastapi_14099,fastapi/fastapi,flat_controlled,SYNTAX_OR_INDENTATION_CORRUPTION,Detached else block and unindented loop inserted by PatchAgent,0
+Cohort 2 (Stratified Random),fastapi_14099,fastapi/fastapi,sfd,SYNTAX_OR_INDENTATION_CORRUPTION,Detached else block and unindented loop inserted by PatchAgent,588
+Cohort 1 Rerun (Reproducibility),fastapi_15661,fastapi/fastapi,flat_controlled_rerun,VENV_OR_PATH_SHADOWING,Test patch imports from scripts.prepare_release which requires workspace scripts/ on PYTHONPATH,938
+Cohort 1 Rerun (Reproducibility),fastapi_15661,fastapi/fastapi,sfd_rerun,VENV_OR_PATH_SHADOWING,Test patch imports from scripts.prepare_release which requires workspace scripts/ on PYTHONPATH,655
+Cohort 1 Rerun (Reproducibility),fastapi_15588,fastapi/fastapi,sfd_rerun,SYNTAX_OR_INDENTATION_CORRUPTION,Malformed type annotations in fastapi/sse.py causing syntax error,864
+Cohort 1 Rerun (Reproducibility),fastapi_15589,fastapi/fastapi,flat_controlled_rerun,SYNTAX_OR_INDENTATION_CORRUPTION,Malformed BaseModel extra configuration in query cookie header model,23711
+Cohort 1 Rerun (Reproducibility),httpx_3672,encode/httpx,flat_controlled_rerun,VENV_OR_PATH_SHADOWING,System dist-packages/httpx shadows workspace src/httpx,1564
+Cohort 1 Rerun (Reproducibility),httpx_3672,encode/httpx,sfd_rerun,VENV_OR_PATH_SHADOWING,System dist-packages/httpx shadows workspace src/httpx,1115
+Cohort 3 (Stratified Disjoint),fastapi_15280,fastapi/fastapi,flat_starter,SYNTAX_OR_INDENTATION_CORRUPTION,Unmatched quote / syntax corruption in exception handler patch,186459
+Cohort 3 (Stratified Disjoint),fastapi_15280,fastapi/fastapi,flat_controlled,SYNTAX_OR_INDENTATION_CORRUPTION,Unmatched quote / syntax corruption in exception handler patch,3028
+Cohort 3 (Stratified Disjoint),fastapi_15280,fastapi/fastapi,sfd,SYNTAX_OR_INDENTATION_CORRUPTION,Unmatched quote / syntax corruption in exception handler patch,86847
+Cohort 3 (Stratified Disjoint),fastapi_14077,fastapi/fastapi,flat_starter,SYNTAX_OR_INDENTATION_CORRUPTION,Patch syntax error in flat_starter run,1898
+Cohort 3 (Stratified Disjoint),fastapi_14371,fastapi/fastapi,flat_controlled,MISSING_SANDBOX_DEPENDENCY,Held-out test patch imports external dependencies (inline_snapshot / dirty_equals) missing from offline wheelhouse.,477
+Cohort 3 (Stratified Disjoint),fastapi_14371,fastapi/fastapi,sfd,MISSING_SANDBOX_DEPENDENCY,Held-out test patch imports external dependencies (inline_snapshot / dirty_equals) missing from offline wheelhouse.,0
+Cohort 3 (Stratified Disjoint),rich_3894,Textualize/rich,sfd,SYNTAX_OR_INDENTATION_CORRUPTION,Unindented if-statement inserted into rich/_inspect.py,621
+Cohort 4 (Stratified Disjoint),fastapi_14455,fastapi/fastapi,flat_starter,MISSING_SANDBOX_DEPENDENCY,Held-out test patch imports external dependencies (inline_snapshot / dirty_equals) missing from offline wheelhouse.,490
+Cohort 4 (Stratified Disjoint),fastapi_14455,fastapi/fastapi,flat_controlled,MISSING_SANDBOX_DEPENDENCY,Held-out test patch imports external dependencies (inline_snapshot / dirty_equals) missing from offline wheelhouse.,490
+Cohort 4 (Stratified Disjoint),fastapi_14455,fastapi/fastapi,sfd,MISSING_SANDBOX_DEPENDENCY,Held-out test patch imports external dependencies (inline_snapshot / dirty_equals) missing from offline wheelhouse.,592
+Cohort 4 (Stratified Disjoint),fastapi_15785,fastapi/fastapi,flat_starter,SYNTAX_OR_INDENTATION_CORRUPTION,Syntax error in security OpenAPI schema patch,0
+Cohort 4 (Stratified Disjoint),fastapi_15785,fastapi/fastapi,flat_controlled,SYNTAX_OR_INDENTATION_CORRUPTION,Syntax error in security OpenAPI schema patch,887
+Cohort 4 (Stratified Disjoint),fastapi_15785,fastapi/fastapi,sfd,SYNTAX_OR_INDENTATION_CORRUPTION,Syntax error in security OpenAPI schema patch,788
+Cohort 4 (Stratified Disjoint),rich_3930,Textualize/rich,flat_starter,MISSING_NEW_SOURCE_MODULE,Issue requires creating rich/_unicode_data.py; absent module causes ModuleNotFoundError during test collection,10573
+Cohort 4 (Stratified Disjoint),rich_3930,Textualize/rich,flat_controlled,MISSING_NEW_SOURCE_MODULE,Issue requires creating rich/_unicode_data.py; absent module causes ModuleNotFoundError during test collection,3435
+Cohort 4 (Stratified Disjoint),rich_3930,Textualize/rich,sfd,MISSING_NEW_SOURCE_MODULE,Issue requires creating rich/_unicode_data.py; absent module causes ModuleNotFoundError during test collection,0

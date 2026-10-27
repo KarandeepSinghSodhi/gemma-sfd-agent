@@ -1,0 +1,6 @@
+Category,Exit Code,Count,Percentage (%),Empirical Mechanism
+Resolved,0,8,7.1,Patch passes all Phase 2 held-out unit tests with zero regressions.
+Assertion Failure,1,56,50.0,"Patch syntactically valid and executes under pytest, but fails assertions due to wrong logic or incomplete multi-file edits."
+Collection Error,2,36,32.1,"Pytest crashes during test collection prior to assertion evaluation (ModuleNotFoundError, SyntaxError, venv shadowing)."
+Budget / Timeout,-1,9,8.0,Agent exhausted 15 tool calls or 2.5 min wall time; 0 patch characters submitted.
+Verification Timeout,124,3,2.7,Verification harness timed out (120s limit) due to daemon process or infinite loop in test runner.

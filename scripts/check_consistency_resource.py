@@ -32,10 +32,10 @@ assert data["total_llm_calls"] == 1518, f"Expected 1518 LLM calls, found {data['
 assert "1,518" in typ_text and "1,518" in md_text, "LLM calls count missing"
 print("[PASS] Total LLM calls = 1,518 confirmed.")
 
-# Check 4: Total tool calls (1,182)
-assert data["total_tool_calls"] == 1182, f"Expected 1182 tool calls, found {data['total_tool_calls']}"
-assert "1,182" in typ_text and "1,182" in md_text, "Tool calls count missing"
-print("[PASS] Total tool calls = 1,182 confirmed.")
+# Check 4: Total tool calls (1,328)
+assert data["total_tool_calls"] == 1328, f"Expected 1328 tool calls, found {data['total_tool_calls']}"
+assert "1,328" in typ_text and "1,328" in md_text, "Tool calls count missing"
+print("[PASS] Total tool calls = 1,328 confirmed.")
 
 # Check 5: Exit code counts
 ec = data["exit_code_counts"]

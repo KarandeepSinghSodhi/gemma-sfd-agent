@@ -3,7 +3,7 @@
   "version": "1.7.0",
   "total_traces": 112,
   "total_llm_calls": 1518,
-  "total_tool_calls": 1182,
+  "total_tool_calls": 1328,
   "total_tokens": 11706178,
   "total_prompt_tokens": 11026487,
   "total_completion_tokens": 679691,

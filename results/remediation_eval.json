@@ -1,0 +1,302 @@
+{
+  "disclaimer": "POST-HOC RE-EVALUATION ONLY. These evaluations assess the diagnostic efficacy of proposed engineering remediations on stored artifacts. They do NOT alter the official Phase 2 competition evaluation scores reported in Tables 1-3.",
+  "py_compile_gate_summary": {
+    "total_syntax_runs": 13,
+    "pre_submission_verification_in_original_agents": 0,
+    "interception_rate_pct": 100.0,
+    "honest_outcome": "Intercepting broken syntax prevents collection crash (Exit 2), but does not resolve the underlying task without additional agent repair turns."
+  },
+  "pythonpath_remediation_summary": {
+    "total_shadowed_runs": 10,
+    "mechanism_confirmed": true,
+    "honest_outcome": "Resolves collection error by prioritizing repository source files over system site-packages. Full execution depends on the official Linux container."
+  },
+  "py_compile_runs": [
+    {
+      "instance_id": "fastapi_14099",
+      "config": "flat_starter",
+      "trace_file": "cohort_flat_starter_fastapi_14099.json",
+      "official_exit_code": 2,
+      "modified_files": [
+        "fastapi/routing.py"
+      ],
+      "executed_pre_submission_verification": false,
+      "post_hoc_py_compile_interception": true,
+      "post_hoc_resolution": "Unresolved (0/1; gate prevents collection crash, but requires additional turn to repair)"
+    },
+    {
+      "instance_id": "fastapi_14099",
+      "config": "flat_controlled",
+      "trace_file": "cohort_flat_controlled_fastapi_14099.json",
+      "official_exit_code": 2,
+      "modified_files": [
+        "fastapi/routing.py"
+      ],
+      "executed_pre_submission_verification": true,
+      "post_hoc_py_compile_interception": true,
+      "post_hoc_resolution": "Unresolved (0/1; gate prevents collection crash, but requires additional turn to repair)"
+    },
+    {
+      "instance_id": "fastapi_14099",
+      "config": "sfd",
+      "trace_file": "cohort_sfd_fastapi_14099.json",
+      "official_exit_code": 2,
+      "modified_files": [
+        "fastapi/routing.py"
+      ],
+      "executed_pre_submission_verification": true,
+      "post_hoc_py_compile_interception": true,
+      "post_hoc_resolution": "Unresolved (0/1; gate prevents collection crash, but requires additional turn to repair)"
+    },
+    {
+      "instance_id": "fastapi_15588",
+      "config": "sfd_rerun",
+      "trace_file": "cohort_rerun_sfd_rerun_fastapi_15588.json",
+      "official_exit_code": 2,
+      "modified_files": [
+        "fastapi/sse.py"
+      ],
+      "executed_pre_submission_verification": true,
+      "post_hoc_py_compile_interception": true,
+      "post_hoc_resolution": "Unresolved (0/1; gate prevents collection crash, but requires additional turn to repair)"
+    },
+    {
+      "instance_id": "fastapi_15589",
+      "config": "flat_controlled_rerun",
+      "trace_file": "cohort_rerun_flat_controlled_rerun_fastapi_15589.json",
+      "official_exit_code": 2,
+      "modified_files": [
+        "fastapi/params.py"
+      ],
+      "executed_pre_submission_verification": true,
+      "post_hoc_py_compile_interception": true,
+      "post_hoc_resolution": "Unresolved (0/1; gate prevents collection crash, but requires additional turn to repair)"
+    },
+    {
+      "instance_id": "fastapi_15280",
+      "config": "flat_starter",
+      "trace_file": "cohort_flat_starter_fastapi_15280.json",
+      "official_exit_code": 2,
+      "modified_files": [
+        "fastapi/applications.py"
+      ],
+      "executed_pre_submission_verification": true,
+      "post_hoc_py_compile_interception": true,
+      "post_hoc_resolution": "Unresolved (0/1; gate prevents collection crash, but requires additional turn to repair)"
+    },
+    {
+      "instance_id": "fastapi_15280",
+      "config": "flat_controlled",
+      "trace_file": "cohort_flat_controlled_fastapi_15280.json",
+      "official_exit_code": 2,
+      "modified_files": [
+        "/tmp/repro.py",
+        "/workspace/tmp/repro.py",
+        "fastapi/applications.py"
+      ],
+      "executed_pre_submission_verification": false,
+      "post_hoc_py_compile_interception": true,
+      "post_hoc_resolution": "Unresolved (0/1; gate prevents collection crash, but requires additional turn to repair)"
+    },
+    {
+      "instance_id": "fastapi_15280",
+      "config": "sfd",
+      "trace_file": "cohort_sfd_fastapi_15280.json",
+      "official_exit_code": 2,
+      "modified_files": [
+        "fastapi/applications.py"
+      ],
+      "executed_pre_submission_verification": true,
+      "post_hoc_py_compile_interception": true,
+      "post_hoc_resolution": "Unresolved (0/1; gate prevents collection crash, but requires additional turn to repair)"
+    },
+    {
+      "instance_id": "fastapi_14077",
+      "config": "flat_starter",
+      "trace_file": "cohort_flat_starter_fastapi_14077.json",
+      "official_exit_code": 2,
+      "modified_files": [
+        "fastapi/openapi/utils.py",
+        "fastapi/exception_handlers.py",
+        "pyproject.toml"
+      ],
+      "executed_pre_submission_verification": true,
+      "post_hoc_py_compile_interception": true,
+      "post_hoc_resolution": "Unresolved (0/1; gate prevents collection crash, but requires additional turn to repair)"
+    },
+    {
+      "instance_id": "rich_3894",
+      "config": "sfd",
+      "trace_file": "cohort_sfd_rich_3894.json",
+      "official_exit_code": 2,
+      "modified_files": [
+        "rich/_inspect.py"
+      ],
+      "executed_pre_submission_verification": true,
+      "post_hoc_py_compile_interception": true,
+      "post_hoc_resolution": "Unresolved (0/1; gate prevents collection crash, but requires additional turn to repair)"
+    },
+    {
+      "instance_id": "fastapi_15785",
+      "config": "flat_starter",
+      "trace_file": "cohort_flat_starter_fastapi_15785.json",
+      "official_exit_code": 2,
+      "modified_files": [
+        "fastapi/routing.py"
+      ],
+      "executed_pre_submission_verification": false,
+      "post_hoc_py_compile_interception": true,
+      "post_hoc_resolution": "Unresolved (0/1; gate prevents collection crash, but requires additional turn to repair)"
+    },
+    {
+      "instance_id": "fastapi_15785",
+      "config": "flat_controlled",
+      "trace_file": "cohort_flat_controlled_fastapi_15785.json",
+      "official_exit_code": 2,
+      "modified_files": [
+        "fastapi/routing.py"
+      ],
+      "executed_pre_submission_verification": true,
+      "post_hoc_py_compile_interception": true,
+      "post_hoc_resolution": "Unresolved (0/1; gate prevents collection crash, but requires additional turn to repair)"
+    },
+    {
+      "instance_id": "fastapi_15785",
+      "config": "sfd",
+      "trace_file": "cohort_sfd_fastapi_15785.json",
+      "official_exit_code": 2,
+      "modified_files": [
+        "fastapi/routing.py"
+      ],
+      "executed_pre_submission_verification": true,
+      "post_hoc_py_compile_interception": true,
+      "post_hoc_resolution": "Unresolved (0/1; gate prevents collection crash, but requires additional turn to repair)"
+    }
+  ],
+  "pythonpath_runs": [
+    {
+      "instance_id": "fastapi_15661",
+      "config": "flat_starter",
+      "trace_file": "cohort_flat_starter_fastapi_15661.json",
+      "official_exit_code": 2,
+      "edited_files": [
+        "scripts/deploy_docs_status.py"
+      ],
+      "issue_type": "Missing /workspace/scripts on PYTHONPATH",
+      "remediation": "PYTHONPATH=/workspace/scripts:/workspace pytest ...",
+      "post_hoc_exit_code_change": "Eliminates collection crash (Exit 2). Semantic test outcome requires execution in Linux swegemma sandbox."
+    },
+    {
+      "instance_id": "fastapi_15661",
+      "config": "flat_controlled",
+      "trace_file": "cohort_flat_controlled_fastapi_15661.json",
+      "official_exit_code": 2,
+      "edited_files": [
+        "scripts/release.sh"
+      ],
+      "issue_type": "Missing /workspace/scripts on PYTHONPATH",
+      "remediation": "PYTHONPATH=/workspace/scripts:/workspace pytest ...",
+      "post_hoc_exit_code_change": "Eliminates collection crash (Exit 2). Semantic test outcome requires execution in Linux swegemma sandbox."
+    },
+    {
+      "instance_id": "fastapi_15661",
+      "config": "sfd",
+      "trace_file": "cohort_sfd_fastapi_15661.json",
+      "official_exit_code": 2,
+      "edited_files": [
+        "scripts/add_latest_release_date.py"
+      ],
+      "issue_type": "Missing /workspace/scripts on PYTHONPATH",
+      "remediation": "PYTHONPATH=/workspace/scripts:/workspace pytest ...",
+      "post_hoc_exit_code_change": "Eliminates collection crash (Exit 2). Semantic test outcome requires execution in Linux swegemma sandbox."
+    },
+    {
+      "instance_id": "httpx_3672",
+      "config": "flat_starter",
+      "trace_file": "cohort_flat_starter_httpx_3672.json",
+      "official_exit_code": 2,
+      "edited_files": [
+        "src/httpx/_server.py",
+        "src/httpx/_parsers.py"
+      ],
+      "issue_type": "Dist-packages shadowing /workspace/src",
+      "remediation": "PYTHONPATH=/workspace/src pytest ...",
+      "post_hoc_exit_code_change": "Eliminates collection crash (Exit 2). Semantic test outcome requires execution in Linux swegemma sandbox."
+    },
+    {
+      "instance_id": "httpx_3672",
+      "config": "flat_controlled",
+      "trace_file": "cohort_flat_controlled_httpx_3672.json",
+      "official_exit_code": 2,
+      "edited_files": [
+        "src/httpx/_server.py"
+      ],
+      "issue_type": "Dist-packages shadowing /workspace/src",
+      "remediation": "PYTHONPATH=/workspace/src pytest ...",
+      "post_hoc_exit_code_change": "Eliminates collection crash (Exit 2). Semantic test outcome requires execution in Linux swegemma sandbox."
+    },
+    {
+      "instance_id": "httpx_3672",
+      "config": "sfd",
+      "trace_file": "cohort_sfd_httpx_3672.json",
+      "official_exit_code": 2,
+      "edited_files": [
+        "src/httpx/_server.py",
+        "tests/test_parsers.py"
+      ],
+      "issue_type": "Dist-packages shadowing /workspace/src",
+      "remediation": "PYTHONPATH=/workspace/src pytest ...",
+      "post_hoc_exit_code_change": "Eliminates collection crash (Exit 2). Semantic test outcome requires execution in Linux swegemma sandbox."
+    },
+    {
+      "instance_id": "fastapi_15661",
+      "config": "flat_controlled_rerun",
+      "trace_file": "cohort_rerun_flat_controlled_rerun_fastapi_15661.json",
+      "official_exit_code": 2,
+      "edited_files": [
+        "scripts/release.sh"
+      ],
+      "issue_type": "Missing /workspace/scripts on PYTHONPATH",
+      "remediation": "PYTHONPATH=/workspace/scripts:/workspace pytest ...",
+      "post_hoc_exit_code_change": "Eliminates collection crash (Exit 2). Semantic test outcome requires execution in Linux swegemma sandbox."
+    },
+    {
+      "instance_id": "fastapi_15661",
+      "config": "sfd_rerun",
+      "trace_file": "cohort_rerun_sfd_rerun_fastapi_15661.json",
+      "official_exit_code": 2,
+      "edited_files": [
+        "scripts/add_latest_release_date.py"
+      ],
+      "issue_type": "Missing /workspace/scripts on PYTHONPATH",
+      "remediation": "PYTHONPATH=/workspace/scripts:/workspace pytest ...",
+      "post_hoc_exit_code_change": "Eliminates collection crash (Exit 2). Semantic test outcome requires execution in Linux swegemma sandbox."
+    },
+    {
+      "instance_id": "httpx_3672",
+      "config": "flat_controlled_rerun",
+      "trace_file": "cohort_rerun_flat_controlled_rerun_httpx_3672.json",
+      "official_exit_code": 2,
+      "edited_files": [
+        "src/httpx/_server.py",
+        "src/httpx/_parsers.py"
+      ],
+      "issue_type": "Dist-packages shadowing /workspace/src",
+      "remediation": "PYTHONPATH=/workspace/src pytest ...",
+      "post_hoc_exit_code_change": "Eliminates collection crash (Exit 2). Semantic test outcome requires execution in Linux swegemma sandbox."
+    },
+    {
+      "instance_id": "httpx_3672",
+      "config": "sfd_rerun",
+      "trace_file": "cohort_rerun_sfd_rerun_httpx_3672.json",
+      "official_exit_code": 2,
+      "edited_files": [
+        "src/httpx/_server.py",
+        "src/httpx/_parsers.py"
+      ],
+      "issue_type": "Dist-packages shadowing /workspace/src",
+      "remediation": "PYTHONPATH=/workspace/src pytest ...",
+      "post_hoc_exit_code_change": "Eliminates collection crash (Exit 2). Semantic test outcome requires execution in Linux swegemma sandbox."
+    }
+  ]
+}
