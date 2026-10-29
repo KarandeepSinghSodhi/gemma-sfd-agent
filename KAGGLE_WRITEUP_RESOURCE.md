@@ -134,13 +134,13 @@ In `flat_starter`, root wraps `code_analyzer` as an `AgentTool`. Across 32 trace
 - Out of 336 tool calls, the model delegated only **7 times (2.1%)**.
 - The model **bypassed delegation on 26 of 32 tasks (81.2%)**, reading files directly into root context (6/32 delegated).
 
-![Figure 3: Sub-Agent Delegation Funnel](figures/fig3_delegation_funnel.png)
+![Figure 3: Sub-Agent Delegation Funnel](https://raw.githubusercontent.com/KarandeepSinghSodhi/gemma-sfd-agent/v1.0.1-camera-ready/figures/fig3_delegation_funnel.png)
 *Figure 3: Sub-agent delegation in `flat_starter`: 81.2% bypassed delegation; 2.1% calls delegated.*
 
 ### 5.4 Cross-Stage Prompt Resets
 In `sfd`, `include_contents: "none"` resets entry prompts from a mean TriageAgent peak of 10,473.9 tokens ($n=32$ primary runs, median 9,863.0; vs 10,922.1 for $n=16$ in SFD) to 1,536.9 tokens at PatchAgent entry. Across 32 primary runs, the mean of per-run percentage resets was 81.95% (median 87.43%, IQR [75.72%, 89.46%]); the ratio of aggregate means corresponds to an 85.3% reduction (a different summary statistic). This drives the 32.0% prompt reduction over flat baselines ($p < 0.0001$).
 
-![Figure 2: Prompt Token Expansion & Stage Resets](figures/fig2_prompt_resets.png)
+![Figure 2: Prompt Token Expansion & Stage Resets](https://raw.githubusercontent.com/KarandeepSinghSodhi/gemma-sfd-agent/v1.0.1-camera-ready/figures/fig2_prompt_resets.png)
 *Figure 2: Prompt trajectories across steps $t$ (mean with 95% bootstrap bands). Flat runs expand monotonically; SFD resets prompt tokens by 87.43% median.*
 
 ---
