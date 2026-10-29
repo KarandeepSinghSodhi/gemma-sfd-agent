@@ -46,6 +46,33 @@ def wilson_ci(k: int, n: int, confidence: float = 0.95) -> tuple[float, float]:
     half = (z * math.sqrt((p * (1 - p) + z**2 / (4 * n)) / n)) / denom
     return (max(0.0, round(float(center - half), 4)), min(1.0, round(float(center + half), 4)))
 
+def task_cluster_bootstrap_resolution_ci(df_sub: pd.DataFrame, tasks: list[str], n_boot: int = 10000, seed: int = 42, alpha: float = 0.05) -> dict[str, float]:
+    """Compute task-level cluster-bootstrap confidence interval for resolution rate.
+    Resamples task clusters (preserving each task's 3 configuration outcomes together).
+    """
+    sub = df_sub[df_sub["instance_id"].isin(tasks)]
+    task_sums = sub.groupby("instance_id")["resolved"].sum().values
+    n_tasks = len(tasks)
+    observed_rate = float(task_sums.sum() / (n_tasks * 3))
+    rng = np.random.default_rng(seed)
+    boot_rates = []
+    for _ in range(n_boot):
+        sample = rng.choice(task_sums, size=n_tasks, replace=True)
+        boot_rates.append(float(sample.sum() / (n_tasks * 3)))
+    lo = float(np.percentile(boot_rates, 100 * (alpha / 2)))
+    hi = float(np.percentile(boot_rates, 100 * (1 - alpha / 2)))
+    return {
+        "n_tasks": n_tasks,
+        "n_runs": n_tasks * 3,
+        "resolved_runs": int(task_sums.sum()),
+        "rate_pct": round(observed_rate * 100, 2),
+        "ci_95_lo_pct": round(lo * 100, 2),
+        "ci_95_hi_pct": round(hi * 100, 2),
+        "n_boot": n_boot,
+        "seed": seed,
+        "method": "task_cluster_percentile_bootstrap"
+    }
+
 def paired_bootstrap_diff_ci(a: list[float], b: list[float], n_boot: int = 10000, seed: int = 42) -> tuple[float, float, float]:
     """Compute 95% bootstrap confidence interval for mean(a) - mean(b)."""
     assert len(a) == len(b)
@@ -171,6 +198,19 @@ def main():
             "ci_95_lo_pct": round(lo_c * 100, 2), "ci_95_hi_pct": round(hi_c * 100, 2)
         }
         
+    # --- 1b. Task-Level Cluster-Bootstrap CIs for Clustered Runs ---
+    print("\n--- 1b. Task-Level Cluster Bootstrap (10,000 resamples over task clusters) ---")
+    task_env = p_df.groupby("instance_id")["env_invalid"].any()
+    valid_tasks_26 = sorted(task_env[~task_env].index.tolist())
+    all_tasks_32 = sorted(p_df["instance_id"].unique().tolist())
+    
+    cluster_boot_results = {
+        "complete_case_26_tasks": task_cluster_bootstrap_resolution_ci(p_df, valid_tasks_26),
+        "primary_all_32_tasks": task_cluster_bootstrap_resolution_ci(p_df, all_tasks_32)
+    }
+    for k, v in cluster_boot_results.items():
+        print(f"  {k:24s}: {v['resolved_runs']:2d}/{v['n_runs']:2d} ({v['rate_pct']:5.2f}%) | 95% Cluster-Bootstrap CI: [{v['ci_95_lo_pct']:5.2f}%, {v['ci_95_hi_pct']:5.2f}%]")
+
     for k, v in wilson_results.items():
         print(f"  {k:22s}: {v['resolved']:2d}/{v['n']:2d} ({v['rate_pct']:5.2f}%) | 95% CI: [{v['ci_95_lo_pct']:5.2f}%, {v['ci_95_hi_pct']:5.2f}%]")
 
@@ -316,6 +356,7 @@ def main():
     # Save results
     stats_report = {
         "wilson_cis": wilson_results,
+        "cluster_bootstrap_cis": cluster_boot_results,
         "mcnemar_exact": mcnemar_results,
         "metric_comparisons_n32": metric_results,
         "rerun_summary": {

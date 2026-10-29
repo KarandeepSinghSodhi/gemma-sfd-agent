@@ -159,7 +159,7 @@
       "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
       "agent_files": "src/requests/models.py",
       "gold_files": "src/requests/_types.py;src/requests/models.py",
-      "reason": "Bug spans 2 files (['src/requests/models.py', 'src/requests/_types.py']), but agent only modified 1 file(s)"
+      "reason": "Bug spans 2 files (['src/requests/_types.py', 'src/requests/models.py']), but agent only modified 1 file(s)"
     },
     {
       "cohort": "Cohort 1 (Canonical)",
@@ -169,7 +169,7 @@
       "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
       "agent_files": "src/requests/models.py",
       "gold_files": "src/requests/_types.py;src/requests/models.py",
-      "reason": "Bug spans 2 files (['src/requests/models.py', 'src/requests/_types.py']), but agent only modified 1 file(s)"
+      "reason": "Bug spans 2 files (['src/requests/_types.py', 'src/requests/models.py']), but agent only modified 1 file(s)"
     },
     {
       "cohort": "Cohort 1 (Canonical)",
@@ -179,7 +179,7 @@
       "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
       "agent_files": "src/requests/models.py",
       "gold_files": "src/requests/_types.py;src/requests/models.py",
-      "reason": "Bug spans 2 files (['src/requests/models.py', 'src/requests/_types.py']), but agent only modified 1 file(s)"
+      "reason": "Bug spans 2 files (['src/requests/_types.py', 'src/requests/models.py']), but agent only modified 1 file(s)"
     },
     {
       "cohort": "Cohort 1 (Canonical)",
@@ -219,7 +219,7 @@
       "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
       "agent_files": "rich/console.py;rich/logging.py",
       "gold_files": "rich/_emoji_replace.py;rich/console.py;rich/emoji.py;rich/logging.py;rich/protocol.py;rich/repr.py;rich/segment.py;rich/syntax.py;rich/theme.py",
-      "reason": "Bug spans 9 files (['rich/logging.py', 'rich/emoji.py', 'rich/syntax.py', 'rich/console.py', 'rich/protocol.py', 'rich/repr.py', 'rich/segment.py', 'rich/theme.py', 'rich/_emoji_replace.py']), but agent only modified 2 file(s)"
+      "reason": "Bug spans 9 files (['rich/protocol.py', 'rich/logging.py', 'rich/theme.py', 'rich/segment.py', 'rich/syntax.py', 'rich/emoji.py', 'rich/console.py', 'rich/_emoji_replace.py', 'rich/repr.py']), but agent only modified 2 file(s)"
     },
     {
       "cohort": "Cohort 1 (Canonical)",
@@ -229,7 +229,7 @@
       "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
       "agent_files": "rich/logging.py",
       "gold_files": "rich/_emoji_replace.py;rich/console.py;rich/emoji.py;rich/logging.py;rich/protocol.py;rich/repr.py;rich/segment.py;rich/syntax.py;rich/theme.py",
-      "reason": "Bug spans 9 files (['rich/logging.py', 'rich/emoji.py', 'rich/syntax.py', 'rich/console.py', 'rich/protocol.py', 'rich/repr.py', 'rich/segment.py', 'rich/theme.py', 'rich/_emoji_replace.py']), but agent only modified 1 file(s)"
+      "reason": "Bug spans 9 files (['rich/protocol.py', 'rich/logging.py', 'rich/theme.py', 'rich/segment.py', 'rich/syntax.py', 'rich/emoji.py', 'rich/console.py', 'rich/_emoji_replace.py', 'rich/repr.py']), but agent only modified 1 file(s)"
     },
     {
       "cohort": "Cohort 1 (Canonical)",
@@ -409,7 +409,7 @@
       "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
       "agent_files": "src/requests/models.py",
       "gold_files": "src/requests/_types.py;src/requests/models.py",
-      "reason": "Bug spans 2 files (['src/requests/models.py', 'src/requests/_types.py']), but agent only modified 1 file(s)"
+      "reason": "Bug spans 2 files (['src/requests/_types.py', 'src/requests/models.py']), but agent only modified 1 file(s)"
     },
     {
       "cohort": "Cohort 1 Rerun (Reproducibility)",
@@ -419,7 +419,7 @@
       "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
       "agent_files": "src/requests/models.py",
       "gold_files": "src/requests/_types.py;src/requests/models.py",
-      "reason": "Bug spans 2 files (['src/requests/models.py', 'src/requests/_types.py']), but agent only modified 1 file(s)"
+      "reason": "Bug spans 2 files (['src/requests/_types.py', 'src/requests/models.py']), but agent only modified 1 file(s)"
     },
     {
       "cohort": "Cohort 1 Rerun (Reproducibility)",
@@ -449,7 +449,7 @@
       "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
       "agent_files": "rich/console.py;rich/logging.py;rich/theme.py",
       "gold_files": "rich/_emoji_replace.py;rich/console.py;rich/emoji.py;rich/logging.py;rich/protocol.py;rich/repr.py;rich/segment.py;rich/syntax.py;rich/theme.py",
-      "reason": "Bug spans 9 files (['rich/logging.py', 'rich/emoji.py', 'rich/syntax.py', 'rich/console.py', 'rich/protocol.py', 'rich/repr.py', 'rich/segment.py', 'rich/theme.py', 'rich/_emoji_replace.py']), but agent only modified 3 file(s)"
+      "reason": "Bug spans 9 files (['rich/protocol.py', 'rich/logging.py', 'rich/theme.py', 'rich/segment.py', 'rich/syntax.py', 'rich/emoji.py', 'rich/console.py', 'rich/_emoji_replace.py', 'rich/repr.py']), but agent only modified 3 file(s)"
     },
     {
       "cohort": "Cohort 1 Rerun (Reproducibility)",
@@ -459,7 +459,7 @@
       "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
       "agent_files": "rich/logging.py",
       "gold_files": "rich/_emoji_replace.py;rich/console.py;rich/emoji.py;rich/logging.py;rich/protocol.py;rich/repr.py;rich/segment.py;rich/syntax.py;rich/theme.py",
-      "reason": "Bug spans 9 files (['rich/logging.py', 'rich/emoji.py', 'rich/syntax.py', 'rich/console.py', 'rich/protocol.py', 'rich/repr.py', 'rich/segment.py', 'rich/theme.py', 'rich/_emoji_replace.py']), but agent only modified 1 file(s)"
+      "reason": "Bug spans 9 files (['rich/protocol.py', 'rich/logging.py', 'rich/theme.py', 'rich/segment.py', 'rich/syntax.py', 'rich/emoji.py', 'rich/console.py', 'rich/_emoji_replace.py', 'rich/repr.py']), but agent only modified 1 file(s)"
     },
     {
       "cohort": "Cohort 3 (Stratified Disjoint)",
@@ -509,7 +509,7 @@
       "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
       "agent_files": "rich/cells.py",
       "gold_files": "rich/cells.py;rich/segment.py",
-      "reason": "Bug spans 2 files (['rich/segment.py', 'rich/cells.py']), but agent only modified 1 file(s)"
+      "reason": "Bug spans 2 files (['rich/cells.py', 'rich/segment.py']), but agent only modified 1 file(s)"
     },
     {
       "cohort": "Cohort 3 (Stratified Disjoint)",
@@ -519,7 +519,7 @@
       "mechanism": "PARTIAL_MULTI_FILE_LOCALIZATION",
       "agent_files": "rich/cells.py",
       "gold_files": "rich/cells.py;rich/segment.py",
-      "reason": "Bug spans 2 files (['rich/segment.py', 'rich/cells.py']), but agent only modified 1 file(s)"
+      "reason": "Bug spans 2 files (['rich/cells.py', 'rich/segment.py']), but agent only modified 1 file(s)"
     },
     {
       "cohort": "Cohort 3 (Stratified Disjoint)",
@@ -609,7 +609,7 @@
       "mechanism": "WRONG_FILE_LOCALIZATION",
       "agent_files": "rich/_wrap.py",
       "gold_files": "rich/console.py;rich/segment.py",
-      "reason": "Agent edited ['rich/_wrap.py'], but gold patch requires ['rich/console.py', 'rich/segment.py']"
+      "reason": "Agent edited ['rich/_wrap.py'], but gold patch requires ['rich/segment.py', 'rich/console.py']"
     },
     {
       "cohort": "Cohort 4 (Stratified Disjoint)",
@@ -619,7 +619,7 @@
       "mechanism": "WRONG_FILE_LOCALIZATION",
       "agent_files": "rich/_wrap.py",
       "gold_files": "rich/console.py;rich/segment.py",
-      "reason": "Agent edited ['rich/_wrap.py'], but gold patch requires ['rich/console.py', 'rich/segment.py']"
+      "reason": "Agent edited ['rich/_wrap.py'], but gold patch requires ['rich/segment.py', 'rich/console.py']"
     },
     {
       "cohort": "Cohort 4 (Stratified Disjoint)",
@@ -629,7 +629,7 @@
       "mechanism": "WRONG_FILE_LOCALIZATION",
       "agent_files": "rich/_wrap.py",
       "gold_files": "rich/console.py;rich/segment.py",
-      "reason": "Agent edited ['rich/_wrap.py'], but gold patch requires ['rich/console.py', 'rich/segment.py']"
+      "reason": "Agent edited ['rich/_wrap.py'], but gold patch requires ['rich/segment.py', 'rich/console.py']"
     },
     {
       "cohort": "Cohort 4 (Stratified Disjoint)",

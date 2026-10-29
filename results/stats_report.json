@@ -71,6 +71,30 @@
       "ci_95_hi_pct": 24.14
     }
   },
+  "cluster_bootstrap_cis": {
+    "complete_case_26_tasks": {
+      "n_tasks": 26,
+      "n_runs": 78,
+      "resolved_runs": 6,
+      "rate_pct": 7.69,
+      "ci_95_lo_pct": 1.28,
+      "ci_95_hi_pct": 15.38,
+      "n_boot": 10000,
+      "seed": 42,
+      "method": "task_cluster_percentile_bootstrap"
+    },
+    "primary_all_32_tasks": {
+      "n_tasks": 32,
+      "n_runs": 96,
+      "resolved_runs": 6,
+      "rate_pct": 6.25,
+      "ci_95_lo_pct": 1.04,
+      "ci_95_hi_pct": 12.5,
+      "n_boot": 10000,
+      "seed": 42,
+      "method": "task_cluster_percentile_bootstrap"
+    }
+  },
   "mcnemar_exact": {
     "sfd_vs_flat_controlled": {
       "c1_only_resolved (b)": 1,

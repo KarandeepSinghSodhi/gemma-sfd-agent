@@ -309,3 +309,16 @@ Format:
   7. *Word Count Safety Cushion*: Whitespace word count optimized to **2,930 words** (70 words below 3,000 ceiling; cleaned prose: **2,870 words**).
 - **Evidence Files**: KAGGLE_WRITEUP_RESOURCE.md, paper_resource.typ, paper_resource.pdf, 
 eferences_gemma.bib, nalysis/gold_patch_control.py.
+
+### [v1.0.0-camera-ready] - 2026-10-29: Final Reviewer Checklist & Camera-Ready Freeze
+- **Reviewer Checklist Items Implemented**:
+  1. *Section 6.1 Hedged Wording Restored*: Restored hedged wording ("is predicted to avoid collection crashes across all 10 path-shadowed runs") in `KAGGLE_WRITEUP_RESOURCE.md` and `paper_resource.typ`.
+  2. *Draft History Removed from Paper Text*: Removed parenthetical draft history remarks from Section 5.2.
+  3. *Edit Hash Disambiguation & Semantic Concordance*: Clarified that normalized edit-operation hashes matched in 0/16 pairs (0.0%), and documented that the 0/16 reflects surrounding context anchors and tool serialization rather than disjoint modifications (e.g., `rich_4077` converged to the identical 2-line `isatty()` fix in both configurations; `requests_7505` converged to the same `isinstance(fp, _SupportsRead)` guard differing only by comment lines).
+  4. *Quotation of Competition Rules*: Quoted Official Rules Section 1.7, 2.4.a.1, 2.4.b.1 (data security), and 2.2.b (up to two final writeups permitted) in Section 3.1 Datasheet.
+  5. *Dual-Submission Differentiation*: Explicitly distinguished the companion SFD architecture paper from the ATIF-Gemma empirical resource paper, with formal cross-citation.
+  6. *Reproducible Task-Level Cluster-Bootstrap Script*: Added `task_cluster_bootstrap_resolution_ci` to `analysis/statistical_tests.py` with fixed seed (42) and 10,000 resamples, verifying the 26-task complete-case CI `[1.28%, 15.38%]` and 32-task primary CI `[1.04%, 12.50%]`.
+  7. *Run-Level Taxonomy CSV Released*: Published `dataset_resource/failure_taxonomy_runs.csv` mapping every run (all 112 runs) to its run ID, instance ID, configuration, cohort, exit code, failure tier, and `env_suspected` flag.
+  8. *Statistical Precision & MDE*: Clarified that no resolution difference is detectable at this sample size (McNemar $p=1.000$; MDE $pprox 15-20$ percentage points), and noted that secondary Wilcoxon tests are exploratory without multiple-testing adjustment.
+  9. *Word Count Headroom*: Trimmed `KAGGLE_WRITEUP_RESOURCE.md` to **2,919 whitespace words** (safe 81-word cushion below the 3,000-word limit; title length: **77 characters**).
+- **Artifacts Synchronized**: `KAGGLE_WRITEUP_RESOURCE.md`, `paper_resource.typ`, `paper_resource.pdf`, `references_gemma.bib`, `analysis/statistical_tests.py`, `results/stats_report.json`, `results/failure_taxonomy_runs.csv`.
