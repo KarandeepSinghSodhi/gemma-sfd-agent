@@ -22,7 +22,7 @@ We plainly state throughout the Abstract, Section 1, Section 5.1, and Table 3 th
 > *"Evaluating 32 benchmark tasks covers only ~25% of the competition SWE-bench split (129 tasks). Is this sample size sufficient to substantiate claims about developer agent dynamics?"*
 
 **Defense & Evidence:**  
-Across 32 tasks, ATIF-Gemma evaluates 112 complete multi-turn GPU executions (96 primary paired runs across 3 configurations + 16 rerun reproducibility runs), totaling 1,518 LLM turns, 1,328 tool calls, and 11,706,178 logged tokens on real 4x NVIDIA L4 GPUs. We do not make unsupported accuracy claims: 95% Wilson score confidence intervals ([1.73%, 20.15%]) and paired bootstrap CIs are reported for every metric (`analysis/statistical_tests.py`, `results/stats_report.json`). In Section 8, we explicitly document this sample size limitation and estimate that evaluating all 129 instances across 3 configurations would require >500 NVIDIA L4 GPU hours.
+Across 32 tasks, ATIF-Gemma evaluates 112 complete multi-turn GPU executions (96 primary paired runs across 3 configurations + 16 rerun reproducibility runs), totaling 1,518 LLM turns, 1,328 tool calls, and 11,706,178 logged tokens on real 4x NVIDIA L4 GPUs. We do not make unsupported accuracy claims: 95% Wilson score confidence intervals ([1.73%, 20.15%]) and paired bootstrap CIs are reported for every metric (`analysis/statistical_tests.py`, `results/stats_report.json`). In Section 8, we explicitly document this sample size limitation and estimate that evaluating all 129 instances across 3 configurations would require approximately 13 hours on 4x NVIDIA L4 GPUs (~52 GPU-hours).
 
 ---
 

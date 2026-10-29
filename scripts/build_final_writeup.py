@@ -180,7 +180,7 @@ Modules provide automated trajectory auditing (`audit`), deterministic exit-code
 
 ## 8. Limitations & Threats to Validity
 
-1. **Task Sample ($n = 32$)**: Evaluates 25% of benchmark instances; running all across 3 configurations requires >500 GPU hours.
+1. **Task Sample ($n = 32$)**: Evaluates 25% of benchmark instances; running all across 3 configurations requires ~52 GPU-hours on 4x L4.
 2. **Model & Quantization**: Evaluates `gemma-4-e4b-it-qat-w4a16-ct` (INT4); larger models (31B) may exhibit different error modes.
 3. **Repository Diversity**: Concentrated on 4 Python repos; runs sharing tasks are clustered.
 4. **Trajectory Non-Determinism**: Under greedy decoding ($T=0.0$), 12/16 exit codes matched on rerun, but normalized edit-operation hashes diverged across 16 pairs (mean drift: 18,571 tokens).

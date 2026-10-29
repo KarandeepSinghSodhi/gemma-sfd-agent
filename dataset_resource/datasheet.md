@@ -88,3 +88,12 @@ Following the *Datasheets for Datasets* standard (Gebru et al., 2021).
 - **Competition Data Governance:** Traces log agent trajectories and public issue descriptions without disclosing held-out test suites (`test_patch` is omitted). Model outputs adhere to Google Gemma Terms of Use.
 - **Repository:** https://github.com/KarandeepSinghSodhi/gemma-sfd-agent
 - **Kaggle Dataset:** https://www.kaggle.com/datasets/karandeepsinghsodhi/atif-gemma-swe-agent-traces
+
+
+### Official Forum Clarification (Topic 749803)
+- **Question asked to competition host:** *"Is publishing derived evaluation labels, model trajectory traces, and diagnostic failure annotations generated from the competition benchmark tasks permitted for public research resources under the rules?"*
+- **Host Elan Markowitz confirmation ([Topic 749803](https://www.kaggle.com/competitions/gemma-4-developer-agent-paper/discussion/749803)):** *"Yes, publishing derived labels is okay."*
+- **Competition Data Safeguards:** To maintain strict compliance with Rule 2.4.b.1 (non-redistribution of Competition Data to non-participants):
+  1. Proprietary `test_patch` evaluation files are strictly omitted.
+  2. Trajectory traces record the autonomous agent's own generated actions, tool arguments, thoughts, and outputs.
+  3. Ground-truth reference patches are used solely as internal scoring oracle inputs to compute derived localization metrics (`analysis/subclassify_exit1.py`) and are not redistributed in the corpus.

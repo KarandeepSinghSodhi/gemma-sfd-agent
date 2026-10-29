@@ -17,7 +17,7 @@ Standardized under ATIF v1.7 (Harbor Framework Contributors, 2026), ATIF-Gemma l
 
 ## 1. Introduction & The Diagnostic Vacuum in SWE Benchmarking
 
-Unlike single-turn code benchmarks (HumanEval; Chen et al., 2021; MBPP; Austin et al., 2021), SWE-bench established repository-level issue resolution for coding agents (Jimenez et al., 2024). Reported resolution rates depend strongly on benchmark split, model scale, and agent harness. Although agent interfaces and architectures have advanced (Yang et al., 2024; Wang et al., 2024; Xia et al., 2024), aggregate scores alone obscure execution bottlenecks. On the competition split, compact models (`gemma-4-e4b-it-qat-w4a16-ct`) plateaued below 10% (median 5.0% across 197 teams; Holbrook, 2026). ATIF-Gemma addresses this diagnostic vacuum through 112 standardized traces, a 4-tier failure taxonomy, a rerun audit, and the open `atif_gemma` toolkit.
+Unlike single-turn code benchmarks (HumanEval; Chen et al., 2021; MBPP; Austin et al., 2021), SWE-bench established repository-level issue resolution for coding agents (Jimenez et al., 2024). Reported resolution rates depend strongly on benchmark split, model scale, and agent harness. Although agent interfaces and architectures have advanced (Yang et al., 2024; Wang et al., 2024; Xia et al., 2024), aggregate scores alone obscure execution bottlenecks. On the competition split, compact models (`gemma-4-e4b-it-qat-w4a16-ct`) plateaued at or below 10% (median 5.0% across 197 teams; Holbrook, 2026). ATIF-Gemma addresses this diagnostic vacuum through 112 standardized traces, a 4-tier failure taxonomy, a rerun audit, and the open `atif_gemma` toolkit.
 
 ---
 
@@ -44,23 +44,23 @@ Gemma 4 (Gemma Team, 2026) introduced compact edge models (`gemma-4-e4b-it-qat-w
 | **Cohort 4 (Stratified Disjoint)** | 24 | 8 | 322 | 284 | 2,555,675 |
 | **Total ATIF-Gemma Corpus** | **112** | **32** | **1,518** | **1,328** | **11,706,178** |
 
-*Note: 32 unique tasks; Cohort 1 Rerun replicates Cohort 1 for reproducibility.*
+*Note: The Cohort 1 Rerun repeats the flat_controlled and sfd configurations across the same eight tasks, yielding 16 rerun traces. The flat_starter configuration was not rerun.*
 
 Covering 32 tasks across 4 repos (`fastapi`: 51, `rich`: 37, `requests`: 19, `httpx`: 5) on 4x NVIDIA L4 GPUs via vLLM (`tp=4`) hosting `gemma-4-e4b-it-qat-w4a16-ct` under Google ADK and `swegemma`, traces record tool calls, thoughts (`extra.event_type: "thinking"`), token metrics, and exit codes.
 
-**Schema Conformance, Datasheet & Governance (Gebru et al., 2021):** All 112 traces pass formal validation against our version-pinned ATIF v1.7 schema (`dataset_resource/atif_schema_v1_7.json`; Harbor Framework Contributors, 2026; `analysis/validate_atif_schema.py`; full sheet in `dataset_resource/datasheet.md`):
-- *Data Access & Licensing*: Code competition data (`gemma-4-developer-agent`) are accessed under Sections 1.7 & 2.4.a.1 of the [Official Rules](https://www.kaggle.com/competitions/gemma-4-developer-agent/rules) (*"may access and use the Competition Data for any purpose... including for academic research and education"*). Evaluated tasks originate from open-source repositories under MIT, Apache-2.0, and BSD-3-Clause licenses (`NOTICE`).
-- *Data Security & Derived Labels (Rule 2.4.b.1)*: Code competition Rule 2.4.b.1 restricts Competition Data redistribution. ATIF-Gemma distributes only model-generated trajectories and metadata; proprietary `test_patch` files are strictly omitted. On the forum ([Topic 749803](https://www.kaggle.com/competitions/gemma-4-developer-agent-paper/discussion/749803)), Host Elan Markowitz confirmed: *"Yes, publishing derived labels is okay."* Gold-patch file lists serve solely as internal ground truth for derived localization tiers (`analysis/subclassify_exit1.py`) and are not redistributed. Step 0 problem statements derive from public GitHub issues. Traces: CC BY 4.0; companion code: Apache-2.0.
+**Schema Conformance, Datasheet & Governance (Gebru et al., 2021):** All 112 traces pass formal validation against version-pinned ATIF v1.7 (`dataset_resource/atif_schema_v1_7.json`; Harbor Framework Contributors, 2026; `analysis/validate_atif_schema.py`; full sheet in `dataset_resource/datasheet.md`):
+- *Data Access & Licensing*: Code competition data (`gemma-4-developer-agent`) are accessed under Sections 1.7 & 2.4.a.1 of the [Official Rules](https://www.kaggle.com/competitions/gemma-4-developer-agent/rules) (*"may access and use the Competition Data for any purpose... including for academic research and education"*). Repositories are open source under MIT, Apache-2.0, and BSD-3-Clause licenses (`NOTICE`).
+- *Data Security & Derived Labels (Rule 2.4.b.1)*: Per Rule 2.4.b.1, proprietary `test_patch` files are strictly omitted. On the forum ([Topic 749803](https://www.kaggle.com/competitions/gemma-4-developer-agent-paper/discussion/749803)), Host Elan Markowitz confirmed: *"Yes, publishing derived labels is okay."* Gold-patch reference diffs are strictly omitted from redistribution; localization metrics record file counts and module overlap. Step 0 problem statements derive from public GitHub issues. Traces: CC BY 4.0; code: Apache-2.0.
 - *Dual-Submission Allowance (Rule 2.2.b)*: Under Section 2.2.b of the [Paper Rules](https://www.kaggle.com/competitions/gemma-4-developer-agent-paper/rules) (*"You may select up to two (2) Final Submissions for judging"*), Host Elan Markowitz confirmed ([Topic 743255](https://www.kaggle.com/competitions/gemma-4-developer-agent-paper/discussion/743255)): *"A team can submit at most two write-ups. There is only one submission track, and the judges will determine the eligibility for each prize."* ATIF-Gemma serves as empirical companion to our SFD architecture paper (Sodhi, 2026), contributing the diagnostic corpus, failure taxonomy, and reproducibility audit.
 
 ---
 
 ## 4. Failure Taxonomy & Phase 2 Outcome Breakdown
 
-**Cross-Paper Taxonomy Concordance & Scope:** While companion SFD (Sodhi, 2026) evaluated 16 paired tasks (48 runs) across three coarse categories, ATIF-Gemma evaluates 32 tasks across 5 cohorts (112 runs) decomposed into exact container exit codes:
-- `timeout_or_budget_no_patch` (15 runs) = pre-submission budget exhaustion (Exit -1, 9 runs) + zero-byte runs without code edits (Exit 1, 6 runs; e.g. `rich_3944` flat_starter).
-- `test_verification_failed` (89 runs) = test-collection crashes (Exit 2, 36 runs: 16 agent-attributable vs 20 `env_suspected`) + non-empty assertion failures (Exit 1 Tiers 2–4, 50 runs) + verification timeouts (Exit 124, 3 runs).
-- `resolved` (8 runs) = clean execution passing all unit assertions without regressions (Exit 0; 6 primary, 2 reruns). Total: 15 + 89 + 8 = 112 runs.
+**Cross-Paper Taxonomy Concordance & Scope:** While companion SFD (Sodhi, 2026) evaluated 16 paired tasks (Cohorts 1–2, 48 runs) on context efficiency, ATIF-Gemma evaluates 32 tasks across 5 cohorts (112 runs) for comprehensive failure diagnosis, mapped to exact container exit codes:
+- `timeout_or_budget_no_patch` (15 runs) = pre-submission budget exhaustion (Exit -1, 9 runs) + zero-byte runs without an applied edit (Exit 1, 6 runs; e.g. `rich_3944` flat_starter).
+- `test_verification_failed` (89 runs) = collection crashes (Exit 2, 36 runs: 16 agent-attributable vs 20 `env_suspected`) + non-empty assertion failures (Exit 1 Tiers 2–4, 50 runs) + timeouts (Exit 124, 3 runs).
+- `resolved` (8 runs) = clean execution passing unit assertions without regressions (Exit 0; 6 primary, 2 reruns). Total: 15 + 89 + 8 = 112 runs.
 
 ### Table 2: Phase 2 Exit Code Failure Taxonomy Across 112 GPU Traces
 
@@ -77,13 +77,13 @@ Covering 32 tasks across 4 repos (`fastapi`: 51, `rich`: 37, `requests`: 19, `ht
 1. **Agent Causes (16/36 = 44.4%)**: Syntax corruption (13/36 across 7 tasks) and missing modules (3/36 on `rich_3930`).
 2. **Environment Causes (20/36 = 55.6%; `env_suspected=True`)**: Path shadowing (10/36 on `httpx_3672`, `fastapi_15661`) and missing wheels (`inline_snapshot`, `dirty_equals` on 10 runs across 4 tasks). Gold-patch controls (`analysis/gold_patch_control.py`) require offline containers (future work).
 
-Excluding 20 suspected sandbox defects leaves 92 valid runs (80 primary, 12 reruns). Across 26 complete-case tasks (78 paired runs), each configuration resolved 2/26 (7.69%, 95% Wilson CI [2.14%, 24.14%]; 6/78 overall, 95% cluster-bootstrap CI [1.28%, 15.38%]). No statistically significant resolution difference was detected by exact McNemar tests ($p=1.000$). Given the small number of tasks and low resolution counts, this should not be interpreted as statistical equivalence. Across all 80 valid primary runs, resolution is **6/80 (7.50%, unadjusted 95% CI [3.48%, 15.41%])** (`flat_starter` 2/27, `flat_controlled` 2/27, `sfd` 2/26); pooled across 92 valid runs, resolution is **8/92 (8.70%, unadjusted 95% CI [4.47%, 16.23%])**.
+Excluding 20 suspected sandbox defects leaves 92 valid runs (80 primary, 12 reruns). Across 26 complete-case tasks (78 paired runs), each configuration resolved 2/26 (7.69%, 95% Wilson CI [2.14%, 24.14%]; 6/78 overall, 95% cluster-bootstrap CI [1.28%, 15.38%]). No significant resolution difference was detected by exact McNemar tests ($p=1.000$), reflecting limited power rather than equivalence. Across 80 valid primary runs, resolution is **6/80 (7.50%, unadjusted 95% CI [3.48%, 15.41%])** (`flat_starter` 2/27, `flat_controlled` 2/27, `sfd` 2/26); pooled across 92 valid runs, resolution is **8/92 (8.70%, unadjusted 95% CI [4.47%, 16.23%])**.
 
 ### 4.2 Deterministic Sub-Classification of Assertion Failures (Exit Code 1: 56 Runs)
 Exit Code 1 represents 50.0% of runs (56/112). A decision tree (`analysis/subclassify_exit1.py`) partitions them:
 1. **Empty / Zero-Byte Patch (6/56 = 10.7%)**: $|F_{\text{agent}}| = 0$. Zero-byte diffs where pytest ran without edits from tool errors (`rich_3043` sfd, `rich_3944` flat_starter, `requests_7502` sfd_rerun), budget limits (`fastapi_14372` flat_starter, `requests_7315` flat_controlled), or unattempted edits (`fastapi_5624` flat_controlled).
 2. **Wrong-File Localization (15/56 = 26.8%)**: $F_{\text{agent}} \cap F_{\text{gold}} = \emptyset$ with applied diff (e.g. `fastapi_15589`).
-3. **Partial Multi-File (14/56 = 25.0%)**: $|F_{\text{gold}}| > 1$ and $F_{\text{agent}} \subsetneq F_{\text{gold}}$ (e.g. `requests_7505`).
+3. **Partial Multi-File (14/56 = 25.0%)**: $|F_{\text{gold}}| > 1$ and $F_{\text{agent}} \subsetneq F_{\text{gold}}$ (e.g. `requests_7505`, modifying `models.py` while omitting a companion module).
 4. **Right-File, Wrong-Logic (21/56 = 37.5%)**: $F_{\text{agent}} \cap F_{\text{gold}} \neq \emptyset$. Correct file(s), but failed unit assertions (e.g. `rich_3471`).
 
 *Caveat:* File overlap ($F_{\text{agent}} \cap F_{\text{gold}}$) is a structural proxy; alternative valid patches exist.
@@ -105,7 +105,7 @@ Across 112 runs, 8 resolved held-out tests on 4 tasks: `rich_4077` (3 runs), `fa
 | **Rerun: `flat_controlled`** | 8 | 1/8 (12.5%) [2.2%, 47.1%] | 12,557.5 | 93,135.6 | 107.4s |
 | **Rerun: `sfd`** | 8 | 1/8 (12.5%) [2.2%, 47.1%] | 9,306.4 | 67,710.1 | 96.4s |
 
-*Note:* Primary resolution: unadjusted outcomes across 32 tasks; complete-case analysis (2/26 per config, 6/78 overall) in Section 4.1. **Peak $P_t$**: max prompt length. **Cumulative Prompt**: sum of input prompt tokens.
+*Note:* Primary resolution: unadjusted outcomes across $n=32$ tasks; complete-case analysis (2/26 per config, 6/78 overall) in Section 4.1. **Peak $P_t$**: max prompt length. **Cumulative Prompt**: sum of prompt tokens ($n=32$ primary runs).
 
 ### 5.1 Statistical Tests & Resolution Invariance
 Across 32 primary tasks, resolution shows identical marginal counts at 2/32 (6.25%, 95% Wilson CI [1.73%, 20.15%]) across `flat_starter`, `flat_controlled`, and `sfd` (McNemar $p = 1.0000$ for all pairs; 6/96 overall, 95% cluster-bootstrap CI [1.04%, 12.50%]). Given small sample sizes, this reflects limited statistical power rather than equivalence.
@@ -120,12 +120,13 @@ In contrast, SFD achieves significant token reductions over flat baselines acros
 Cohort 1 was re-executed across 8 tasks $\times$ 2 configs (16 paired runs; `analysis/statistical_tests.py`):
 - **Exit Code Agreement**: 12/16 runs (75.0%) matched exit codes (4 flips: `rich_4077` ctrl 1->0; `fastapi_15588` sfd 1->2; `fastapi_15589` ctrl 1->2; `fastapi_15589` sfd -1->1).
 - **Patch Presence Agreement**: 14/16 runs (87.5%) agreed on patch presence (8/8 `flat_controlled`, 6/8 `sfd`; discordant on `fastapi_15589`, `requests_7502`).
-- **Normalized Edit-Operation Hash Agreement**: Hashes of recorded edit and patch payloads matched in 0/16 pairs (0.0%), showing run-to-run edit divergence despite greedy decoding ($T=0.0$).
-- **Semantic Concordance Across Reruns**:
-  - *Resolution Convergence (`rich_4077`)*: All three resolved runs (`flat_controlled_rerun`, `sfd_orig`, `sfd_rerun`) converged to identical 3-line logic (`def isatty(self) -> bool: return self.__file.isatty()`), differing only by anchor (after line 18 `fileno()` vs before line 23 `write()`; diffs in `results/rich_4077_diffs.md`).
-  - *Unresolved Concordance (`requests_7505`)*: Across both `flat_controlled` runs on `requests_7505`, original and rerun applied identical logic (`elif isinstance(fp, _SupportsRead): fdata = fp.read()`), differing only by comments. Both failed (Exit 1, Tier 3) because the task required modifying `src/requests/_types.py` (defining `has_read()`) and `models.py`.
-  - *Cohort-Wide Concordance*: 10/16 pairs (62.5%) touched identical files; 1 pair (`requests_7505` `flat_controlled`) matched 100% on normalized replacement code; recorded edit sequences diverged in all 16 pairs due to context lines and anchors.
-- **Token Drift**: Mean absolute difference was **18,571.0 total tokens** between pairs.
+- **Normalized Edit-Operation Hash Agreement**: Across all 16 rerun pairs, normalized edit-operation hashes differed (0/16, 0.0%). Manual diff analysis identified semantic convergence in selected cases (`rich_4077`), despite differences in recorded edits and patch context.
+- **Concordance by Normalization Level**:
+  1. *Target File Localization*: 10/16 pairs (62.5%) touched identical files.
+  2. *Comment-Stripped Replacement Logic*: 1/16 pairs (6.3%; `requests_7505` `flat_controlled`, applying identical logic `elif isinstance(fp, _SupportsRead): fdata = fp.read()`, differing only by comments; companion SFD evaluated SFD's distinct edit).
+  3. *Submitted Patch & Tool-Sequence Hashes*: 0/16 pairs (0.0%) matched on serialized edit payloads or bitwise patch diffs due to varying context lines.
+  4. *Semantic Resolution Convergence*: 1/16 pairs (6.3%; `rich_4077` `sfd`, resolving tests via identical logic `def isatty(self) -> bool: return self.__file.isatty()`).
+- **Token Drift**: Mean absolute difference was **18,571.0 total tokens** between paired runs.
 
 ### 5.3 Sub-Agent Bypassing in the Starter Kit
 In `flat_starter`, root wraps `code_analyzer` as an `AgentTool`. Across 32 traces:
@@ -136,7 +137,7 @@ In `flat_starter`, root wraps `code_analyzer` as an `AgentTool`. Across 32 trace
 *Figure 3: Sub-agent delegation in `flat_starter`: 81.2% bypassed delegation; 2.1% calls delegated.*
 
 ### 5.4 Cross-Stage Prompt Resets
-In `sfd`, `include_contents: "none"` resets entry prompts from a mean TriageAgent peak of 10,473.9 tokens (median 9,863.0) to 1,536.9 tokens (median 1,503.0) at PatchAgent entry. Across 32 primary runs, this yields an 81.95% mean prompt reset (median 87.43%, IQR [75.72%, 89.46%]), driving 32.0% prompt reduction over flat baselines ($p < 0.0001$).
+In `sfd`, `include_contents: "none"` resets entry prompts from a mean TriageAgent peak of 10,473.9 tokens ($n=32$ primary runs, median 9,863.0; vs 10,922.1 reported for $n=16$ in SFD) to 1,536.9 tokens at PatchAgent entry. Across 32 primary runs, this yields an 81.95% mean prompt reset (median 87.43%, IQR [75.72%, 89.46%]), driving 32.0% prompt reduction over flat baselines ($p < 0.0001$).
 
 ![Figure 2: Prompt Token Expansion & Stage Resets](figures/fig2_prompt_resets.png)
 *Figure 2: Prompt trajectories across steps $t$ (mean with 95% bootstrap bands). Flat runs expand monotonically; SFD resets prompt tokens by 87.43% median.*
@@ -174,7 +175,7 @@ Modules provide trajectory auditing (`audit`), deterministic exit-code and local
 
 ## 8. Limitations & Threats to Validity
 
-1. **Task Sample ($n = 32$)**: Covers ~25% of benchmark (full evaluation requires >500 L4 GPU hours).
+1. **Task Sample ($n = 32$)**: Covers ~25% of the benchmark split (evaluating all 129 tasks across 3 configurations requires ~13 hours on 4x L4, or ~52 GPU-hours, exceeding remaining competition quota).
 2. **Model & Quantization**: Specific to `gemma-4-e4b-it-qat-w4a16-ct` (INT4); larger models may differ.
 3. **Repository Scope**: Evaluates 4 Python repos; runs sharing tasks are paired and clustered.
 4. **Non-Determinism**: Under $T=0.0$, 12/16 exit codes matched on rerun, but edit hashes diverged (mean drift: 18,571 tokens).
@@ -204,7 +205,7 @@ ATIF-Gemma shows raw resolution rates mask critical execution bottlenecks (50.0%
 - Lindenbauer, T., et al. (2025). The Complexity Trap: Simple Observation Masking Is as Efficient as LLM Summarization for Agent Context Management. [*arXiv:2508.21433*](https://arxiv.org/abs/2508.21433)
 - Pan, J., et al. (2024). Training Software Engineering Agents and Verifiers with SWE-Gym. [*arXiv:2412.21139*](https://arxiv.org/abs/2412.21139)
 - Rajak, R. (2026). Gemma 4 TFD Agentic Trajectories & Benchmark: 50 multi-turn SWE-bench trajectories. *Kaggle Datasets*. [Benchmark](https://www.kaggle.com/datasets/rajarajak/gemma-4-tfd-agentic-trajectories-benchmark)
-- Sodhi, K. S. (2026). State-Filtered Deliberation: Mitigating Multi-Turn Context Bloat in Small Developer Agents. *Kaggle Gemma 4 Developer Agent Paper Competition*. [Companion Paper](https://github.com/KarandeepSinghSodhi/gemma-sfd-agent/blob/v1.0.0-camera-ready/KAGGLE_WRITEUP.md).
+- Sodhi, K. S. (2026). State-Filtered Deliberation: Stage-Isolated Context Management for Small Open-Weight Software Engineering Agents. *Kaggle Gemma 4 Developer Agent Paper Competition*. [Companion Paper](https://github.com/KarandeepSinghSodhi/gemma-sfd-agent/blob/v1.0.0-camera-ready/KAGGLE_WRITEUP.md).
 - Wang, X., et al. (2024). OpenHands: An Open Platform for AI Software Developers as Generalist Agents. [*arXiv:2407.16741*](https://arxiv.org/abs/2407.16741)
 - Xia, C. S., et al. (2024). Agentless: Demystifying LLM-based Software Engineering Agents. [*arXiv:2407.01489*](https://arxiv.org/abs/2407.01489)
 - Yang, J., et al. (2024). SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering. *NeurIPS 2024*. [*arXiv:2405.15793*](https://arxiv.org/abs/2405.15793)
