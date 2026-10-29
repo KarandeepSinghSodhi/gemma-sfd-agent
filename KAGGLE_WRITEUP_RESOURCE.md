@@ -17,7 +17,7 @@ Standardized under ATIF v1.7 (Harbor Framework Contributors, 2026), ATIF-Gemma l
 
 ## 1. Introduction & The Diagnostic Vacuum in SWE Benchmarking
 
-Unlike single-turn benchmarks (HumanEval; Chen et al., 2021; MBPP; Austin et al., 2021), SWE-bench established repository repair for coding agents (Jimenez et al., 2024). Resolution rates depend on split, model scale, and harness. Although agent interfaces have advanced (Yang et al., 2024; Wang et al., 2024; Xia et al., 2024), aggregate scores obscure execution failures. On the competition split, compact models (`gemma-4-e4b-it-qat-w4a16-ct`) plateaued $\le 10\%$ (median 5.0% across 197 teams; Holbrook, 2026). ATIF-Gemma resolves this diagnostic vacuum via 112 standardized traces, a 4-tier failure taxonomy, a rerun audit, and the open `atif_gemma` toolkit.
+Unlike single-turn benchmarks (HumanEval; Chen et al., 2021; MBPP; Austin et al., 2021), SWE-bench established repository repair for coding agents (Jimenez et al., 2024). Resolution rates depend on split, model scale, and harness. Although agent interfaces have advanced (Yang et al., 2024; Wang et al., 2024; Xia et al., 2024), aggregate scores obscure execution failures. On the competition split, compact models (`gemma-4-e4b-it-qat-w4a16-ct`) plateaued ≤ 10% (median 5.0% across 197 teams; Holbrook, 2026). ATIF-Gemma resolves this diagnostic vacuum via 112 standardized traces, a 4-tier failure taxonomy, a rerun audit, and the open `atif_gemma` toolkit.
 
 ---
 
@@ -67,7 +67,7 @@ The 112 traces span 32 unique tasks across four repositories: `fastapi` (51 trac
 | Category | Exit Code | Count (%) | Empirical Mechanism & Operational Diagnosis |
 | :--- | :---: | :---: | :--- |
 | **Resolved** | `0` | 8 (7.1%) | Patch applied cleanly; all pytest unit assertions passed with zero regressions. |
-| **Assertion Failure** | `1` | 56 (50.0%) | Patch applied (or empty zero-byte diff); pytest collected test suite, but $\ge 1$ assertion failed. |
+| **Assertion Failure** | `1` | 56 (50.0%) | Patch applied (or empty zero-byte diff); pytest collected test suite, but ≥ 1 assertion failed. |
 | **Collection Crash** | `2` | 36 (32.1%) | Pytest crashed during test collection (syntax errors, missing modules, import shadowing). |
 | **Turn Budget / No-Patch** | `-1` | 9 (8.0%) | Exhausted tool/time budget (`max_tool_calls=15`, `max_turns=20`, `max_time_minutes=2.5`) without generating diff (0 patch characters). |
 | **Harness Timeout** | `124` | 3 (2.7%) | Pytest execution exceeded container wall-clock limit (>120s execution timeout). |
@@ -79,19 +79,19 @@ The 112 traces span 32 unique tasks across four repositories: `fastapi` (51 trac
 1. **Agent Causes (16/36 = 44.4%)**: Syntax corruption (13/36 across 7 tasks) and missing modules (3/36 on `rich_3930`).
 2. **Environment-Suspected Cases (20/36 = 55.6%; `env_suspected=True`)**: Path shadowing (10/36 on `httpx_3672`, `fastapi_15661`) and missing wheels (`inline_snapshot`, `dirty_equals` on 10 runs across 4 tasks). Gold-patch controls (`analysis/gold_patch_control.py`) require offline containers (future work).
 
-Excluding the 20 flagged cases in sensitivity analysis leaves 92 runs (80 primary, 12 reruns). Across 26 complete-case clusters (78 primary runs evaluated across all 3 configs), each resolved 2/26 (7.69%, 95% Wilson CI [2.14%, 24.14%]; 6/78 overall, 95% cluster-bootstrap CI [1.28%, 15.38%]). No significant resolution difference was detected by exact McNemar tests ($p=1.000$), reflecting limited power rather than equivalence. Across 80 sensitivity primary runs, resolution is **6/80 (7.50%, unadjusted 95% CI [3.48%, 15.41%])** (`flat_starter` 2/27, `flat_controlled` 2/27, `sfd` 2/26); pooled across 92 sensitivity runs, resolution is **8/92 (8.70%, unadjusted 95% CI [4.47%, 16.23%])**.
+Excluding the 20 flagged cases in sensitivity analysis leaves 92 runs (80 primary, 12 reruns). Across 26 complete-case clusters (78 primary runs evaluated across all 3 configs), each resolved 2/26 (7.69%, 95% Wilson CI [2.14%, 24.14%]; 6/78 overall, 95% cluster-bootstrap CI [1.28%, 15.38%]). No significant resolution difference was detected by exact McNemar tests (p = 1.000), reflecting limited power rather than equivalence. Across 80 sensitivity primary runs, resolution is **6/80 (7.50%, unadjusted 95% CI [3.48%, 15.41%])** (`flat_starter` 2/27, `flat_controlled` 2/27, `sfd` 2/26); pooled across 92 sensitivity runs, resolution is **8/92 (8.70%, unadjusted 95% CI [4.47%, 16.23%])**.
 
 ### 4.2 Deterministic Sub-Classification of Assertion Failures (Exit Code 1: 56 Runs)
 Exit Code 1 represents 50.0% of runs (56/112). A decision tree (`analysis/subclassify_exit1.py`) partitions them:
-1. **Empty / Zero-Byte Patch (6/56 = 10.7%)**: $|F_{\text{agent}}| = 0$. Zero-byte diffs without edits from tool errors (`rich_3043` sfd, `rich_3944` flat_starter, `requests_7502` sfd_rerun), budget limits (`fastapi_14372` flat_starter, `requests_7315` flat_controlled), or unattempted edits (`fastapi_5624` flat_controlled).
-2. **Wrong-File Localization (15/56 = 26.8%)**: $F_{\text{agent}} \cap F_{\text{gold}} = \emptyset$ with applied diff (e.g. `fastapi_15589`).
-3. **Partial Multi-File (14/56 = 25.0%)**: $|F_{\text{gold}}| > 1$ and $F_{\text{agent}} \subsetneq F_{\text{gold}}$ (e.g. `requests_7505`, modifying `models.py` while omitting a companion module).
-4. **Right-File, Wrong-Logic (21/56 = 37.5%)**: $F_{\text{agent}} \cap F_{\text{gold}} \neq \emptyset$. Correct file(s), but failed unit assertions (e.g. `rich_3471`).
+1. **Empty / Zero-Byte Patch (6/56 = 10.7%)**: |F_agent| = 0. Zero-byte diffs without edits from tool errors (`rich_3043` sfd, `rich_3944` flat_starter, `requests_7502` sfd_rerun), budget limits (`fastapi_14372` flat_starter, `requests_7315` flat_controlled), or unattempted edits (`fastapi_5624` flat_controlled).
+2. **Wrong-File Localization (15/56 = 26.8%)**: F_agent ∩ F_gold = ∅ with applied diff (e.g. `fastapi_15589`).
+3. **Partial Multi-File (14/56 = 25.0%)**: |F_gold| > 1 and F_agent ⊂ F_gold (e.g. `requests_7505`, modifying `models.py` while omitting a companion module).
+4. **Right-File, Wrong-Logic (21/56 = 37.5%)**: F_agent ∩ F_gold ≠ ∅. Correct file(s), but failed unit assertions (e.g. `rich_3471`).
 
-*Caveat:* File overlap ($F_{\text{agent}} \cap F_{\text{gold}}$) is a structural proxy; alternative valid patches exist.
+*Caveat:* File overlap (F_agent ∩ F_gold) is a structural proxy; alternative valid patches exist.
 
 ### 4.3 Ground-Truth Resolved Runs & Task Clustering
-Across 112 runs, 8 runs resolved the held-out tests, across 4 tasks: `rich_4077` (3 runs), `fastapi_9753` (1), `fastapi_14077` (2), `rich_3894` (2). In primary runs ($n=96$), 4/32 tasks (12.5%) resolved at least once; 0/32 resolved across all 3 configs. Runs sharing tasks are clustered.
+Across 112 runs, 8 runs resolved the held-out tests, across 4 tasks: `rich_4077` (3 runs), `fastapi_9753` (1), `fastapi_14077` (2), `rich_3894` (2). In primary runs (n = 96), 4/32 tasks (12.5%) resolved at least once; 0/32 resolved across all 3 configs. Runs sharing tasks are clustered.
 
 ---
 
@@ -99,7 +99,7 @@ Across 112 runs, 8 runs resolved the held-out tests, across 4 tasks: `rich_4077`
 
 ### Table 3: Architectural Metrics — 32 Primary Runs per Configuration and 8 Rerun Runs per Configuration
 
-| Configuration | Runs | Resolved (95% Wilson CI) | Mean Peak $P_t$ | Mean Cumulative Prompt | Mean Duration |
+| Configuration | Runs | Resolved (95% Wilson CI) | Mean Peak P_t | Mean Cumulative Prompt | Mean Duration |
 | :--- | :---: | :---: | :---: | :---: | :---: |
 | **Official Starter (`flat_starter`)** | 32 | 2/32 (6.2%) [1.7%, 20.2%] | 13,359.7 | 105,817.6 | 94.2s |
 | **Single-Agent (`flat_controlled`)** | 32 | 2/32 (6.2%) [1.7%, 20.2%] | 13,959.0 | 118,173.0 | 90.8s |
@@ -107,19 +107,19 @@ Across 112 runs, 8 runs resolved the held-out tests, across 4 tasks: `rich_4077`
 | **Rerun: `flat_controlled`** | 8 | 1/8 (12.5%) [2.2%, 47.1%] | 12,557.5 | 93,135.6 | 107.4s |
 | **Rerun: `sfd`** | 8 | 1/8 (12.5%) [2.2%, 47.1%] | 9,306.4 | 67,710.1 | 96.4s |
 
-*Note:* Primary resolution: unadjusted outcomes across $n=32$ tasks; complete-case analysis (2/26 per config, 6/78 overall) in Section 4.1. **Peak $P_t$**: max prompt length. **Cumulative Prompt**: sum of prompt tokens ($n=32$ primary runs).
+*Note:* Primary resolution: unadjusted outcomes across n = 32 tasks; complete-case analysis (2/26 per config, 6/78 overall) in Section 4.1. **Peak P_t**: max prompt length. **Cumulative Prompt**: sum of prompt tokens (n = 32 primary runs).
 
 ### 5.1 Statistical Tests & Resolution Invariance
-Across 32 primary tasks, resolution shows identical marginal counts at 2/32 (6.25%, 95% Wilson CI [1.73%, 20.15%]) across `flat_starter`, `flat_controlled`, and `sfd` (McNemar $p = 1.0000$ for all pairs; 6/96 overall, 95% cluster-bootstrap CI [1.04%, 12.50%]). Given small sample size, this reflects limited statistical power rather than equivalence.
+Across 32 primary tasks, resolution shows identical marginal counts at 2/32 (6.25%, 95% Wilson CI [1.73%, 20.15%]) across `flat_starter`, `flat_controlled`, and `sfd` (McNemar p = 1.0000 for all pairs; 6/96 overall, 95% cluster-bootstrap CI [1.04%, 12.50%]). Given small sample size, this reflects limited statistical power rather than equivalence.
 
 In contrast, SFD achieves significant token reductions over flat baselines (exploratory paired comparisons):
-- **Cumulative Prompt Tokens**: vs `flat_controlled`: **-37,797.4 (-32.0%)** (95% CI [-52,214.6, -23,755.2], Wilcoxon $p < 0.0001$; lower in 25/32); vs `flat_starter`: **-25,441.9 (-24.0%)** (95% CI [-42,485.1, -9,031.4], $p = 0.0061$; lower in 24/32).
-- **Peak Prompt Tokens**: vs `flat_controlled`: **-3,051.6 (-21.9%)** (95% CI [-4,142.9, -1,968.2], $p < 0.0001$; lower in 28/32); vs `flat_starter`: **-2,452.2 (-18.4%)** (95% CI [-3,795.9, -1,111.8], $p = 0.0008$; lower in 26/32).
-- **Cumulative Total Tokens**: vs `flat_controlled`: **-36,786.3 (-29.7%)** (95% CI [-51,715.4, -22,346.4], $p < 0.0001$); vs `flat_starter`: **-24,585.3 (-22.0%)** (95% CI [-41,948.3, -8,026.9], $p = 0.0073$).
-- **Duration**: Non-significant (vs `flat_controlled`: -4.2s, -4.7%, $p = 0.4540$; vs `flat_starter`: -7.7s, -8.1%, $p = 0.4429$).
+- **Cumulative Prompt Tokens**: vs `flat_controlled`: **-37,797.4 (-32.0%)** (95% CI [-52,214.6, -23,755.2], Wilcoxon p < 0.0001; lower in 25/32); vs `flat_starter`: **-25,441.9 (-24.0%)** (95% CI [-42,485.1, -9,031.4], p = 0.0061; lower in 24/32).
+- **Peak Prompt Tokens**: vs `flat_controlled`: **-3,051.6 (-21.9%)** (95% CI [-4,142.9, -1,968.2], p < 0.0001; lower in 28/32); vs `flat_starter`: **-2,452.2 (-18.4%)** (95% CI [-3,795.9, -1,111.8], p = 0.0008; lower in 26/32).
+- **Cumulative Total Tokens**: vs `flat_controlled`: **-36,786.3 (-29.7%)** (95% CI [-51,715.4, -22,346.4], p < 0.0001); vs `flat_starter`: **-24,585.3 (-22.0%)** (95% CI [-41,948.3, -8,026.9], p = 0.0073).
+- **Duration**: Non-significant (vs `flat_controlled`: -4.2s, -4.7%, p = 0.4540; vs `flat_starter`: -7.7s, -8.1%, p = 0.4429).
 
 ### 5.2 Rerun Reproducibility & Determinism Audit
-Cohort 1 was re-executed across 8 tasks $\times$ 2 configs (16 paired runs; `analysis/statistical_tests.py`):
+Cohort 1 was re-executed across 8 tasks × 2 configs (16 paired runs; `analysis/statistical_tests.py`):
 - **Exit Code Agreement**: 12/16 runs (75.0%) matched exit codes (4 flips: `rich_4077` ctrl 1->0; `fastapi_15588` sfd 1->2; `fastapi_15589` ctrl 1->2; `fastapi_15589` sfd -1->1).
 - **Patch Presence Agreement**: 14/16 runs (87.5%) agreed on patch presence (8/8 `flat_controlled`, 6/8 `sfd`; discordant on `fastapi_15589`, `requests_7502`).
 - **Recorded Edit Payload Hash Agreement**: Serialized sequences of recorded `write_file`, `edit_file`, and `submit_patch` payloads matched in 0/16 rerun pairs (0.0%). This measures recorded tool payloads, not final repository patches. Manual diff analysis identified semantic convergence in selected cases (`rich_4077`), despite differences in recorded operations and context.
@@ -138,10 +138,10 @@ In `flat_starter`, root wraps `code_analyzer` as an `AgentTool`. Across 32 trace
 *Figure 3: Sub-agent delegation in `flat_starter`: 81.2% bypassed delegation; 2.1% calls delegated.*
 
 ### 5.4 Cross-Stage Prompt Resets
-In `sfd`, `include_contents: "none"` resets entry prompts from a mean TriageAgent peak of 10,473.9 tokens ($n=32$ primary runs, median 9,863.0; vs 10,922.1 for $n=16$ in SFD) to 1,536.9 tokens at PatchAgent entry. Across 32 primary runs, the mean of per-run percentage resets was 81.95% (median 87.43%, IQR [75.72%, 89.46%]); the ratio of aggregate means corresponds to an 85.3% reduction (a different summary statistic). This drives the 32.0% prompt reduction over flat baselines ($p < 0.0001$).
+In `sfd`, `include_contents: "none"` resets entry prompts from a mean TriageAgent peak of 10,473.9 tokens (n = 32 primary runs, median 9,863.0; vs 10,922.1 for n = 16 in SFD) to 1,536.9 tokens at PatchAgent entry. Across 32 primary runs, the mean of per-run percentage resets was 81.95% (median 87.43%, IQR [75.72%, 89.46%]); the ratio of aggregate means corresponds to an 85.3% reduction (a different summary statistic). This drives the 32.0% prompt reduction over flat baselines (p < 0.0001).
 
 ![Figure 2: Prompt Token Expansion & Stage Resets](https://raw.githubusercontent.com/KarandeepSinghSodhi/gemma-sfd-agent/v1.0.1-camera-ready/figures/fig2_prompt_resets.png)
-*Figure 2: Prompt trajectories across steps $t$ (mean with 95% bootstrap bands). Flat runs expand monotonically; SFD resets prompt tokens by 87.43% median.*
+*Figure 2: Prompt trajectories across steps t (mean with 95% bootstrap bands). Flat runs expand monotonically; SFD resets prompt tokens by 87.43% median.*
 
 ---
 
@@ -176,11 +176,11 @@ Modules provide trajectory auditing (`audit`), deterministic exit-code and local
 
 ## 8. Limitations & Threats to Validity
 
-1. **Task Sample ($n = 32$)**: Covers ~25% of the benchmark split (evaluating all 129 tasks across 3 configurations requires ~13 hours on 4x L4, or ~52 GPU-hours, exceeding remaining quota).
+1. **Task Sample (n = 32)**: Covers ~25% of the benchmark split (evaluating all 129 tasks across 3 configurations requires ~13 hours on 4x L4, or ~52 GPU-hours, exceeding remaining quota).
 2. **Model & Quantization**: Specific to `gemma-4-e4b-it-qat-w4a16-ct` (INT4); larger models may differ.
 3. **Repository Scope**: Evaluates 4 Python repos; runs sharing tasks are paired and clustered.
-4. **Non-Determinism**: Under $T=0.0$, 12/16 exit codes matched on rerun; edit hashes diverged (mean drift: 18,571 tokens).
-5. **Structural Proxy**: File overlap ($F_\text{agent} \cap F_\text{gold}$) is a proxy; alternative valid patches exist.
+4. **Non-Determinism**: Under temperature T = 0.0, 12/16 exit codes matched on rerun; edit hashes diverged (mean drift: 18,571 tokens).
+5. **Structural Proxy**: File overlap (F_agent ∩ F_gold) is a proxy; alternative valid patches exist.
 6. **Sandbox Sensitivity (`env_suspected=True`)**: 20 runs exhibited collection failures consistent with container constraints (missing wheels, path shadowing); confirmation requires offline container controls (future work).
 
 ---
