@@ -81,7 +81,7 @@
   Software engineering (SWE) benchmarks typically report scalar task-resolution rates while discarding multi-turn execution trajectories, obscuring why developer agents fail. For compact 4-bit models (`gemma-4-e4b-it-qat-w4a16-ct`), diagnosing low resolution (median 5.0% across 197 teams on the official Small Model Prize leaderboard; @holbrook2026leaderboard) is hindered by limited public trace data linking small-agent trajectories to systematic failure diagnoses and held-out outcomes. We introduce *ATIF-Gemma*, an open empirical diagnostic corpus of 112 execution traces comprising 1,518 LLM calls, 1,328 tool invocations, and 11,706,178 logged tokens across 32 paired SWE-bench tasks on 4x NVIDIA L4 GPUs using Google ADK and `swegemma`. All evaluated tasks derive from public repositories under permissive open-source licenses (MIT, Apache-2.0, BSD-3-Clause in `NOTICE`; evaluation `test_patch` omitted per data governance rules).
   
   #v(2pt)
-  Standardized under ATIF v1.7 (100% schema-validated; @harbor2026atif), ATIF-Gemma cross-references fine-grained actions against held-out outcomes. Across the 26 tasks with valid environments across all configurations, each agent architecture resolved *2/26 tasks (7.69%, 95% Wilson CI [2.14%, 24.14%])*, yielding *6/78 resolved runs overall (7.69%, 95% task-level cluster-bootstrap CI [1.28%, 15.38%])*; across all 96 raw primary runs, resolution is *6/96 (6.25%, 2/32 per configuration, 95% task-level cluster-bootstrap CI [1.04%, 12.50%])*; pooled across 112 runs, resolution is 8/112 (7.14%). We establish a deterministic failure taxonomy: assertion failures (50.0%, 56/112), collection errors (32.1%, 36/112; 55.6% attributed to sandbox defects, flagged `env_suspected`), budget exhaustion (8.0%, 9/112), and verification timeouts (2.7%, 3/112). We release the trace corpus, the `atif_gemma` package, and run-level diagnostic data.
+  Standardized under ATIF v1.7 (100% schema-validated; @harbor2026atif), ATIF-Gemma cross-references fine-grained actions against held-out outcomes. Across the 26 tasks with valid environments across all configurations, each agent architecture resolved *2/26 tasks (7.69%, 95% Wilson CI [2.14%, 24.14%])*, yielding *6/78 resolved runs overall (7.69%, 95% task-level cluster-bootstrap CI [1.28%, 15.38%])*; across all 96 raw primary runs, resolution is *6/96 (6.25%, 2/32 per configuration, 95% task-level cluster-bootstrap CI [1.04%, 12.50%])*; pooled across 112 runs, resolution is 8/112 (7.14%). We establish a deterministic failure taxonomy: assertion failures (50.0%, 56/112), collection errors (32.1%, 36/112; 55.6% environment-suspected, flagged `env_suspected=True`; in sensitivity analysis excluding these 20 runs, resolution is 6/80 [7.50%] primary and 8/92 [8.70%] pooled), budget exhaustion (8.0%, 9/112), and verification timeouts (2.7%, 3/112). We release the trace corpus, the `atif_gemma` package, and run-level diagnostic data.
 ]
 
 #v(0.2cm)
@@ -181,7 +181,7 @@ In SWE-bench, patch verification is executed in an isolated verification sandbox
     [Budget / Timeout], [-1], [9 (8.0%)], [Exhausted tool or time budget (`max_tool_calls=15`, `max_turns=20`, `max_time_minutes=2.5`) without generating unified diff (0 patch characters).],
     [Verification Timeout], [124], [3 (2.7%)], [Verification harness timed out (120s limit) due to daemon process or infinite loop in test runner.]
   ),
-  caption: [Empirical Phase 2 exit code distribution across all 112 ATIF-Gemma execution traces.]
+  caption: [Empirical Phase 2 exit code distribution across all 112 ATIF-Gemma execution traces. *Note on Taxonomy Duality:* This table uses mutually exclusive Phase 2 exit-code categories. The companion-paper taxonomy is a separate semantic mapping that reassigns the six Exit 1 zero-byte-patch cases to `timeout_or_budget_no_patch`. Category totals differ between taxonomies, while overall totals remain 112 runs.]
 )
 
 #v(0.2cm)
@@ -197,7 +197,7 @@ A critical diagnostic finding enabled by ATIF-Gemma is that *nearly one-third of
    - *Syntactic & Indentation Corruption (13/36 = 36.1%)*: Across 7 tasks (e.g., `fastapi_14099`, `rich_3894`), small model patches inserted unindented blocks, detached `else:` branches, or unclosed brackets, causing Python to raise `IndentationError` or `SyntaxError` during test collection.
    - *Missing New Source Module (3/36 = 8.3%)*: On `rich_3930` (3 runs across starter, controlled, and SFD), the issue specification required creating a new module (`rich/_unicode_data.py`). Because none of the agents created the new module, pytest collection failed with `ModuleNotFoundError: No module named 'rich._unicode_data'`.
 
-2. *Environment-Attributable Collection Failures (20/36 = 55.6%; flagged `env_suspected=True`)*:
+2. *Environment-Suspected Collection Failures (20/36 = 55.6%; flagged `env_suspected=True`)*:
    - *Virtual Environment & Path Shadowing (10/36 = 27.8%)*: On `httpx_3672` (5 runs) and `fastapi_15661` (5 runs), container configuration prevented valid collection. In `httpx_3672`, system packages at `/usr/local/lib/python3.12/dist-packages/httpx` shadowed `/workspace/src/httpx`. In `fastapi_15661`, the test patch imported from `scripts.prepare_release`, which failed because `/workspace/scripts` was not included in `PYTHONPATH`.
    - *Missing Sandbox Dependencies (10/36 = 27.8%)*: On 4 tasks (`fastapi_14361`, `fastapi_14371`, `fastapi_14455`, `fastapi_14459`), held-out test patches imported external testing libraries (`inline_snapshot`, `dirty_equals`) absent from the offline wheelhouse, triggering `ModuleNotFoundError` across every evaluated architecture.
 
@@ -216,7 +216,7 @@ Representing half of the entire corpus (56/112 = 50.0%), Exit Code 1 occurs when
 *Caveat:* Gold-patch file overlap serves as an automated structural proxy; valid alternative engineering implementations may modify different helper abstractions to resolve an issue.
 
 == 4.3 Ground-Truth Resolved Runs & Task-Level Clustering
-Across the 112 runs, 8 runs successfully resolved held-out tests across 4 distinct tasks: `rich_4077` (3 runs), `fastapi_9753` (1 run), `fastapi_14077` (2 runs), and `rich_3894` (2 runs). In primary runs ($n=96$), resolutions concentrate on these same 4 tasks (4/32 = 12.5% of tasks resolved at least once; 0/32 tasks resolved across all 3 configurations). Runs sharing tasks are paired and clustered, not independent i.i.d. draws.
+Across the 112 runs, 8 runs resolved the held-out tests, across 4 tasks: `rich_4077` (3 runs), `fastapi_9753` (1 run), `fastapi_14077` (2 runs), and `rich_3894` (2 runs). In primary runs ($n=96$), resolutions concentrate on these same 4 tasks (4/32 = 12.5% of tasks resolved at least once; 0/32 tasks resolved across all 3 configurations). Runs sharing tasks are paired and clustered, not independent i.i.d. draws.
 
 #v(0.3cm)
 = 5. Quantitative Audit Across Agent Architectures
@@ -236,7 +236,7 @@ ATIF-Gemma pairs each task across three distinct agent architectures executing o
     [Rerun: flat_controlled], [8], [1/8 (12.5%) [2.2%, 47.1%]], [12,557.5], [93,135.6], [107.4s],
     [Rerun: sfd], [8], [1/8 (12.5%) [2.2%, 47.1%]], [9,306.4], [67,710.1], [96.4s]
   ),
-  caption: [Architectural comparison across all 112 ATIF-Gemma runs. Primary-run resolution rates reflect unadjusted raw outcomes across all 32 tasks, including suspected sandbox defects; complete-case sensitivity analysis on valid runs (2/26 per config, 6/78 overall) is reported in Section 4.1. *Mean Peak $P_t$*: maximum prompt length reaching context across turns $t$. *Mean Prompt*: sum of input prompt tokens across LLM calls ($n=32$ primary runs).]
+  caption: [Architectural Metrics --- 32 Primary Runs per Configuration and 8 Rerun Runs per Configuration. Primary-run resolution rates reflect unadjusted raw outcomes across all 32 tasks, including suspected sandbox defects; complete-case sensitivity analysis on valid runs (2/26 per config, 6/78 overall) is reported in Section 4.1. *Mean Peak $P_t$*: maximum prompt length reaching context across turns $t$. *Mean Prompt*: sum of input prompt tokens across LLM calls ($n=32$ primary runs).]
 )
 
 == 5.1 Statistical Tests & Resolution Invariance
@@ -251,12 +251,11 @@ In contrast, the token reduction achieved by SFD's stage isolation is highly sta
 Cohort 1 was re-executed independently across 8 tasks x 2 configurations (16 paired runs; `analysis/statistical_tests.py`):
 - *Exit Code Agreement*: 12 of 16 runs (75.0%) matched exact Phase 2 exit codes.
 - *Patch Presence Agreement*: 14 of 16 runs (87.5%) agreed on patch generation presence (8/8 in `flat_controlled`, 6/8 in `sfd`). Discordances: `fastapi_15589` (sfd: timeout vs 590-char patch) and `requests_7502` (sfd: 581 chars vs 0 bytes from edit-tool exceptions).
-- *Normalized Edit-Operation Hash Agreement*: Across all 16 rerun pairs, normalized edit-operation hashes differed (0 of 16 pairs, 0.0%). Manual diff analysis nevertheless identified semantic convergence in selected cases, including `rich_4077`, despite differences in recorded edit operations and patch context.
-- *Concordance by Normalization Level*:
-  1. *Target File Localization*: 10 of 16 pairs (62.5%) touched the identical set of source files.
-  2. *Normalized Replacement Code (Comment-Stripped)*: 1 of 16 pairs (6.3%; `requests_7505` `flat_controlled`, applying identical single-line logic `elif isinstance(fp, _SupportsRead): fdata = fp.read()`, differing only by preceding comments; companion SFD evaluated SFD's distinct edit replacing `isinstance(data, _SupportsRead)`).
-  3. *Submitted Patch & Tool-Sequence Hashes*: 0 of 16 pairs (0.0%) produced identical serialized edit payloads or bitwise patch diffs due to varying context lines.
-  4. *Semantic Resolution Convergence*: 1 of 16 pairs (6.3%; `rich_4077` `sfd`, resolving unit tests via identical 3-line logic `def isatty(self) -> bool: return self.__file.isatty()`).
+- *Recorded Edit-Operation Payload Hash Agreement*: The serialized sequence of recorded `write_file`, `edit_file`, and `submit_patch` payloads matched in 0 of 16 rerun pairs (0.0%). This measures agreement between recorded tool-operation payloads, not identity of the final applied repository patches. Manual diff analysis nevertheless identified semantic convergence in selected cases (`rich_4077`), despite differences in recorded tool operations and patch context.
+- *Concordance Observations*:
+  1. *Target-File Localization*: 10 of 16 pairs (62.5%) touched the same source files.
+  2. *Comment-Stripped Replacement Logic*: 1 of 16 pairs (6.3%; `requests_7505` `flat_controlled`, applying identical single-line logic `elif isinstance(fp, _SupportsRead): fdata = fp.read()`, differing only by comments; companion SFD evaluated SFD's distinct edit).
+  3. *Semantic Resolution Convergence*: 1 of 16 pairs (6.3%; `rich_4077` `sfd`, converging on a successful resolution via `def isatty(self) -> bool: return self.__file.isatty()`).
 - *Exit-Code Flips*: The 4 discordant pairs: (1) `rich_4077` (ctrl: 1->0 resolved); (2) `fastapi_15588` (sfd: 1->2); (3) `fastapi_15589` (ctrl: 1->2); (4) `fastapi_15589` (sfd: -1->1).
 - *Token Drift*: Mean absolute token difference was 18,571.0 cumulative total tokens between paired runs ($|"tokens"_("rerun") - "tokens"_("orig")|$ across the 16 pairs), quantifying multi-turn trajectory divergence.
 
@@ -342,7 +341,7 @@ To ensure rigorous interpretation of our empirical findings, we explicitly ident
 3. *Repository Diversity & Clustered Runs*: The corpus is concentrated across four Python libraries (`fastapi`, `rich`, `requests`, `httpx`). Runs across configurations on the same task are paired and clustered, not independent samples.
 4. *Trajectory Non-Determinism & Token Drift*: Under greedy decoding ($T=0.0$, `seed=42`), 12/16 exit codes matched on rerun, but no paired workspace edit sequences were byte-identical across the 16 pairs (mean absolute token difference: 18,571.0 cumulative total tokens), reflecting serving-level trajectory divergence.
 5. *File-Level Structural Proxy*: Evaluates file overlap ($F_("agent") sect F_("gold")$); valid alternative patches modifying different helper abstractions remain possible.
-6. *Harness Environment Failures (`env_suspected=True`)*: 20 runs failed due to offline container constraints (missing wheels and site-package shadowing), demonstrating real-world benchmark friction.
+6. *Sandbox Sensitivity (`env_suspected=True`)*: 20 runs exhibited collection failures consistent with container constraints (missing wheels, path shadowing); confirming these requires offline container controls (future work).
 
 #v(0.3cm)
 = 9. Conclusion & Resource Availability
@@ -352,7 +351,7 @@ ATIF-Gemma establishes an open, reproducible, full-fidelity diagnostic foundatio
 *Dataset URL:* https://www.kaggle.com/datasets/karandeepsinghsodhi/atif-gemma-swe-agent-traces \
 *Code Repository:* https://github.com/KarandeepSinghSodhi/gemma-sfd-agent \
 *Interactive Exploration Kernel:* https://www.kaggle.com/code/karandeepsinghsodhi/atif-gemma-diagnostic-exploration \
-*Manuscript PDF:* https://raw.githubusercontent.com/KarandeepSinghSodhi/gemma-sfd-agent/v1.0.0-camera-ready/paper_resource.pdf
+*Manuscript PDF:* https://raw.githubusercontent.com/KarandeepSinghSodhi/gemma-sfd-agent/v1.0.1-camera-ready/paper_resource.pdf
 
 #v(0.3cm)
 #bibliography("references_gemma.bib", style: "ieee", title: "References")

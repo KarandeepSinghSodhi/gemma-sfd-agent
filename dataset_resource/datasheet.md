@@ -83,8 +83,8 @@ Following the *Datasheets for Datasets* standard (Gebru et al., 2021).
 
 ## 6. Distribution & Licensing
 
-- **License:** Creative Commons Attribution 4.0 International (CC-BY-4.0).
-- **Code Attribution & Upstream Licenses:** SWE-bench instances are derived from Jimenez et al. (2024; MIT). Evaluated target repositories (`fastapi`, `rich`, `requests`, `httpx`) are licensed under MIT, Apache-2.0, and BSD-3-Clause licenses, as documented in the dataset `NOTICE` file.
+- **License:** Creative Commons Attribution 4.0 International (CC BY 4.0) applies to the original corpus annotations and diagnostic metadata to the extent licensable.
+- **Code Attribution & Upstream Licenses:** SWE-bench instances derive from Jimenez et al. (2024; MIT). Evaluated target repositories (`fastapi`, `rich`, `requests`, `httpx`) and code snippets embedded in traces remain subject to their original upstream open-source licenses (MIT, Apache-2.0, BSD-3-Clause), as documented in the dataset `NOTICE` file.
 - **Competition Data Governance:** Traces log agent trajectories and public issue descriptions without disclosing held-out test suites (`test_patch` is omitted). Model outputs adhere to Google Gemma Terms of Use.
 - **Repository:** https://github.com/KarandeepSinghSodhi/gemma-sfd-agent
 - **Kaggle Dataset:** https://www.kaggle.com/datasets/karandeepsinghsodhi/atif-gemma-swe-agent-traces
