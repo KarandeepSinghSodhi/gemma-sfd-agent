@@ -1,12 +1,13 @@
 """
-gold_patch_control.py: Gold-Patch Oracle Control for SWE-bench Benchmark Tasks.
-Applies reference ground-truth patches from tasks_reference.jsonl directly to repository snapshots
+gold_patch_control.py: Reference Ground-Truth Patch Oracle Control Protocol.
+Applies author reference patches from tasks_reference.jsonl directly to repository snapshots
 and executes held-out verification tests to establish the empirical Oracle Ceiling.
 
-NOTE: This script requires the official Linux evaluation environment with mounted repo snapshots
-and offline wheelhouse (e.g. on Kaggle /kaggle/input/gemma-4-developer-agent).
-When local Linux sandbox is absent, this task is marked BLOCKED per empirical protocol Rule 2.
-DO NOT SIMULATE OR ESTIMATE RESULTS.
+ENVIRONMENT REQUIREMENT:
+This script is designed for execution within the competition's offline Linux evaluation
+container (where repository snapshots and the offline wheelhouse are mounted).
+Because that offline evaluation container was not available in local workstation environments,
+executing this oracle control was not conducted locally and remains planned future work.
 """
 import json
 import os
@@ -26,19 +27,19 @@ def run_gold_patch_evaluation(data_dir: Path, output_file: Path):
         import swegemma
         from swegemma.models import load_tasks
     except ImportError:
-        print("[BLOCKED] swegemma is not installed in the current environment.")
-        print("To run this oracle control, execute inside the official Kaggle kernel environment.")
+        print("[ENVIRONMENT REQUIRED] swegemma is not installed in the local workstation environment.")
+        print("To run this oracle control, execute inside the official competition container environment.")
         sys.exit(0)
         
     tasks_path = data_dir / "tasks.jsonl"
     if not tasks_path.exists():
-        print(f"[BLOCKED] tasks.jsonl not found at {tasks_path}")
+        print(f"[ENVIRONMENT REQUIRED] tasks.jsonl not found at {tasks_path}")
         sys.exit(0)
         
     tasks = load_tasks(tasks_path)
     print(f"Loaded {len(tasks)} benchmark tasks for gold-patch oracle evaluation.")
     
-    # Execution loop inside Kaggle sandbox ...
+    # Execution loop inside competition sandbox ...
     # Outputs to results/gold_patch_oracle_results.json
 
 if __name__ == "__main__":

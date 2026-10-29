@@ -294,3 +294,18 @@ Format:
   - Paired 26-task valid resolution: 2/26 (7.69%) per config, 6/78 (7.69%) overall
   - Rerun patch presence agreement: 14/16 (87.5%) (8/8 controlled, 6/8 SFD)
   - Raw whitespace word count: 2,977 words -> 2,959 words (< 3,000 max ceiling)
+
+---
+
+## [Final Review & Release Freeze] 2026-10-29 12:05 UTC
+- **Task**: Final reviewer checklist cleanup before submission.
+- **What Changed**:
+  1. *Prompt Phrasing Cleanup*: Replaced leaked instruction 'per Rule 2 zero-simulation' in Section 4.1 with explicit future work note; professionally labeled nalysis/gold_patch_control.py as an offline container protocol.
+  2. *Gemma 4 Citation Restored*: Synchronized reference to Gemma 4 Technical Report (arXiv:2607.02770).
+  3. *SWE-Gym & Rajak Citations*: Corrected official title to 'Training Software Engineering Agents and Verifiers with SWE-Gym' (arXiv:2412.21139); standardized Raja Rajak (Rajak, R.) with direct links.
+  4. *Rerun Metric Disambiguation*: Explicitly clarified that 14/16 (87.5%) refers to patch-presence agreement, while 0/16 pairs produced bitwise-identical final patches or edit sequences (SHA-256).
+  5. *Task-Level Cluster Bootstrap Statistics*: Reported 26-task complete-case headline resolution (2/26 per config, 7.69%, 95% task-level cluster-bootstrap CI [1.28%, 15.38%]; 6/96 primary cluster-bootstrap CI [1.04%, 13.54%]).
+  6. *Gebru-Style Datasheet Integrated*: Added Section 3.1 Datasheet summary covering purpose, composition, collection, data governance, and CC BY 4.0 / Apache-2.0 licensing.
+  7. *Word Count Safety Cushion*: Whitespace word count optimized to **2,930 words** (70 words below 3,000 ceiling; cleaned prose: **2,870 words**).
+- **Evidence Files**: KAGGLE_WRITEUP_RESOURCE.md, paper_resource.typ, paper_resource.pdf, 
+eferences_gemma.bib, nalysis/gold_patch_control.py.
