@@ -1,222 +1,165 @@
 # State-Filtered Deliberation: Stage-Isolated Context Management for Small Open-Weight Software Engineering Agents
 
 **Author:** Karandeep Singh Sodhi (Independent Researcher — `https://github.com/KarandeepSinghSodhi/gemma-sfd-agent`)  
-**Track:** Google — The Gemma 4 Developer Agent Competition (Paper Track)
+**Track:** Google — The Gemma 4 Developer Agent Competition (Paper Track)  
+**Artifact Repository:** `https://github.com/KarandeepSinghSodhi/gemma-sfd-agent` (Tag: `v1.0.1-camera-ready`)  
+**Companion Resource Paper:** [Sodhi (2026)](https://github.com/KarandeepSinghSodhi/gemma-sfd-agent/blob/v1.0.1-camera-ready/KAGGLE_WRITEUP_RESOURCE.md)
 
 ---
 
 ## Abstract
 
-On the Gemma 4 Developer Agent Challenge Small Model Prize leaderboard (197 teams, 2026-10-24 UTC), public resolution rates on 4-bit quantized E2B/E4B models range from 0.0% to 10.0% (median 5.0%), compared to 22.0%–24.0% for 31B models. We study **State-Filtered Deliberation (SFD)**, a declarative three-stage `SequentialAgent` architecture in Google ADK and `swegemma` (`TriageAgent` → `PatchAgent` → `VerifierAgent`) that configures `include_contents: "none"` on `PatchAgent` and `VerifierAgent` to slice out prior tool observations at stage boundaries while passing structured state variables (`localization_packet` and `patch_manifest`). Across n = 16 paired tasks on `gemma-4-e4b-it-qat-w4a16-ct` (64 total runs on 4x NVIDIA L4 GPUs) against the official starter kit (`flat_starter`) and a controlled single-agent baseline (`flat_controlled`), SFD resets stage-entry prompts from a mean `TriageAgent` peak of 10922.1 tokens to 1500.9 tokens at `PatchAgent` entry (-86.3%), lowers per-task peak prompt length relative to `flat_controlled` on 13/16 tasks (sign test p = 0.0213, mean 11291.9 vs. 13550.8 tokens; 13029.3 on `flat_starter`, without bounding upper-tail peaks: max 16146 vs. 15281 and 16154), and reduces cumulative total tokens by 25.7% vs. `flat_controlled` (88909.5 vs. 119664.4, sign test p = 0.0213). In this 16-task sample, `flat_starter` also bypasses its discretionary `code_analyzer` sub-agent on 13/16 tasks (81.2%). End-to-end task resolution shows a null difference: 1/16 (6.2%, 95% Wilson CI [1.1%, 28.3%]) for `sfd` and `flat_starter`, and 0/16 (0.0%, CI [0.0%, 19.4%]) for `flat_controlled` (McNemar p = 1.0000). Code and all 64 traces: `https://github.com/KarandeepSinghSodhi/gemma-sfd-agent`.
+On the Gemma 4 Developer Agent Challenge Small Model Prize leaderboard (197 teams, 2026-10-24 UTC), public resolution rates on 4-bit quantized E2B/E4B models range from 0.0% to 10.0% (median 5.0%), compared to 22.0%–24.0% for 31B models. We study **State-Filtered Deliberation (SFD)**, a declarative three-stage `SequentialAgent` architecture in Google ADK and `swegemma` (`TriageAgent` → `PatchAgent` → `VerifierAgent`) that configures `include_contents: "none"` on downstream stages to slice out prior tool observations while passing structured state variables (`localization_packet` and `patch_manifest`). Across n = 16 paired tasks on `gemma-4-e4b-it-qat-w4a16-ct` (64 total runs on 4x NVIDIA L4 GPUs) against the official starter kit (`flat_starter`) and a controlled single-agent baseline (`flat_controlled`), SFD resets stage-entry prompts from a mean `TriageAgent` peak of 10,922.1 tokens to 1,500.9 tokens at `PatchAgent` entry (-86.3%), lowers per-task peak prompt length relative to `flat_controlled` on 13/16 tasks (sign test p = 0.0213, mean 11291.9 vs 13550.8 tokens; 13029.3 on flat_starter), and reduces cumulative total tokens by 25.7% vs `flat_controlled` (88,909.5 vs 119,664.4, sign test p = 0.0213). In this 16-task sample, `flat_starter` bypasses its discretionary `code_analyzer` sub-agent on 13/16 tasks (81.2%). End-to-end task resolution shows a null difference: 1/16 (6.2%, 95% Wilson CI [1.1%, 28.3%]) for `sfd` and `flat_starter`, and 0/16 (0.0%, CI [0.0%, 19.4%]) for `flat_controlled` (McNemar p = 1.0000).
 
 ---
 
 ## 1. Introduction & Motivating Hypotheses
 
-Repository-level software engineering benchmarks such as SWE-bench (Jimenez et al., 2024) evaluate whether language model agents can diagnose bug reports, navigate multi-file codebases, synthesize patches, and pass unit test suites. While frontier models and 31B open-weight models achieve strong resolution rates using iterative ReAct loops (Yao et al., 2023; Yang et al., 2024; Wang et al., 2024), deploying autonomous coding agents on local developer workstations requires compact, quantized open-weight models such as the Gemma 4 family (E2B, E4B, 12B, 31B) (Gemma Team, 2026).
+Repository-level software engineering benchmarks such as SWE-bench (Jimenez et al., 2024) evaluate autonomous coding agents on bug localization, patch synthesis, and regression testing. While 31B models achieve up to 24.0% public resolution, compact models face severe capability constraints. On the official Small Model Prize leaderboard (E2B/E4B models, 197 teams), scores range from 0.0% to 10.0% (mean 4.23%, median 5.0%), with 92.9% of teams scoring ≤ 6.0%.
 
-Empirical data from the Google Gemma 4 Developer Agent Challenge highlights the severity of this capability gap. In our archived leaderboard snapshots (`results/leaderboard_snapshot_2026_10_26.json`, retrieved 2026-10-26 UTC, and `results/small_model_leaderboard_2026_10_24.csv` from `ryanholbrook/gemma-4-developer-agent-small-model-leaderboard`, updated 2026-10-24 23:58 UTC), the official competition starter baseline running on `gemma-4-31b-it-qat-w4a16-ct` with fine-tuned LoRA adapters achieves a 22.0% (`0.22`) public resolution rate and the top 31B submissions reach 24.0% (`0.24`). By contrast, across all N = 197 participating teams on the official Small Model Prize leaderboard (restricted to E2B/E4B models), public resolution scores range from 0.0% (`0.00`) to 10.0% (`0.10`), with a median of 5.0% (`0.05`), a mean of 4.23% (`0.0423`), and 183 of 197 teams (92.9%) scoring ≤ 6.0% (`0.06`). (Our own full-set competition submission, Ref `#57643078` submitted 2026-10-25 21:22:35 UTC, remained in `SubmissionStatus.PENDING` (`public_score: null`) in the asynchronous evaluation queue at the time of snapshot retrieval on 2026-10-26 UTC.)
-
-We formulate and test three specific hypotheses regarding `gemma-4-e4b-it-qat-w4a16-ct`:
-1. **Prompt-Length Error Correlation Hypothesis (Hypothesis 1):** In multi-turn trajectories, as per-call prompt length P_t increases with accumulated tool observations, we hypothesize that non-budget tool call errors (such as malformed `edit_file` search blocks) and duplicate file reads occur more frequently. We test this observationally by bucketing all recorded LLM calls by prompt token length P_t and separating genuine tool errors from budget-cap rejections.
-2. **Discretionary Sub-Agent Under-Utilization Hypothesis (Hypothesis 2):** The official competition starter kit (`sample_submission/agent.yaml`) already provides a read-only `code_analyzer` sub-agent wrapped as an `AgentTool` (`skip_summarization: true`) alongside all nine built-in `swegemma` tools on the root `swe_baseline_agent`. Because invoking `code_analyzer` is discretionary, we hypothesize that a 4B model rarely delegates to `code_analyzer` and instead executes exploratory file reads directly inside its root context window.
-3. **Stage-Entry Context Reset & Role Partitioning Hypothesis (Hypothesis 3):** Replacing discretionary delegation with a mandatory `SequentialAgent` pipeline (`TriageAgent` → `PatchAgent` → `VerifierAgent`) that sets `include_contents: "none"` on `PatchAgent` and `VerifierAgent` deterministically bounds **stage-entry** prompt length and lowers typical per-task peak prompt length (though not upper-tail `TriageAgent` peaks) while separating localization from code editing.
+We formulate and evaluate three hypotheses on `gemma-4-e4b-it-qat-w4a16-ct`:
+1. **Prompt-Length Error Correlation (H1):** As per-call prompt length P_t increases with accumulated tool observations, non-budget tool errors and duplicate file reads occur more frequently.
+2. **Discretionary Sub-Agent Under-Utilization (H2):** In the official starter kit, discretionary delegation to `code_analyzer` is underutilized by the 4B model in favor of unpruned root reads.
+3. **Stage-Entry Context Reset & Role Partitioning (H3):** A declarative `SequentialAgent` pipeline (`TriageAgent` → `PatchAgent` → `VerifierAgent`) with `include_contents: "none"` deterministically bounds stage-entry prompt length, lowering typical per-task peak prompts while isolating localization from patch editing.
 
 ---
 
 ## 2. Context Mechanics in `swegemma` and `google-adk`
 
 ### 2.1 Prompt Growth and the Token Signal Ratio
-Consider an agent trajectory across LLM calls t ∈ {1, 2, ..., T}. Let P_t denote the prompt token count and C_t the completion token count on call t. In a continuous single-agent session (`include_contents: "default"`), the prompt at call t concatenates the system instruction s_0, the initial harness task prompt u_0, and all prior assistant turns a_i and tool observations o_i:
+Consider an agent trajectory across LLM calls t ∈ {1, 2, ..., T}. In a continuous single-agent session (`include_contents: "default"`), prompt P_t concatenates the system instruction s_0, initial harness task prompt u_0, and all prior turns a_i and observations o_i:
 ```text
 P_t = |s_0| + |u_0| + Σ_{i=1}^{t-1} (|a_i| + |o_i|)
 ```
-In the `swegemma` harness, even at call t = 1, |s_0| + |u_0| spans ~1,900–4,800 tokens because `build_agent_prompt()` embeds the problem statement, budget rules, tool schemas, and up to 200 breadth-first directory tree entries under `/workspace`. Furthermore, `swegemma` configures Google ADK's `EventsCompactionConfig` (`compaction_interval=15`, `token_threshold=14336`, `event_retention_size=5`) to compact long histories after 15 turns.
+In `swegemma`, even at t = 1, |s_0| + |u_0| spans ~1,900–4,800 tokens because `build_agent_prompt()` embeds the problem statement, budget rules, tool schemas, and up to 200 directory tree entries under `/workspace`.
 
-### 2.2 Exact Stage-Boundary Slicing via `include_contents: "none"` in Google ADK
-Inspection of `google-adk==1.36.1` (`google/adk/flows/llm_flows/contents.py` and `functions.py`) establishes the exact runtime behavior when `SequentialAgent` transitions between sub-agents:
-- When a sub-agent executes a tool call, `functions.py` records both the `function_call` event and the resulting `function_response` event with `event.author = invocation_context.agent.name`.
-- When `include_contents: "none"` is configured on `PatchAgent` (or `VerifierAgent`), `_ContentLlmRequestProcessor` calls `_get_current_turn_contents(branch, session.events, agent.name)`. This function scans `session.events` backward from `len(events) - 1` and stops at the first event where `event.author == "user"` or `_is_other_agent_reply(agent.name, event)` is `True`—which is the *immediately preceding sub-agent's final text emission event* e_k.
-- `_get_current_turn_contents` slices `session.events[k:]`, excluding `events[:k]` (both `events[0]`, the initial 200-entry workspace layout tree, and all intermediate `function_call`, `function_response`, and thought blocks from earlier stages).
-- Crucially, within the active sub-agent's own multi-step loop, all new tool calls and responses (`events[k+1:]`) have `event.author == agent.name`, so the backward scan retains the sub-agent's complete within-stage tool history. Thus, `include_contents: "none"` bounds **stage-entry** prompt length by construction, but does **not** bound within-stage prompt growth if a sub-agent makes many tool calls.
+### 2.2 Exact Stage-Boundary Slicing via `include_contents: "none"`
+Inspection of `google-adk==1.36.1` reveals the exact runtime behavior:
+- When `include_contents: "none"` is configured on `PatchAgent` or `VerifierAgent`, `_ContentLlmRequestProcessor` calls `_get_current_turn_contents()`.
+- This function scans backward through `session.events` to the immediately preceding sub-agent's final emission event e_k, slicing `session.events[k:]`.
+- This deterministically excludes all previous intermediate tool calls, observations, and initial workspace layouts, bounding **stage-entry** prompt length by construction. Crucially, within-stage tool history accumulates normally.
 
 ---
 
-## 3. Architecture & Runtime-Enforced vs. Prompt-Requested Rules
+## 3. Architecture: Runtime-Enforced vs. Prompt-Requested Rules
 
-All configurations execute inside `swegemma`, which provides nine built-in tools: `run_command`, `read_file`, `edit_file`, `write_file`, `get_status`, `submit_patch`, and the pre-computed NetworkX AST call-graph and `.npz` symbol-embedding tools `search_similar_code`, `get_code_neighbors`, and `get_code_subgraph`. SFD (`sub_sfd`) chains three sub-agents under a root `SequentialAgent`:
-1. **`TriageAgent` (`include_contents: "default"`, `output_key: "localization_packet"`):** Restricted in YAML to five read-only tools (`search_similar_code`, `get_code_neighbors`, `get_code_subgraph`, `read_file`, `get_status`).
-2. **`PatchAgent` (`include_contents: "none"`, `output_key: "patch_manifest"`):** Restricted in YAML to four workspace tools (`read_file`, `edit_file`, `write_file`, `get_status`). Interpolates `{problem_description?}` and `{localization_packet?}` via `inject_session_state()`.
-3. **`VerifierAgent` (`include_contents: "none"`):** Configured with `run_command`, `read_file`, `edit_file`, `get_status`, and `submit_patch`. Interpolates `{problem_description?}`, `{localization_packet?}`, and `{patch_manifest?}`.
-
-Table 1 separates constraints enforced in code/YAML from behaviors requested only via prompts. All nine files in `agent_sfd/` (`agent.yaml`, `eval_config.yaml`, `configs/sampling.yaml`, `prompts/*.md`, and `sub_agents/*.yaml`) are byte-for-byte identical to the competition archive `submission_sfd.zip` (SHA-256 `c4857f8d163fe7d64d74b22370ee26ad8f6e23af50678edc4414fb2f2d928124`, submitted to Kaggle as Ref `#57643078` at `2026-10-25 21:22:35 UTC` and committed 52 seconds later in git commit `af0937d4109f956d7d11aa560809bcb4f6bab471` at `21:23:27 UTC`, with zero subsequent commits or untracked edits touching `agent_sfd/`), and the Kaggle evaluation kernels (`kaggle_kernel/`) wrote these exact files from a clean working tree.
+SFD chains three sub-agents under a root `SequentialAgent`:
+1. **`TriageAgent` (`output_key: "localization_packet"`):** Restricted in YAML to 5 read-only tools (`search_similar_code`, `get_code_neighbors`, `get_code_subgraph`, `read_file`, `get_status`).
+2. **`PatchAgent` (`include_contents: "none"`, `output_key: "patch_manifest"`):** Restricted to 4 workspace tools (`read_file`, `edit_file`, `write_file`, `get_status`). Interpolates `{problem_description?}` and `{localization_packet?}`.
+3. **`VerifierAgent` (`include_contents: "none"`):** Equipped with `run_command`, `read_file`, `edit_file`, `get_status`, and `submit_patch`.
 
 ### Table 1: Runtime-Enforced Constraints vs. Prompt-Level Directives
 
 | Mechanism / Rule | Enforced in Code / YAML Config | Prompt-Requested Only (Unenforced) |
 | :--- | :--- | :--- |
-| **Stage execution & tool separation** | `SequentialAgent` order; per-stage `tools:` lists in `sub_agents/*.yaml` | Stopping after ≤ 3 tool calls in `TriageAgent` / `PatchAgent` |
-| **Cross-stage context reset** | `include_contents: "none"` slices `events[k:]` at stage entry | Within-stage prompt growth & per-stage tool call count |
-| **State packet handoff** | `output_key` writes final text to `session.state`; `{var?}` interpolation | Formatting text inside `<localization_packet>` / `<patch_manifest>` tags |
-| **Observation size caps** | `read_file` ≤ 150 lines / 10k chars; `run_command` stdout ≤ 5k chars | Reading narrow `start_line`..`end_line` slices |
-| **Test & workspace hygiene** | `strip_protected_files_from_patch` strips edits to `tests/*`, `pytest.ini`, `conftest.py` | Running targeted `pytest` (not bare `pytest`); putting scratch scripts in `/tmp/` |
-| **Task session budgets** | Global session caps: `max_tool_calls=15`, `max_turns=20`, `max_time_minutes=2.5` | Calling `submit_patch` before global budget exhaustion |
+| **Stage & Tool Separation** | `SequentialAgent` order; per-stage `tools:` lists | Stopping after ≤ 3 tool calls per stage |
+| **Cross-Stage Context Reset** | `include_contents: "none"` slices `events[k:]` | Within-stage prompt growth & turn duration |
+| **State Packet Handoff** | `output_key` writes to `session.state`; `{var?}` injection | Formatting text inside `<localization_packet>` tags |
+| **Observation Caps** | `read_file` ≤ 150 lines / 10k chars; stdout ≤ 5k chars | Reading narrow `start_line`..`end_line` slices |
+| **Hygiene & Budgets** | Protected files stripped from patch; global 15-tool cap | Targeted `pytest` runs; calling `submit_patch` in time |
 
 ---
 
-## 4. Experimental Setup & Paired Evaluation Results (`gemma-4-e4b-it-qat-w4a16-ct`)
+## 4. Experimental Setup & Paired Evaluation Results
 
-All experiments were executed on Kaggle's 4x NVIDIA L4 GPU environment (`machine_shape: "NvidiaL4"`, 96 GB total VRAM, `tensor_parallel_size=4`, `vLLM` serving `gemma-4-e4b-it-qat-w4a16-ct`, `temperature=0.0`, `seed=42`, `max_output_tokens=8192`, `thinking_budget=1536`, `max_tool_calls=15`, `max_turns=20`, `max_time_minutes=2.5`).
-- **Two-Cohort Sampling Design (n = 16 unique tasks, 64 total 4x L4 GPU runs):** **Cohort 1** (canonical `tasks.jsonl` order, n = 8) yielded 1/8 (12.5%) for `sfd` (`rich_4077`), 0/8 (0.0%) for `flat_starter`, and 0/8 (0.0%) for `flat_controlled`; **Cohort 2** (disjoint seeded-random stratified sample with `random.Random(42)`, n = 8) yielded 0/8 (0.0%) for `sfd`, 1/8 (12.5%) for `flat_starter` (`fastapi_9753`), and 0/8 (0.0%) for `flat_controlled`.
-- **Controlled Single-Agent Scope (`flat_controlled`):** `flat_controlled` matches `sfd`'s 9 tools, combined 3-phase prompt text, and sampling parameters inside a single `LlmAgent` (`include_contents: "default"`), while differing in stage-scoped instruction/tool partitioning and `SequentialAgent` context resets.
+Experiments ran on 4x NVIDIA L4 GPUs (96 GB VRAM, `tensor_parallel_size=4`, vLLM, `gemma-4-e4b-it-qat-w4a16-ct`, `temperature=0.0`, `seed=42`, `thinking_budget=1536`, `max_tool_calls=15`, `max_turns=20`, `max_time_minutes=2.5`).
+- **Two-Cohort Sampling (n = 16 tasks, 64 runs):** Cohort 1 (canonical, n = 8) yielded 1/8 for `sfd` (`rich_4077`), 0/8 for `flat_starter`, 0/8 for `flat_controlled`. Cohort 2 (seeded-random, n = 8) yielded 0/8 for `sfd`, 1/8 for `flat_starter` (`fastapi_9753`), 0/8 for `flat_controlled`.
+- **Controlled Baseline (`flat_controlled`):** Matches SFD's 9 tools, combined prompt text, and sampling parameters in a single `LlmAgent` (`include_contents: "default"`).
 
-### Table 2: Aggregate Paired Results (n = 16)
+### Table 2: Aggregate Paired Results (n = 16 Tasks)
 
-| Configuration | Resolved (k/n) | 95% Wilson CI | Non-Empty Patch | Fail: No / Wrong Patch | Mean Peak P_t | Max Peak P_t | Mean Cum. Tokens | Mean Tools | Mean Time |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| Official Starter Kit (`agent_tool` pattern) | 1/16 (6.2%) | [1.1%, 28.3%] | 13/16 (81.2%) | 3 / 12 | 13029.3 | 15281 | 103350.1 | 9.9 | 97.3s |
-| Controlled Single-Agent (`LlmAgent`) | 0/16 (0.0%) | [0.0%, 19.4%] | 14/16 (87.5%) | 2 / 14 | 13550.8 | 16154 | 119664.4 | 10.5 | 92.2s |
-| State-Filtered Deliberation (`SequentialAgent`) | 1/16 (6.2%) | [1.1%, 28.3%] | 14/16 (87.5%) | 2 / 13 | 11291.9 | 16146 | 88909.5 | 11.2 | 89.4s |
-
-- **Primary Resolution Tests vs. Exploratory Post-Hoc Context/Cost Comparisons:** Paired resolution (`resolved`) is our primary outcome; the paired sign tests and bootstrap CIs on peak prompt tokens, cumulative total tokens, and wall-clock duration below are **exploratory post-hoc analyses** (not pre-registered or adjusted for multiple comparisons; note that the `sfd` vs. `flat_controlled` sign test p = 0.0213 remains < 0.05 under a two-baseline Bonferroni correction).
-- **`sfd` vs. `flat_starter`:** Resolution difference Δ = -0.00%, 95% paired bootstrap CI [-18.75%, +18.75%], discordant pairs (b=1, c=1), exact two-sided McNemar p = 1.0000. Exploratory paired peak prompt difference: -1,737.4 tokens (-13.3%, 95% paired bootstrap CI [-3768.0, +68.7]), with `sfd` achieving a lower peak P_t on **11/16 tasks** (exact two-sided sign test p = 0.2101). Exploratory paired cumulative total token difference: -14,440.6 tokens (-14.0%, 95% CI [-33916.2, +4032.5], lower on **11/16 tasks**, sign test p = 0.2101); wall-clock time difference: -7.97s (95% CI [-26.38, +8.66]s, faster on 8/16 tasks, sign test p = 1.0000).
-- **`sfd` vs. `flat_controlled`:** Resolution difference Δ = +6.25%, 95% paired bootstrap CI [-0.00%, +18.75%], discordant pairs (b=1, c=0), exact two-sided McNemar p = 1.0000. Exploratory paired peak prompt difference: **-2,258.8 tokens** (-16.7%, 95% paired bootstrap CI **[-3734.9, -789.6]**, excluding zero), with `sfd` achieving a lower peak P_t on **13/16 tasks** vs. 3/16 (exact two-sided sign test **p = 0.0213**). Exploratory paired cumulative total token difference: **-30,754.9 tokens** (-25.7%, 95% paired bootstrap CI **[-52067.0, -10336.1]**, excluding zero), with `sfd` using fewer cumulative tokens on **13/16 tasks** (sign test **p = 0.0213**); wall-clock time difference: -2.82s (95% CI [-19.46, +13.52]s, faster on 7/16 tasks, sign test p = 0.8036).
-- **Rerun Reproducibility (`tp=4`, `temperature=0.0`, `seed=42`, `traces/rerun_results/`):** Rerunning `sfd` (n = 8) and `flat_controlled` (n = 8) on Cohort 1 produced 8/8 (100.0%) and 7/8 (87.5%) `resolved` agreement (`6/8` and `8/8` patch-presence agreement), with a mean absolute peak prompt drift of 2427.2 tokens (`sfd`, max 5292) and 1797.4 tokens (`flat_controlled`, max 4457), consistent with run-to-run nondeterminism in parallel `vLLM`/ADK execution (`tp=4`). Crucially, while `sfd_rerun` again resolved `rich_4077` (`1/8`), `flat_controlled_rerun` also generated `self.__file.isatty()` and resolved `rich_4077` (`1/8`). Combined with `6/8` SFD patch-presence agreement across reruns, this shows that single-run resolution counts (`0/16` vs. `1/16`) at n = 16 are noisy and that the single-task difference on `rich_4077` in Run 1 is within run-to-run execution variance.
-- **Stage-Entry Context Reset vs. Trajectory Peak Context:** The trace data demonstrate a clear distinction between **stage-entry** prompt length, **typical** per-task peak prompt length, and **upper-tail** trajectory peak prompt length. Across the `sfd` runs (n = 16), `TriageAgent` (which has `include_contents: "default"` and is never reset) reaches a mean peak prompt of **10922.1 tokens** (max **16146**, with the six highest `TriageAgent` peaks reaching `16,146` on `rich_4076`, `15,961` on `fastapi_14099`, `15,605` on `fastapi_14459`, `14,528` on `rich_3944`, `14,454` on `fastapi_15589`, and `14,446` on `requests_7502`). At `PatchAgent` entry (`include_contents: "none"`), the prompt resets to a mean of **1500.9 tokens** (max **2126**)—a **-86.3% cross-boundary peak-to-entry reset** that holds by construction because `_get_current_turn_contents()` slices out prior tool history and `events[0]` and injects only the problem statement and `<localization_packet>`. Similarly, `VerifierAgent` entry resets to a mean of **1470.2 tokens** (max **2165**) after `PatchAgent` reaches a within-stage mean peak of **5355.9 tokens** (max **12680**). Because exploratory reading and code editing are split across a reset boundary rather than stacked into a single session, SFD achieves a lower per-task peak prompt length than the controlled single-agent baseline (`flat_controlled`) on **13/16 tasks** (sign test p = 0.0213, mean reduction of 16.7%, or -2,258.8 tokens) and lower than `flat_starter` on **11/16 tasks** (mean reduction of 13.3%, or -1,737.4 tokens). However, SFD does **not** bound upper-tail trajectory peaks when `TriageAgent` itself loops until budget exhaustion: SFD's maximum peak (16146) is virtually identical to `flat_starter` (15281) and `flat_controlled` (16154), and on tasks such as `requests_7502` (`14,446` vs. `10,436` / `11,238`) and `rich_4076` (`16,146` vs. `12,860` / `14,849`), SFD peaked higher than both baselines.
-
----
-
-## 5. Per-Task Trace Analysis, Hypothesis Tests & Failure Audit
-
-### Table 3: Task-by-Task Paired Outcomes and Peak Prompt Tokens (max_t P_t)
-
-| Task ID | Repository | `flat_starter` (Peak P_t) | `flat_controlled` (Peak P_t) | `sfd` (Peak P_t) |
-| :--- | :--- | :--- | :--- | :--- |
-| `fastapi_14099` | `fastapi/fastapi` | Fail (`test_verification_failed`) (15281) | Fail (`timeout_or_budget_no_patch`) (13933) | Fail (`test_verification_failed`) (15961) |
-| `fastapi_14361` | `fastapi/fastapi` | Fail (`test_verification_failed`) (10191) | Fail (`test_verification_failed`) (15010) | Fail (`test_verification_failed`) (9831) |
-| `fastapi_14459` | `fastapi/fastapi` | Fail (`test_verification_failed`) (14820) | Fail (`timeout_or_budget_no_patch`) (16154) | Fail (`test_verification_failed`) (15605) |
-| `fastapi_15588` | `fastapi/fastapi` | Fail (`test_verification_failed`) (13083) | Fail (`test_verification_failed`) (10785) | Fail (`test_verification_failed`) (7291) |
-| `fastapi_15589` | `fastapi/fastapi` | Fail (`test_verification_failed`) (14711) | Fail (`test_verification_failed`) (14912) | Fail (`timeout_or_budget_no_patch`) (14454) |
-| `fastapi_15661` | `fastapi/fastapi` | Fail (`test_verification_failed`) (11099) | Fail (`test_verification_failed`) (14445) | Fail (`test_verification_failed`) (7180) |
-| `fastapi_9753` | `fastapi/fastapi` | Pass (11047) | Fail (`test_verification_failed`) (11743) | Fail (`test_verification_failed`) (6469) |
-| `httpx_3672` | `encode/httpx` | Fail (`test_verification_failed`) (14736) | Fail (`test_verification_failed`) (13010) | Fail (`test_verification_failed`) (8140) |
-| `requests_7427` | `psf/requests` | Fail (`test_verification_failed`) (9747) | Fail (`test_verification_failed`) (15387) | Fail (`test_verification_failed`) (13362) |
-| `requests_7502` | `psf/requests` | Fail (`test_verification_failed`) (10436) | Fail (`test_verification_failed`) (11238) | Fail (`test_verification_failed`) (14446) |
-| `requests_7505` | `psf/requests` | Fail (`test_verification_failed`) (10800) | Fail (`test_verification_failed`) (12318) | Fail (`test_verification_failed`) (10659) |
-| `rich_3043` | `Textualize/rich` | Fail (`test_verification_failed`) (14789) | Fail (`test_verification_failed`) (14820) | Fail (`timeout_or_budget_no_patch`) (14384) |
-| `rich_3944` | `Textualize/rich` | Fail (`timeout_or_budget_no_patch`) (15175) | Fail (`test_verification_failed`) (15031) | Fail (`test_verification_failed`) (14528) |
-| `rich_4070` | `Textualize/rich` | Fail (`timeout_or_budget_no_patch`) (13298) | Fail (`test_verification_failed`) (14826) | Fail (`test_verification_failed`) (8499) |
-| `rich_4076` | `Textualize/rich` | Fail (`test_verification_failed`) (14577) | Fail (`test_verification_failed`) (15083) | Fail (`test_verification_failed`) (16146) |
-| `rich_4077` | `Textualize/rich` | Fail (`timeout_or_budget_no_patch`) (14679) | Fail (`test_verification_failed`) (8117) | Pass (3716) |
-
-### Table 4: Measured Stage-Boundary Prompt Token Resets Across `sfd` Trajectories (n = 16)
-
-*Note: Patch Entry (Δ vs. Triage Peak) compares `PatchAgent`'s first call against `TriageAgent`'s peak call.*
-
-| Task ID | Triage Entry | Triage Peak | Patch Entry (Δ vs. Triage Peak) | Patch Peak | Verifier Entry | Verifier Peak |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| `fastapi_14099` | 2634 | 15961 | 1746 (-89.1%) | 4145 | 1420 | 6860 |
-| `fastapi_14361` | 2477 | 9831 | 1192 (-87.9%) | 6365 | 1260 | 2117 |
-| `fastapi_14459` | 2773 | 15605 | 1804 (-88.4%) | 3633 | 1562 | 2496 |
-| `fastapi_15588` | 3373 | 4979 | 1877 (-62.3%) | 7291 | 1818 | 2333 |
-| `fastapi_15589` | 3083 | 14454 | 1534 (-89.4%) | 12680 | 1588 | 1588 |
-| `fastapi_15661` | 2993 | 3873 | 1505 (-61.1%) | 7180 | 1557 | 4875 |
-| `fastapi_9753` | 2763 | 6469 | 1881 (-70.9%) | 3030 | 1652 | 4976 |
-| `httpx_3672` | 2116 | 7842 | 1261 (-83.9%) | 5007 | 1304 | 8140 |
-| `requests_7427` | 2072 | 13362 | 1326 (-90.1%) | 5891 | 1347 | 1850 |
-| `requests_7502` | 1914 | 14446 | 1480 (-89.8%) | 2714 | 1427 | 3042 |
-| `requests_7505` | 2102 | 10659 | 1293 (-87.9%) | 2784 | 1362 | 1812 |
-| `rich_3043` | 2618 | 14384 | 1388 (-90.4%) | 7650 | 1285 | 2014 |
-| `rich_3944` | 2892 | 14528 | 1187 (-91.8%) | 4323 | 1255 | 2141 |
-| `rich_4070` | 4829 | 8499 | 2126 (-75.0%) | 5380 | 2165 | 7542 |
-| `rich_4076` | 2901 | 16146 | 1212 (-92.5%) | 4816 | 1268 | 1887 |
-| `rich_4077` | 2903 | 3716 | 1203 (-67.6%) | 2805 | 1254 | 1970 |
-
-### 5.1 Testing Hypothesis 1: Observational Error Rates by Prompt-Length Bucket
-
-To test whether longer prompts correlate with higher tool error rates in our recorded trajectories, Table 5a groups all LLM calls and tool invocations across the primary configurations (`flat_starter`, `flat_controlled`, `sfd`, 48 runs across n = 16 tasks) into four prompt-length buckets (P_t < 4,000; 4,000–7,999; 8,000–11,999; and ≥ 12,000 tokens). Because global budget exhaustion (`BudgetExceeded` when `tool_calls_used == 15`) occurs late in trajectories by definition, Table 5a explicitly separates genuine non-budget tool errors (`FileEditError`, `CommandError`, `FileReadError`) from `BudgetExceeded` events, and Table 5b stratifies `edit_file` `FileEditError` rates by configuration.
-
-#### Table 5a: Pooled Observational Non-Budget Tool Error, `BudgetExceeded`, `edit_file` `FileEditError`, and Duplicate `read_file` Rates by Prompt-Length Bucket (P_t)
-
-| Prompt Length Bucket (P_t) | LLM Calls | Tool Calls | Non-Budget Tool Errors | `BudgetExceeded` | `edit_file` `FileEditError` | `edit_file` `BudgetExceeded` | Duplicate `read_file` |
+| Configuration | Resolved (k/n) | 95% Wilson CI | Non-Empty Patch | Mean Peak P_t | Max Peak P_t | Mean Cum. Tokens | Mean Duration |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| `< 4,000` | 155 | 138 | 18/138 (13.0%) | 1/138 | 4/20 (20.0%) | 0/20 | 6/50 (12.0%) |
-| `4,000 - 7,999` | 220 | 193 | 30/193 (15.5%) | 3/193 | 12/38 (31.6%) | 1/38 | 3/102 (2.9%) |
-| `8,000 - 11,999` | 183 | 160 | 22/160 (13.8%) | 4/160 | 11/30 (36.7%) | 2/30 | 6/54 (11.1%) |
-| `>= 12,000` | 85 | 72 | 13/72 (18.1%) | 1/72 | 7/17 (41.2%) | 0/17 | 5/25 (20.0%) |
+| **Official Starter (`flat_starter`)** | 1/16 (6.2%) | [1.1%, 28.3%] | 13/16 (81.2%) | 13029.3 | 15281 | 103,350.1 | 97.3s |
+| **Single-Agent (`flat_controlled`)** | 0/16 (0.0%) | [0.0%, 19.4%] | 14/16 (87.5%) | 13550.8 | 16154 | 119,664.4 | 92.2s |
+| **State-Filtered Deliberation (`sfd`)** | 1/16 (6.2%) | [1.1%, 28.3%] | 14/16 (87.5%) | 11291.9 | 16146 | 88,909.5 | 89.4s |
 
-#### Table 5b: Per-Configuration Stratification of `edit_file` `FileEditError` Rates Across Prompt-Length Buckets (P_t)
+- **Primary Resolution vs. Cost Tests:** Paired resolution shows a null difference across all comparisons (McNemar p = 1.0000). In exploratory paired context comparisons:
+  - **vs `flat_controlled`:** Peak prompt is **-2,258.8 tokens (-16.7%)** lower (95% CI [-3,734.9, -789.6], lower on **13/16 tasks**, sign test **p = 0.0213**). Cumulative tokens are **-30,754.9 tokens (-25.7%)** lower (95% CI [-52,067.0, -10,336.1], lower on **13/16 tasks**, sign test **p = 0.0213**).
+  - **vs `flat_starter`:** Peak prompt is **-1,737.4 tokens (-13.3%)** lower (lower on 11/16 tasks, sign test p = 0.2101); cumulative tokens are **-14,440.6 tokens (-14.0%)** lower (lower on 11/16 tasks, p = 0.2101).
+- **Rerun Reproducibility (Cohort 1, 16 runs):** Rerunning `sfd` and `flat_controlled` on Cohort 1 showed 100% and 87.5% resolution agreement. Interestingly, `flat_controlled_rerun` also resolved `rich_4077` (1/8), demonstrating that single-task resolution differences at n = 16 are within run-to-run execution variance.
+- **Stage-Entry Reset vs. Trajectory Peak:** Across 16 `sfd` runs, `TriageAgent` reaches a mean peak prompt of **10,922.1 tokens** (max 16,146). At `PatchAgent` entry, prompts reset to a mean of **1,500.9 tokens** (max 2,126)—a **-86.3% reset**. `VerifierAgent` entry resets to a mean of **1,470.2 tokens**. SFD lowers typical per-task peaks on 13/16 tasks, but does not bound upper-tail peaks when `TriageAgent` loops until budget exhaustion.
 
-*Note: Numerators report non-budget `FileEditError` counts; `edit_file` `BudgetExceeded` rejections (`1` in `flat_controlled` at 8,000–11,999, `1` in `sfd` at 4,000–7,999, and `1` in `sfd` at 8,000–11,999, shown in Table 5a) are excluded.*
+---
 
-| Configuration (`edit_file` `FileEditError`) | < 4,000 | 4,000–7,999 | 8,000–11,999 | ≥ 12,000 |
-| :--- | :---: | :---: | :---: | :---: |
-| `flat_starter` | 0/0 (0.0%) | 7/15 (46.7%) | 6/12 (50.0%) | 3/7 (42.9%) |
-| `flat_controlled` | 0/0 (0.0%) | 0/10 (0.0%) | 5/17 (29.4%) | 4/10 (40.0%) |
-| `sfd` | 4/20 (20.0%) | 5/13 (38.5%) | 0/1 (0.0%) | 0/0 (0.0%) |
+## 5. Hypothesis Testing, Case Studies & Failure Taxonomy
 
-When `BudgetExceeded` rejections are separated from genuine tool errors, Hypothesis 1 is **inconclusive** in these traces: overall non-budget tool error rates remain flat across the first three buckets (13.0% at P_t < 4,000, 15.5% at 4,000–7,999, and 13.8% at 8,000–11,999) before rising slightly to 18.1% (13/72) at P_t ≥ 12,000, while duplicate `read_file` rates are non-monotonic (12.0%, 2.9%, 11.1%, and 20.0%). Furthermore, as Table 5b shows, the pooled increase in `edit_file` `FileEditError` rates from 20.0% (4/20) at P_t < 4,000 to 41.2% (7/17) at P_t ≥ 12,000 is confounded by stage and configuration: every `< 4,000` `edit_file` call comes from `sfd` (`PatchAgent` immediately after the ~1.5k stage-entry reset), whereas within `flat_starter` (`46.7%`, `50.0%`, `42.9%`) and `flat_controlled` (`0.0%`, `29.4%`, `40.0%`), `edit_file` sample sizes per bucket are small (7–17 calls) and multiple calls come from the same trajectory.
+### Table 3: Task-by-Task Outcomes and Peak Prompt Tokens (max_t P_t)
 
-### 5.2 Testing Hypothesis 2: Descriptive Reconciliation of `code_analyzer_agent` Calls in `flat_starter`
+| Task ID | Repo | `flat_starter` (Peak P_t) | `flat_controlled` (Peak P_t) | `sfd` (Peak P_t) | Stage 1→2 Reset |
+| :--- | :--- | :--- | :--- | :--- | :---: |
+| `fastapi_14099` | `fastapi` | Fail (15,281) | Fail (13,933) | Fail (15,961) | 15,961 → 1,746 (-89.1%) |
+| `fastapi_14361` | `fastapi` | Fail (10,191) | Fail (15,010) | Fail (9,831) | 9,831 → 1,192 (-87.9%) |
+| `fastapi_14459` | `fastapi` | Fail (14,820) | Fail (16,154) | Fail (15,605) | 15,605 → 1,804 (-88.4%) |
+| `fastapi_15588` | `fastapi` | Fail (13,083) | Fail (10,785) | Fail (7,291) | 4,979 → 1,877 (-62.3%) |
+| `fastapi_15589` | `fastapi` | Fail (14,711) | Fail (14,912) | Fail (14,454) | 14,454 → 1,534 (-89.4%) |
+| `fastapi_15661` | `fastapi` | Fail (11,099) | Fail (14,445) | Fail (7,180) | 3,873 → 1,505 (-61.1%) |
+| `fastapi_9753` | `fastapi` | **Pass** (11,047) | Fail (11,743) | Fail (6,469) | 6,469 → 1,881 (-70.9%) |
+| `httpx_3672` | `httpx` | Fail (14,736) | Fail (13,010) | Fail (8,140) | 7,842 → 1,261 (-83.9%) |
+| `requests_7427` | `requests` | Fail (9,747) | Fail (15,387) | Fail (13,362) | 13,362 → 1,326 (-90.1%) |
+| `requests_7502` | `requests` | Fail (10,436) | Fail (11,238) | Fail (14,446) | 14,446 → 1,480 (-89.8%) |
+| `requests_7505` | `requests` | Fail (10,800) | Fail (12,318) | Fail (10,659) | 10,659 → 1,293 (-87.9%) |
+| `rich_3043` | `rich` | Fail (14,789) | Fail (14,820) | Fail (14,384) | 14,384 → 1,388 (-90.4%) |
+| `rich_3944` | `rich` | Fail (15,175) | Fail (15,031) | Fail (14,528) | 14,528 → 1,187 (-91.8%) |
+| `rich_4070` | `rich` | Fail (13,298) | Fail (14,826) | Fail (8,499) | 8,499 → 2,126 (-75.0%) |
+| `rich_4076` | `rich` | Fail (14,577) | Fail (15,083) | Fail (16,146) | 16,146 → 1,212 (-92.5%) |
+| `rich_4077` | `rich` | Fail (14,679) | Fail (8,117) | **Pass** (3,716) | 3,716 → 1,203 (-67.6%) |
 
-Inspection of the `flat_starter` ATIF v1.7 traces (`traces/`) provides a descriptive accounting of `code_analyzer_agent` usage in this 16-task sample and reconciles the budget-counted tool metric in Table 2 with the raw ATIF trace event count:
-- In `swegemma`, `session.state["tool_calls_used"]` (reported in Table 2 as **Mean Tools** = 9.9, or **158 budget-counted calls** across 16 tasks, 158 / 16 = 9.875) increments on workspace, graph, and shell tools (`read_file`, `edit_file`, `write_file`, `run_command`, `search_similar_code`, `get_code_neighbors`, `get_code_subgraph`), including those executed inside the child `code_analyzer_agent`, but does **not** increment on free `submit_patch` calls (`13` calls) or on the parent `AgentTool` wrapper call `code_analyzer_agent(request=...)` itself (`4` calls).
-- Specifically, the **176 total ATIF trace `tool_calls` events** in `flat_starter` decompose into: **145 root-agent workspace/graph/shell calls** + **14 child `code_analyzer_agent` calls** (`4` on `requests_7505`, `3` on `rich_4077`, `7` on `requests_7427`, totaling 159 attempted budget-applicable calls, of which **158** incremented `tool_calls_used` and 1 call on `fastapi_14099` was rejected after hitting the `max_tool_calls=15` cap), plus **13 free `submit_patch` calls** + **4 root `code_analyzer_agent` delegation calls** = **176 total trace tool events**.
-- Out of `149` non-`submit_patch` tool decisions made by the root `swe_baseline_agent` in this 16-task sample (`145` direct workspace/graph/shell calls vs. `4` `code_analyzer_agent` delegations), `swe_baseline_agent` delegated to `code_analyzer_agent` **4/149 times (2.7%)** (`4/176 = 2.3%` of all trace tool events), bypassing `code_analyzer_agent` on **13/16 tasks (81.2%)**.
+### 5.1 Testing Hypothesis 1: Tool Error Rates by Prompt-Length Bucket
+Table 4 groups all 563 tool calls across the 48 primary runs into four prompt token buckets. Separating `BudgetExceeded` (cap rejections) from genuine tool errors shows that non-budget error rates remain flat across the first three buckets (13.0%, 15.5%, 13.8%) before rising slightly to 18.1% at P_t ≥ 12,000. Hypothesis 1 is **inconclusive** in these traces.
 
-### 5.3 Testing Hypothesis 3: Case Studies (`rich_4077` & `fastapi_9753`), Ground-Truth Localization Taxonomy, and Audit of Unresolved SFD Tasks
+#### Table 4: Tool Errors & Budget Caps by Prompt Length (P_t)
 
-**Why `sfd` resolved `rich_4077` while `flat_starter` and `flat_controlled` (Run 1) failed, and why `flat_starter` resolved `fastapi_9753`:**
-- **On `rich_4077` (Cohort 1, adding `isatty()` to `FileProxy` in `rich/file_proxy.py`):** `flat_starter` spent all 15 budget-counted tool calls running commands and reading files (`14,679` peak prompt tokens) without ever calling `edit_file` (`0` patch chars). `flat_controlled` (Run 1) localized `rich/file_proxy.py` in 6 calls at its **lowest** peak prompt (`8,117` tokens), but wrote `import os` and `return os.isatty(self.__file.fileno())`, which fails Phase 2 `pytest` verification (`test_exit_code=1`) because the wrapped mock file object in `tests/test_file_proxy.py` implements `isatty()` without exposing an integer `fileno()`. In `sfd`, `TriageAgent` read `rich/file_proxy.py` (`3,716` peak prompt tokens) and wrote `<localization_packet>` explicitly specifying `def isatty(self) -> bool: return self.__file.isatty()`; `PatchAgent` entered at `1,203` tokens and applied that exact 3-line method (`resolved=True`). Moreover, in our rerun reproducibility study (`traces/rerun_results/`), both `sfd_rerun` (`resolved=True`) and `flat_controlled_rerun` (`resolved=True`) generated `self.__file.isatty()`, confirming that `rich_4077` does not fail due to context overflow in single-agent mode.
-- **On `fastapi_9753` (Cohort 2, supporting `functools.partial` in FastAPI dependencies):** `flat_starter` read `fastapi/dependencies/models.py` directly, edited `Dependant._unwrapped_call` at step 6 (`9,595` prompt tokens on the `edit_file` call, later reaching its trajectory peak of `11,047` prompt tokens at step 10 on `submit_patch`), and unwrapped `isinstance(self.call, functools.partial)` via `return self.call.func` (`resolved=True`). By contrast, `sfd`'s `TriageAgent` (`6,469` peak prompt tokens) localized `fastapi/dependencies/utils.py` instead of `models.py`, and `PatchAgent` merely added an unused `from functools import partial` import (`test_verification_failed`, Phase 2 `test_exit_code=1`). This illustrates a key trade-off of strict stage isolation: when `TriageAgent` localizes the wrong file (`utils.py` vs. `models.py`), `PatchAgent` (`include_contents: "none"`) starts with only `<localization_packet>` and does not re-explore neighboring modules.
+| Prompt Bucket (P_t) | LLM Calls | Tool Calls | Non-Budget Tool Errors | `BudgetExceeded` | `edit_file` Errors | Duplicate Reads |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| `< 4,000` | 155 | 138 | 18/138 (13.0%) | 1/138 | 4/20 (20.0%) | 6/50 (12.0%) |
+| `4,000 - 7,999` | 220 | 193 | 30/193 (15.5%) | 3/193 | 12/38 (31.6%) | 3/102 (2.9%) |
+| `8,000 - 11,999` | 183 | 160 | 22/160 (13.8%) | 4/160 | 11/30 (36.7%) | 6/54 (11.1%) |
+| `≥ 12,000` | 85 | 72 | 13/72 (18.1%) | 1/72 | 7/17 (41.2%) | 5/25 (20.0%) |
 
-**Phase 2 Exit-Code Breakdown and Ground-Truth Localization Taxonomy (`tasks.jsonl`):**
-Cross-referencing the 16 `sfd` runs against the Stage 1–3 ATIF traces (`traces/`) and the ground-truth `patch` and `test_patch` specifications in `tasks.jsonl` yields an exact, non-speculative taxonomy of outcomes:
-- **By Phase 2 Verification Exit Code (`15` unresolved `sfd` runs):** **5 tasks** exited with `test_exit_code = 2` (`pytest` collection/import error prior to test execution): `fastapi_14099` (where `PatchAgent` left a detached `else:` block at `fastapi/routing.py:259`, raising `SyntaxError` during collection), `fastapi_15661` (where the reference patch creates a new module `scripts/prepare_release.py` imported by `test_patch`, whereas SFD edited `scripts/add_latest_release_date.py`, raising `ModuleNotFoundError`), and `fastapi_14361`, `fastapi_14459`, and `httpx_3672` (where the offline sandbox venv lacked `inline_snapshot` or resolved `import httpx` to `/usr/local/lib/python3.12/dist-packages/httpx` across all 3 configurations, alongside wrong or incomplete file localization by SFD). **8 tasks** generated a non-empty patch that ran under `pytest` and exited with `test_exit_code = 1` (test assertion failure: `fastapi_15588`, `fastapi_9753`, `requests_7427`, `requests_7502`, `requests_7505`, `rich_3944`, `rich_4070`, `rich_4076`). Finally, **2 tasks** produced a 0-byte patch due to tool or budget exhaustion (`fastapi_15589`, `test_exit_code = -1`; and `rich_3043`, `test_exit_code = 1` after 4 `FileEditError` calls).
-- **By Ground-Truth File & Symbol Localization (`16` total `sfd` runs vs. `tasks.jsonl` reference patches):** SFD localized the **exact single reference file** on **4/16 tasks** (`rich_4077` [resolved], `fastapi_15588` [wrong `ValueError` message string in `fastapi/sse.py`], `fastapi_15589` [localized `fastapi/dependencies/utils.py` but hit `BudgetExceeded` before editing], and `rich_3043` [localized `CONSOLE_HTML_FORMAT` in `rich/_export_format.py` but failed 4 `edit_file` calls]); achieved **partial localization on multi-file or multi-site reference patches** on **6/16 tasks** (`fastapi_14099` [1/3 files + `SyntaxError`], `fastapi_14459` [1/3 files], `httpx_3672` [1/7 files], `requests_7502` [1/2 sites in `src/requests/models.py`], `requests_7505` [1/2 files, omitting `src/requests/_types.py`], and `rich_4070` [1/9 files]); and localized the **wrong file or function** on **6/16 tasks** (`fastapi_14361`, `fastapi_15661`, `fastapi_9753`, `requests_7427`, `rich_3944`, `rich_4076`).
+### 5.2 Testing Hypothesis 2: Discretionary Sub-Agent Bypassing
+In `flat_starter`, root made 149 non-submit tool decisions. It delegated to `code_analyzer` only **4 times (2.7%)**, completely bypassing delegation on **13 of 16 tasks (81.2%)**. This confirms **Hypothesis 2**: compact models rarely delegate voluntarily when root tools are available.
 
-#### Table 6: Complete Task-by-Task Audit of Unresolved `sfd` Runs (15/16 Tasks)
+### 5.3 Case Studies & Ground-Truth Localization Audit
+- **`rich_4077` (Resolved by SFD):** `flat_starter` exhausted 15 calls without editing. `flat_controlled` wrote `os.isatty(self.__file.fileno())`, failing because the mock file lacked `fileno()`. SFD's `TriageAgent` localized `rich/file_proxy.py` at 3,716 tokens and specified `def isatty(self) -> bool: return self.__file.isatty()`. `PatchAgent` entered at 1,203 tokens and applied this exact fix (`resolved=True`).
+- **`fastapi_9753` (Resolved by Starter, Failed by SFD):** `flat_starter` edited `Dependant._unwrapped_call` in `fastapi/dependencies/models.py`, resolving the task. SFD's `TriageAgent` localized `utils.py` instead of `models.py`. Because `PatchAgent` operates with isolated context, it could not recover from the upstream mislocalization.
 
-*Note: Table 6 separates Stage 1–3 observations recorded in `traces/` from Phase 2 held-out verification exit codes (`1` = test assertion failure, `2` = `pytest` collection/import error, `-1` = no patch) and direct comparisons against the ground-truth reference `patch` and `test_patch` in `tasks.jsonl`.*
+#### Table 5: Ground-Truth File Localization Taxonomy Across 16 SFD Runs
 
-| Task ID | Submitted SFD Patch | Failure Bucket (Exit) | Trace-Recorded Stage 1–3 Observation (`traces/`) | Phase 2 Outcome & Reference Comparison (`tasks.jsonl`) |
-| :--- | :--- | :--- | :--- | :--- |
-| `fastapi_14099` | `fastapi/routing.py` (588 chars) | `Agent Collection Error` (exit=2) | `P_t` peaked at 15,961 in `TriageAgent` (6,860 in `VerifierAgent`). `PatchAgent` inserted `for dep in dependencies: file_stack.callback(dep())` in `fastapi/routing.py`, leaving a detached `else:` at line 259; Stage 3 `run_command` Step 18 failed `pytest` collection (`SyntaxError: invalid syntax`, `exit_code=2`). | Phase 2 `pytest` exited with `test_exit_code=2` (collection error from `SyntaxError` at `fastapi/routing.py:259`). Reference patch in `tasks.jsonl` modifies `fastapi/applications.py`, `fastapi/middleware/asyncexitstack.py`, and `fastapi/routing.py`. |
-| `fastapi_14361` | `fastapi/openapi/models.py` (383 chars) | `Environment Error` (exit=2) | `PatchAgent` changed `Reference.ref` in `fastapi/openapi/models.py` to `Optional[str] = Field(default=None, alias='$ref')`; Stage 3 `run_command` Step 14 ran `pytest tests/test_openapi_schema.py` (`exit_code=4`, file not found). | Reference patch modifies `_remap_definitions_and_field_mappings` in `fastapi/_compat/v2.py` (wrong file localized). Also, `test_patch` (`tests/test_schema_compat_pydantic_v2.py`) imports `inline_snapshot`, which is absent in the offline sandbox venv (`ModuleNotFoundError` at collection, `test_exit_code=2` across all 3 configs; seen in `flat_starter` Step 11). |
-| `fastapi_14459` | `fastapi/dependencies/models.py` (783 chars) | `Environment Error` (exit=2) | `PatchAgent` replaced ordered list deduplication in `Dependant.oauth_scopes` in `fastapi/dependencies/models.py` with `set(self.parent_oauth_scopes) \| set(self.own_oauth_scopes)`; Stage 3 `run_command` Step 18 ran `pytest tests/test_dependencies.py` (`exit_code=4`, file not found). | Reference patch modifies 3 files (`fastapi/dependencies/models.py`, `fastapi/dependencies/utils.py`, `fastapi/openapi/utils.py`; SFD edited 1/3 files). Also, `test_patch` imports `inline_snapshot`, causing `pytest` collection to exit with `test_exit_code=2`. |
-| `fastapi_15588` | `fastapi/sse.py` (1008 chars) | `test_verification_failed` (exit=1) | `PatchAgent` replaced `_check_id_no_null` with `_check_sse_string` (`\0`, `\n`, `\r`) in `fastapi/sse.py`, raising `ValueError('SSE field cannot contain null, newline, or carriage return characters')`; existing `tests/test_sse.py` passed in Stage 3 Step 15 (18 passed). | Phase 2 `pytest` exited with `test_exit_code=1` (assertion failure): `test_patch` (`tests/test_sse.py`) asserts `pytest.raises(ValueError, match=f"SSE '{field_name}' must be a single line")`, which did not match SFD's error message string. |
-| `fastapi_15589` | None (0 chars) | `timeout_or_budget_no_patch` (exit=-1) | `TriageAgent` made 10 read-only calls (`P_t` peaked at 14,454); `PatchAgent` entered at 1,534 tokens, read 6 slices of `fastapi/dependencies/utils.py`, and hit `BudgetExceeded` (`max_tool_calls=15`) on Step 20 `edit_file` (0 patch chars). | No patch submitted (`test_exit_code=-1`). Reference patch adds `processed_keys.add(get_validation_alias(field))` at line 829 of `fastapi/dependencies/utils.py` (correct file localized by `TriageAgent`, but budget exhausted before edit). |
-| `fastapi_15661` | `scripts/add_latest_release_date.py` (660 chars) | `Environment Error` (exit=2) | `PatchAgent` rewrote `RELEASE_HEADER_PATTERN` in `scripts/add_latest_release_date.py`; Stage 3 `run_command` Steps 14 & 17 failed with `CommandError: No release header found` (`exit_code=1`). | Reference patch creates a new 216-line CLI module `scripts/prepare_release.py`, and `test_patch` (`tests/test_prepare_release.py`) imports `from scripts.prepare_release import ...` at top level, failing Phase 2 collection (`test_exit_code=2`, `ModuleNotFoundError`) across all 3 configs. |
-| `fastapi_9753` | `fastapi/dependencies/utils.py` (349 chars) | `test_verification_failed` (exit=1) | `TriageAgent` (`P_t` peak 6,469) localized `fastapi/dependencies/utils.py`, and `PatchAgent` only added an unused `from functools import partial` import (349 chars). | Phase 2 `pytest` exited with `test_exit_code=1` (assertion failure): reference patch (and `flat_starter`, which resolved the task with `test_exit_code=0`) unwraps `isinstance(self.call, functools.partial)` inside `Dependant._unwrapped_call` in `fastapi/dependencies/models.py` (wrong file localized by SFD). |
-| `httpx_3672` | `src/httpx/_server.py` (630 chars) | `Environment Error` (exit=2) | `PatchAgent` added `self._parser.complete()` and `self._parser.reset()` in `src/httpx/_server.py` (hit `BudgetExceeded` on Step 12 `edit_file`); Stage 3 `run_command` Steps 13, 16, 18, 20 failed `pytest tests/test_parsers.py` at collection (`exit_code=2`, `ImportError: cannot import name 'Stream' from 'httpx'`). | Reference patch modifies 7 files across `src/httpx/` and `src/ahttpx/` (SFD edited 1/7 files). Also, in the offline sandbox venv, `import httpx` resolves to `/usr/local/lib/python3.12/dist-packages/httpx` instead of `/workspace/src/httpx`, yielding `test_exit_code=2` at collection across all 3 configs. |
-| `requests_7427` | `src/requests/utils.py` (471 chars) | `test_verification_failed` (exit=1) | `PatchAgent` added `host = urlparse(host).hostname if host else host` inside `proxy_bypass` in `src/requests/utils.py`; existing `pytest tests/test_utils.py -k proxy` passed in Stage 3 Step 15 (56 passed). | Phase 2 `pytest` exited with `test_exit_code=1` (assertion failure): reference patch modifies `should_bypass_proxies` in `src/requests/utils.py` (`if hostname == host or host_with_port == host: return True`) rather than `proxy_bypass`. |
-| `requests_7502` | `src/requests/models.py` (581 chars) | `test_verification_failed` (exit=1) | `PatchAgent` replaced `elif isinstance(fp, _SupportsRead):` with `elif hasattr(fp, 'read'):` at line 236 of `src/requests/models.py`; Stage 3 `run_command` Step 16 failed (`CommandError` on `pytest`, 1 failed). | Phase 2 `pytest` exited with `test_exit_code=1` (assertion failure): reference patch in `src/requests/models.py` uses `elif isinstance(fp, _SupportsRead) or hasattr(fp, 'read'):` at both lines 239 and 251 of `_encode_files` (SFD updated only one site). |
-| `requests_7505` | `src/requests/models.py` (978 chars) | `test_verification_failed` (exit=1) | `PatchAgent` replaced two `isinstance(data, _SupportsRead)` checks in `src/requests/models.py` with `hasattr(data, 'read')`; Stage 3 `run_command` Step 14 passed 1 selected test in `tests/test_requests.py`. | Phase 2 `pytest` exited with `test_exit_code=1` (assertion failure): reference patch adds `has_read(obj)` in `src/requests/_types.py` and updates 4 `_SupportsRead` sites across `src/requests/models.py` (SFD updated only 2/4 sites and omitted `_types.py`). |
-| `rich_3043` | None (0 chars) | `Assertion Failure: Empty Diff` (exit=1) | `TriageAgent` localized `CONSOLE_HTML_FORMAT` in `rich/_export_format.py`, but `PatchAgent` failed 4 consecutive `edit_file` calls (`FileEditError: old_string not found` on Steps 12, 13, 15, 16) and `VerifierAgent` submitted a 0-byte diff (`patch_size: 0`). | No patch submitted (`test_exit_code=1`). Reference patch moves `<html>` before `<head>` in `CONSOLE_HTML_FORMAT` in `rich/_export_format.py` (correct file and symbol localized by `TriageAgent`, but unpatched due to `FileEditError`). |
-| `rich_3944` | `rich/_win32_console.py` (474 chars) | `test_verification_failed` (exit=1) | `PatchAgent` changed `ctypes.c_char(char.encode())` to `ctypes.c_wchar(char)` in `rich/_win32_console.py`; Stage 3 `run_command` Step 17 ran `pytest tests/test_win32_console.py` (`collected 0 items` on Linux). | Phase 2 `pytest` exited with `test_exit_code=1` (assertion failure): reference patch changes `if codepoint > table[-1][1]: return 0` to `return 1` in `get_character_cell_size` in `rich/cells.py` (wrong file localized by `TriageAgent`). |
-| `rich_4070` | `rich/logging.py` (967 chars) | `test_verification_failed` (exit=1) | `PatchAgent` deferred `from .traceback import Traceback` inside `RichHandler.emit` in `rich/logging.py`; Stage 3 `run_command` Steps 12 & 15 failed (`CommandError` on `pytest`). | Phase 2 `pytest` exited with `test_exit_code=1` (assertion failure): reference patch modifies 9 files (`rich/_emoji_replace.py`, `console.py`, `emoji.py`, `logging.py`, `protocol.py`, `repr.py`, `segment.py`, `syntax.py`, `theme.py`) to lazy-load `_emoji_codes` and `pygments` (SFD edited 1/9 files). |
-| `rich_4076` | `rich/text.py` (467 chars) | `test_verification_failed` (exit=1) | `TriageAgent` (`P_t` peak 16,146) localized `rich/text.py`; `PatchAgent` replaced `sanitized_text = strip_control_codes(text)` with `sanitized_text = text` in `Text.__init__`; Stage 3 `run_command` Step 17 passed 1 test in `tests/test_text.py`. | Phase 2 `pytest` exited with `test_exit_code=1` (assertion failure): reference patch changes `for line in terminal_text.splitlines():` to `for line in re.split(r'(?<=\n)', terminal_text):` in `AnsiDecoder.decode` in `rich/ansi.py` (wrong file localized by `TriageAgent`). |
+| Localization Category | Count (%) | Empirical Diagnosis across SFD Runs (`traces/`) |
+| :--- | :---: | :--- |
+| **Exact Single File** | 4/16 (25.0%) | `rich_4077` (resolved), `fastapi_15588` (wrong error string), `fastapi_15589` (budget limit before edit), `rich_3043` (4 `edit_file` string mismatches). |
+| **Partial Multi-File** | 6/16 (37.5%) | Localized 1 file of a multi-file reference patch: `fastapi_14099`, `fastapi_14459`, `httpx_3672`, `requests_7502`, `requests_7505`, `rich_4070`. |
+| **Wrong File / Symbol** | 6/16 (37.5%) | Misidentified target module: `fastapi_14361`, `fastapi_15661`, `fastapi_9753`, `requests_7427`, `rich_3944`, `rich_4076`. |
 
 ---
 
 ## 6. Related Work
 
-- **Staged vs. Monolithic SWE Agents:** SWE-agent (Yang et al., 2024) and OpenHands (Wang et al., 2024) equip an LLM with an interactive bash/file environment inside a continuous trajectory. Conversely, Agentless (Xia et al., 2024) demonstrated that a fixed pipeline of localization followed by repair without autonomous shell loops is competitive on frontier models. SFD combines tool-using ADK sub-agents with stage-boundary context slicing.
-- **Observation Masking vs. LLM Summarization:** Lindenbauer, Slinko, Felder, Bogomolov, & Zharov (2025) (*"The Complexity Trap: Simple Observation Masking Is as Efficient as LLM Summarization for Agent Context Management"*, `arXiv:2508.21433`, JetBrains Research & TU Munich) show that simple observation masking of older environment outputs halves token costs while matching or outperforming LLM summarization on SWE-bench Verified. SFD's `include_contents: "none"` transition acts as a coarse stage-boundary observation mask.
+- **Staged vs. Monolithic Agents:** SWE-agent (Yang et al., 2024) and OpenHands (Wang et al., 2024) execute continuous bash/file loops. Agentless (Xia et al., 2024) demonstrated that a two-phase pipeline without shell loops is competitive on frontier models. SFD combines tool-using sub-agents with declarative stage-boundary context slicing.
+- **Observation Masking:** Lindenbauer et al. (2025) (*"The Complexity Trap"*, arXiv:2508.21433) show that observation masking matches or beats LLM summarization. SFD's `include_contents: "none"` operates as a coarse stage-boundary observation mask.
 
 ---
 
 ## 7. Limitations & Threats to Validity
 
-1. **Sample Size, Repository Mix, and Statistical Power:** At n = 16, `sfd` (1/16 = 6.2%) and `flat_starter` (1/16 = 6.2%) tie in resolution rate (McNemar p = 1.0000), and the 1-task difference over `flat_controlled` (0/16 = 0.0%) yields McNemar p = 1.0000 and disappears on Cohort 1 rerun (`1/8` each). Detecting a 10 percentage point paired difference (e.g., 15% vs. 5% with 12% discordant pairs) at 80% power (α = 0.05, two-sided McNemar test) requires N ≈ 115–130 paired tasks (essentially the entire 129-task benchmark). In addition, because our stratified cohorts guarantee representation of all four repositories, the 16-task sample (`7` `fastapi` [43.8%], `5` `rich` [31.2%], `3` `requests` [18.8%], `1` `httpx` [6.2%]) slightly over-represents `requests` and `httpx` relative to the full 129-task benchmark (`67` `fastapi` [51.9%], `48` `rich` [37.2%], `13` `requests` [10.1%], `1` `httpx` [0.8%]).
-2. **Confounding of Budget Limits (`max_tool_calls=15`, `max_time_minutes=2.5`) with Context Effects:** As shown in Table 2 and Table 6, 3/16 `flat_starter` runs (`rich_3944`, `rich_4070`, `rich_4077`), 2/16 `flat_controlled` runs (`fastapi_14099`, `fastapi_14459`), and 2/16 `sfd` runs (`fastapi_15589`, `rich_3043`) failed to produce a patch (`timeout_or_budget_no_patch`). Without per-stage code caps on tool calls, global budget exhaustion confounds purely architectural comparisons.
-3. **Propagation of Triage Localization Errors Across Isolated Stages:** As demonstrated by `fastapi_9753` (`flat_starter` resolved by editing `models.py`, whereas `sfd` localized `utils.py`) and `rich_4070`, when `TriageAgent` misidentifies the target file or omits a companion module in a multi-file bug, `PatchAgent` receives only `<localization_packet>` and cannot recover from the upstream localization error.
+1. **Sample Size & Power (n = 16):** With small samples, detecting a 10% resolution difference requires N ≈ 115–130 paired tasks. Single-task differences are within run-to-run execution variance.
+2. **Budget Confounding:** 7/48 primary runs failed due to global tool/time caps (`max_tool_calls=15`, 2.5 min), confounding context effects with budget exhaustion.
+3. **Error Propagation:** Strict stage isolation prevents `PatchAgent` from recovering when `TriageAgent` misidentifies the target file.
 
 ---
 
 ## 8. Conclusion & Reproducibility
 
-We presented and empirically audited State-Filtered Deliberation (SFD) on `gemma-4-e4b-it-qat-w4a16-ct` across 64 real `swegemma` + `vLLM` execution runs (n = 16 paired tasks across 3 configurations = 48 primary runs, plus 16 rerun reproducibility runs) on 4x NVIDIA L4 GPUs. Our traces establish three findings in this 16-task sample: (1) in the official starter kit (`flat_starter`), the 4B model bypassed the discretionary `code_analyzer_agent` on 13/16 tasks (81.2%), invoking it on 4/149 (2.7%) of root non-`submit_patch` tool decisions; (2) configuring `include_contents: "none"` in a 3-stage `SequentialAgent` deterministically resets **stage-entry** prompt length (`PatchAgent` entry mean 1500.9 tokens vs. `TriageAgent` peak mean 10922.1 tokens, a -86.3% reset) and in exploratory post-hoc paired tests lowers per-task peak prompt length relative to `flat_controlled` on 13/16 tasks (sign test p = 0.0213, mean reduction of 16.7%, 95% CI [-3734.9, -789.6]) and cumulative total tokens by 25.7% (95% CI [-52067.0, -10336.1], sign test p = 0.0213), without bounding upper-tail `TriageAgent` peaks (max 16146 tokens); and (3) end-to-end task resolution on 4-bit quantized E4B (1/16 = 6.2% for `sfd` and `flat_starter` vs. 0/16 = 0.0% for `flat_controlled`, McNemar p = 1.0000) shows a null overall resolution difference, with `tasks.jsonl` reference comparisons showing `4/16` exact single-file localizations, `6/16` partial multi-file/multi-site localizations, and `6/16` wrong file/function localizations. All 64 execution traces (`traces/`), leaderboard snapshots (`results/leaderboard_snapshot_2026_10_26.json`, `results/small_model_leaderboard_2026_10_24.csv`), and scripts (`scripts/aggregate.py`, `scripts/render_paper.py`, `scripts/check_consistency.py`) are publicly available at `https://github.com/KarandeepSinghSodhi/gemma-sfd-agent`.
+Across 64 execution runs on `gemma-4-e4b-it-qat-w4a16-ct`, State-Filtered Deliberation demonstrates that:
+1. Compact models bypass discretionary delegation in 81.2% of tasks.
+2. Configuring `include_contents: "none"` deterministically resets stage-entry prompts by 86.3% (10,922 to 1,501 tokens), reducing per-task peak prompts on 13/16 tasks (p = 0.0213) and cumulative tokens by 25.7% (p = 0.0213).
+3. End-to-end task resolution shows a null difference (6.2% vs 0.0%, p = 1.0000), dominated by upstream localization and editing errors.
+
+All code, traces, and scripts are open-sourced:
+- **Repository:** `https://github.com/KarandeepSinghSodhi/gemma-sfd-agent` (Tag: `v1.0.1-camera-ready`)
+- **Companion Diagnostic Resource Paper:** [ATIF-Gemma](https://github.com/KarandeepSinghSodhi/gemma-sfd-agent/blob/v1.0.1-camera-ready/KAGGLE_WRITEUP_RESOURCE.md)
+- **Kaggle Kernel:** `https://www.kaggle.com/code/karandeepsinghsodhi/sfd-state-filtered-deliberation-agent-gemma-4`
 
 ---
 
@@ -227,5 +170,5 @@ We presented and empirically audited State-Filtered Deliberation (SFD) on `gemma
 3. Xia, C. S., et al. (2024). *Agentless: Demystifying LLM-based Software Engineering Agents.* arXiv:2407.01489.
 4. Yang, J., et al. (2024). *SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering.* arXiv:2405.15793.
 5. Wang, X., et al. (2024). *OpenHands: An Open Platform for AI Software Developers as Generalist Agents.* arXiv:2407.16741.
-6. Lindenbauer, T., Slinko, I., Felder, L., Bogomolov, E., & Zharov, Y. (2025). *The Complexity Trap: Simple Observation Masking Is as Efficient as LLM Summarization for Agent Context Management.* arXiv:2508.21433 (NeurIPS 2025 DL4C Workshop).
+6. Lindenbauer, T., et al. (2025). *The Complexity Trap: Simple Observation Masking Is as Efficient as LLM Summarization for Agent Context Management.* arXiv:2508.21433.
 7. Gemma Team, Google DeepMind (2026). *Gemma 4 Technical Report.* arXiv:2607.02770.
