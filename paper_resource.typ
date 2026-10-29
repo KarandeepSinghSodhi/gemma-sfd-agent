@@ -81,7 +81,7 @@
   Software engineering (SWE) benchmarks typically report scalar task-resolution rates while discarding multi-turn execution trajectories, obscuring why developer agents fail. For compact 4-bit models (`gemma-4-e4b-it-qat-w4a16-ct`), diagnosing low resolution (median 5.0% across 197 teams on the official Small Model Prize leaderboard; @holbrook2026leaderboard) is hindered by limited public trace data linking small-agent trajectories to systematic failure diagnoses and held-out outcomes. We introduce *ATIF-Gemma*, an open empirical diagnostic corpus of 112 execution traces comprising 1,518 LLM calls, 1,328 tool invocations, and 11,706,178 logged tokens across 32 paired SWE-bench tasks on 4x NVIDIA L4 GPUs using Google ADK and `swegemma`. All evaluated tasks derive from public repositories under permissive open-source licenses (MIT, Apache-2.0, BSD-3-Clause in `NOTICE`; evaluation `test_patch` omitted per data governance rules).
   
   #v(2pt)
-  Standardized under ATIF v1.7 (100% schema-validated; @harbor2026atif), ATIF-Gemma cross-references fine-grained actions against held-out outcomes. Across the 26 tasks with valid environments across all configurations, each agent architecture resolved *2/26 tasks (7.69%, 95% Wilson CI [2.14%, 24.14%])*, yielding *6/78 resolved runs overall (7.69%, 95% task-level cluster-bootstrap CI [1.28%, 15.38%])*; across all 96 raw primary runs, resolution is *6/96 (6.25%, 2/32 per configuration, 95% task-level cluster-bootstrap CI [1.04%, 12.50%])*; pooled across 112 runs, resolution is 8/112 (7.14%). We establish a deterministic failure taxonomy: assertion failures (50.0%, 56/112), collection errors (32.1%, 36/112; 55.6% environment-suspected, flagged `env_suspected=True`; in sensitivity analysis excluding these 20 runs, resolution is 6/80 [7.50%] primary and 8/92 [8.70%] pooled), budget exhaustion (8.0%, 9/112), and verification timeouts (2.7%, 3/112). We release the trace corpus, the `atif_gemma` package, and run-level diagnostic data.
+  Standardized under ATIF v1.7 (100% schema-validated; @harbor2026atif), ATIF-Gemma cross-references fine-grained actions against held-out outcomes. Across 26 complete-case task clusters, each configuration resolved *2/26 tasks (7.69%, 95% Wilson CI [2.14%, 24.14%])*; combined, the three configurations resolved *6/78 primary runs (95% task-cluster bootstrap CI [1.28%, 15.38%])*; across all 96 primary runs, resolution is *6/96 (6.25%, 2/32 per configuration, cluster-bootstrap CI [1.04%, 12.50%])*; across all 112 records including reruns, 8 traces resolved (7.14%). We establish a deterministic failure taxonomy: assertion failures (50.0%, 56/112), collection errors (32.1%, 36/112; 55.6% environment-suspected, flagged `env_suspected=True`; in sensitivity analysis excluding these 20 runs, resolution is 6/80 [7.50%] primary and 8/92 [8.70%] pooled), budget exhaustion (8.0%, 9/112), and verification timeouts (2.7%, 3/112). We release the trace corpus, the `atif_gemma` package, and run-level diagnostic data.
 ]
 
 #v(0.2cm)
@@ -139,7 +139,7 @@ The Gemma 4 family @gemma2026team introduced compact open-weight models optimize
   caption: [Summary composition of the ATIF-Gemma diagnostic trace corpus across five cohorts on 4x NVIDIA L4 GPUs. Note: The Cohort 1 Rerun repeats the flat_controlled and sfd configurations across the same eight tasks, yielding 16 rerun traces; the flat_starter configuration was not rerun.]
 )
 
-The corpus covers 32 unique SWE-bench instances spanning four major Python repositories: `fastapi` (51 runs), `rich` (37 runs), `requests` (19 runs), and `httpx` (5 runs). All experiments were served using vLLM 0.19.1 under tensor parallel 4 (`tp=4`, 96 GB aggregate VRAM) hosting `gemma-4-e4b-it-qat-w4a16-ct` with Google ADK 1.36.1 and `swegemma`.
+The 112 traces span 32 unique tasks across four repositories: `fastapi` (51 traces), `rich` (37), `requests` (19), and `httpx` (5). Experiments ran on 4 NVIDIA L4 GPUs via vLLM 0.19.1 (`tp=4`, 96 GB aggregate VRAM) hosting `gemma-4-e4b-it-qat-w4a16-ct` with Google ADK 1.36.1 and `swegemma`. Traces record tool calls, deliberative thoughts (`extra.event_type: "thinking"`), token metrics, and Phase 2 exit codes.
 
 Each trace conforms strictly to the *ATIF v1.7 JSON Schema*:
 - *Metadata Block*: Records `instance_id`, `repo`, `base_commit`, `agent_config_name`, vLLM sampling parameters (`temperature=0.0`, `seed=42`, `max_output_tokens=8192`, `thinking_budget=1536`), and hardware fingerprints.
@@ -271,7 +271,7 @@ ATIF-Gemma provides empirical trace evidence of how small models handle discreti
 )
 
 == 5.4 Cross-Stage Prompt Resets
-In `sfd` traces, configuring `include_contents: "none"` on downstream stages resets entry prompts from a mean TriageAgent peak of 10,473.9 tokens ($n=32$ primary runs, median 9,863.0; vs 10,922.1 reported for the $n=16$ cohort in @sodhi2026sfd) down to a mean of 1,536.9 tokens (median 1,503.0) at PatchAgent entry. Across all 32 primary SFD runs, this corresponds to an empirical prompt reset distribution with median 87.43%, mean 81.95%, IQR [75.72%, 89.46%], and range [44.95%, 92.49%], driving the overall 32.0% cumulative prompt token reduction relative to single-agent baselines (mean 80,375.7 vs 118,173.0 tokens, Wilcoxon $p < 0.0001$).
+In `sfd` traces, configuring `include_contents: "none"` on downstream stages resets entry prompts from a mean TriageAgent peak of 10,473.9 tokens ($n=32$ primary runs, median 9,863.0; vs 10,922.1 reported for the $n=16$ cohort in @sodhi2026sfd) down to a mean of 1,536.9 tokens (median 1,503.0) at PatchAgent entry. Across all 32 primary SFD runs, the mean of per-run percentage resets was 81.95% (median 87.43%, IQR [75.72%, 89.46%], range [44.95%, 92.49%]). The ratio of aggregate mean prompt lengths corresponds to an 85.3% reduction, a different summary statistic. This mechanism drives the overall 32.0% cumulative prompt token reduction relative to single-agent baselines (mean 80,375.7 vs 118,173.0 tokens, Wilcoxon $p < 0.0001$).
 
 #v(0.2cm)
 #figure(
@@ -313,7 +313,7 @@ Along with the dataset, we release a standalone Python package (`atif-gemma`) in
 
 ```bash
 # Direct installation via pip from GitHub
-pip install git+https://github.com/KarandeepSinghSodhi/gemma-sfd-agent.git
+pip install git+https://github.com/KarandeepSinghSodhi/gemma-sfd-agent.git@v1.0.1-camera-ready
 
 # Or local editable install from a cloned repository
 git clone https://github.com/KarandeepSinghSodhi/gemma-sfd-agent.git

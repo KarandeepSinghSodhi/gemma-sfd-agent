@@ -11,20 +11,20 @@
 
 SWE-bench benchmarks report scalar resolution rates, obscuring multi-turn failure dynamics in small developer agents. Small models plateaued at low resolution (median 5.0% across 197 teams on the official Small Model Prize leaderboard). We introduce **ATIF-Gemma**, an open diagnostic corpus of 112 multi-turn execution traces across 32 SWE-bench tasks evaluating `gemma-4-e4b-it-qat-w4a16-ct` on 4x NVIDIA L4 GPUs across three controlled architectures (`flat_starter`, `flat_controlled`, `sfd`).
 
-Standardized under ATIF v1.7 (Harbor Framework Contributors, 2026), ATIF-Gemma links agent actions to held-out test outcomes. Primary resolution is **6/96 (6.25%)** (2/32 per config, 95% Wilson CI [1.73%, 20.15%]; cluster-bootstrap CI [1.04%, 12.50%]); pooled resolution is 8/112 (7.14%). Across 26 complete-case task clusters, each resolved 2/26 (7.69%, 95% CI [2.14%, 24.14%]; 6/78 overall, cluster-bootstrap CI [1.28%, 15.38%]). We classify four failure modes: assertion failures (50.0%, 56/112), collection crashes (32.1%, 36/112), budget exhaustion (8.0%, 9/112), and harness timeouts (2.7%, 3/112). Collection errors partition into agent-attributable failures (16/36) and environment-suspected failures (20/36; flagged `env_suspected=True`). In sensitivity analysis excluding the 20 flagged runs, resolution is **6/80 (7.50%)** primary and **8/92 (8.70%)** pooled. We release the corpus, `atif_gemma` toolkit, and remediations.
+Standardized under ATIF v1.7 (Harbor Framework Contributors, 2026), ATIF-Gemma links agent actions to held-out test outcomes. Primary resolution is **6/96 (6.25%)** (2/32 per config, 95% Wilson CI [1.73%, 20.15%]; cluster-bootstrap CI [1.04%, 12.50%]); across all 112 records, including reruns, 8 traces resolved (7.14%). Across 26 complete-case task clusters, each configuration resolved 2/26 tasks (7.69%, 95% Wilson CI [2.14%, 24.14%]); combined, the three configurations resolved 6/78 primary runs (95% task-cluster bootstrap CI [1.28%, 15.38%]). We classify four failure modes: assertion failures (50.0%, 56/112), collection crashes (32.1%, 36/112), budget exhaustion (8.0%, 9/112), and harness timeouts (2.7%, 3/112). Collection errors partition into agent-attributable failures (16/36) and environment-suspected failures (20/36; flagged `env_suspected=True`). In sensitivity analysis excluding the 20 flagged runs, resolution is **6/80 (7.50%)** primary and **8/92 (8.70%)** pooled. We release the corpus, `atif_gemma` toolkit, and remediations.
 
 ---
 
 ## 1. Introduction & The Diagnostic Vacuum in SWE Benchmarking
 
-Unlike single-turn benchmarks (HumanEval; Chen et al., 2021; MBPP; Austin et al., 2021), SWE-bench established repository repair for coding agents (Jimenez et al., 2024). Resolution rates depend on benchmark split, model scale, and harness. Although agent interfaces have advanced (Yang et al., 2024; Wang et al., 2024; Xia et al., 2024), aggregate scores obscure execution failures. On the competition split, compact models (`gemma-4-e4b-it-qat-w4a16-ct`) plateaued $\le 10\%$ (median 5.0% across 197 teams; Holbrook, 2026). ATIF-Gemma resolves this diagnostic vacuum via 112 standardized traces, a 4-tier failure taxonomy, a rerun audit, and the open `atif_gemma` toolkit.
+Unlike single-turn benchmarks (HumanEval; Chen et al., 2021; MBPP; Austin et al., 2021), SWE-bench established repository repair for coding agents (Jimenez et al., 2024). Resolution rates depend on split, model scale, and harness. Although agent interfaces have advanced (Yang et al., 2024; Wang et al., 2024; Xia et al., 2024), aggregate scores obscure execution failures. On the competition split, compact models (`gemma-4-e4b-it-qat-w4a16-ct`) plateaued $\le 10\%$ (median 5.0% across 197 teams; Holbrook, 2026). ATIF-Gemma resolves this diagnostic vacuum via 112 standardized traces, a 4-tier failure taxonomy, a rerun audit, and the open `atif_gemma` toolkit.
 
 ---
 
 ## 2. Related Work: Trajectory Corpora & Agent Diagnostics
 
 ### 2.1 SWE Agent Trajectories & Diagnostics
-Prior work established repair benchmarks (SWE-bench; Jimenez et al., 2024), agent interfaces (SWE-agent; Yang et al., 2024; OpenHands; Wang et al., 2024; Agentless; Xia et al., 2024), and training data on real tasks (SWE-Gym; Pan et al., 2024) or synthetic tasks (SWE-smith; Yang et al., 2025). Public Gemma 4 datasets also offer traces (Rajak, 2026). ATIF-Gemma complements these via an exit-code failure taxonomy, suspected-environment attribution, and a rerun audit for compact Gemma 4 agents under version-pinned ATIF v1.7 (Harbor Framework Contributors, 2026).
+Prior work established repair benchmarks (SWE-bench; Jimenez et al., 2024), agent interfaces (SWE-agent; Yang et al., 2024; OpenHands; Wang et al., 2024; Agentless; Xia et al., 2024), and training data on real tasks (SWE-Gym; Pan et al., 2024) or synthetic tasks (SWE-smith; Yang et al., 2025). Public datasets also offer Gemma traces (Rajak, 2026). ATIF-Gemma complements these via an exit-code failure taxonomy, suspected-environment attribution, and a rerun audit for compact Gemma 4 agents under version-pinned ATIF v1.7 (Harbor Framework Contributors, 2026).
 
 ### 2.2 Small Open-Weight Developer Agents
 Gemma 4 (Gemma Team, 2026) introduced edge models (`gemma-4-e4b-it-qat-w4a16-ct`). In multi-turn agents, managing observation bloat is critical (Lindenbauer et al., 2025). While companion SFD (Sodhi, 2026) addressed prompt bloat on 16 tasks, ATIF-Gemma contributes the diagnostic corpus, failure taxonomy, and reproducibility audit across 32 tasks and 112 runs.
@@ -46,18 +46,18 @@ Gemma 4 (Gemma Team, 2026) introduced edge models (`gemma-4-e4b-it-qat-w4a16-ct`
 
 *Note: The Cohort 1 Rerun repeats the flat_controlled and sfd configurations across the same eight tasks, yielding 16 rerun traces. The flat_starter configuration was not rerun.*
 
-Across 32 tasks in 4 repos (`fastapi`: 51, `rich`: 37, `requests`: 19, `httpx`: 5) on 4x L4 GPUs via vLLM (`tp=4`, `gemma-4-e4b-it-qat-w4a16-ct`), traces log tool calls, deliberative thoughts (`extra.event_type: "thinking"`), tokens, and Phase 2 exit codes.
+The 112 traces span 32 unique tasks across four repositories: `fastapi` (51 traces), `rich` (37), `requests` (19), and `httpx` (5). Experiments ran on 4 NVIDIA L4 GPUs via vLLM (`tp=4`) using `gemma-4-e4b-it-qat-w4a16-ct`. Traces record tool calls, deliberative thoughts (`extra.event_type: "thinking"`), token metrics, and Phase 2 exit codes.
 
 **Schema Conformance, Datasheet & Governance (Gebru et al., 2021):** All 112 traces pass formal validation against version-pinned ATIF v1.7 (`dataset_resource/atif_schema_v1_7.json`; Harbor Framework Contributors, 2026; `analysis/validate_atif_schema.py`; sheet in `dataset_resource/datasheet.md`):
 - *Data Access & Licensing*: Task data from the code competition (`gemma-4-developer-agent`) are accessed under Sections 1.7 & 2.4.a.1 of the [Official Rules](https://www.kaggle.com/competitions/gemma-4-developer-agent/rules) (*"may access and use the Competition Data for any purpose... including for academic research and education"*). Repositories are open-source (MIT, Apache-2.0, BSD-3-Clause; `NOTICE`).
 - *Data Security & Derived Labels (Rule 2.4.b.1)*: Per Rule 2.4.b.1, proprietary `test_patch` files are omitted. On the forum ([Topic 749803](https://www.kaggle.com/competitions/gemma-4-developer-agent-paper/discussion/749803)), Host Elan Markowitz confirmed: *"Yes, publishing derived labels is okay."* Gold-patch diffs are not redistributed; localization metrics record file counts and overlap. CC BY 4.0 covers original annotations/metadata; third-party code snippets in traces remain subject to upstream licenses (`NOTICE`); code: Apache-2.0.
-- *Dual-Submission Allowance (Rule 2.2.b)*: Under Section 2.2.b of the [Paper Rules](https://www.kaggle.com/competitions/gemma-4-developer-agent-paper/rules) (*"You may select up to two (2) Final Submissions for judging"*), Host Elan Markowitz confirmed ([Topic 743255](https://www.kaggle.com/competitions/gemma-4-developer-agent-paper/discussion/743255)): *"A team can submit at most two write-ups. There is only one submission track, and the judges will determine the eligibility for each prize."* ATIF-Gemma serves as empirical companion to SFD (Sodhi, 2026), providing the diagnostic corpus, failure taxonomy, and reproducibility audit.
+- *Dual-Submission Allowance (Rule 2.2.b)*: Per Section 2.2.b of the [Paper Rules](https://www.kaggle.com/competitions/gemma-4-developer-agent-paper/rules), Host Elan Markowitz confirmed ([Topic 743255](https://www.kaggle.com/competitions/gemma-4-developer-agent-paper/discussion/743255)): *"A team can submit at most two write-ups. There is only one submission track, and the judges will determine the eligibility for each prize."* ATIF-Gemma is the empirical companion to SFD (Sodhi, 2026).
 
 ---
 
 ## 4. Failure Taxonomy & Phase 2 Outcome Breakdown
 
-**Cross-Paper Taxonomy Concordance & Scope:** While companion SFD (Sodhi, 2026) evaluated 16 paired tasks (Cohorts 1–2, 48 runs) on context efficiency, ATIF-Gemma evaluates 32 tasks across 5 cohorts (112 runs) for comprehensive failure diagnosis, mapped to exact container exit codes:
+**Cross-Paper Taxonomy Concordance & Scope:** While SFD (Sodhi, 2026) evaluated 16 paired tasks (48 runs) on context efficiency, ATIF-Gemma evaluates 32 tasks across 5 cohorts (112 runs) for failure diagnosis, mapped to container exit codes:
 - `timeout_or_budget_no_patch` (15 runs) = pre-submission budget exhaustion (Exit -1, 9 runs) + zero-byte runs without an applied edit (Exit 1, 6 runs; e.g. `rich_3944` flat_starter).
 - `test_verification_failed` (89 runs) = collection crashes (Exit 2, 36 runs: 16 agent-attributable vs 20 `env_suspected`) + non-empty assertion failures (Exit 1 Tiers 2–4, 50 runs) + timeouts (Exit 124, 3 runs).
 - `resolved` (8 runs) = clean execution passing unit assertions without regressions (Exit 0; 6 primary, 2 reruns). Total: 15 + 89 + 8 = 112 runs.
@@ -99,7 +99,7 @@ Across 112 runs, 8 runs resolved the held-out tests, across 4 tasks: `rich_4077`
 
 ### Table 3: Architectural Metrics — 32 Primary Runs per Configuration and 8 Rerun Runs per Configuration
 
-| Configuration | Runs | Primary Resolved (95% CI) | Mean Peak $P_t$ | Mean Cumulative Prompt | Mean Duration |
+| Configuration | Runs | Resolved (95% Wilson CI) | Mean Peak $P_t$ | Mean Cumulative Prompt | Mean Duration |
 | :--- | :---: | :---: | :---: | :---: | :---: |
 | **Official Starter (`flat_starter`)** | 32 | 2/32 (6.2%) [1.7%, 20.2%] | 13,359.7 | 105,817.6 | 94.2s |
 | **Single-Agent (`flat_controlled`)** | 32 | 2/32 (6.2%) [1.7%, 20.2%] | 13,959.0 | 118,173.0 | 90.8s |
@@ -110,19 +110,19 @@ Across 112 runs, 8 runs resolved the held-out tests, across 4 tasks: `rich_4077`
 *Note:* Primary resolution: unadjusted outcomes across $n=32$ tasks; complete-case analysis (2/26 per config, 6/78 overall) in Section 4.1. **Peak $P_t$**: max prompt length. **Cumulative Prompt**: sum of prompt tokens ($n=32$ primary runs).
 
 ### 5.1 Statistical Tests & Resolution Invariance
-Across 32 primary tasks, resolution shows identical marginal counts at 2/32 (6.25%, 95% Wilson CI [1.73%, 20.15%]) across `flat_starter`, `flat_controlled`, and `sfd` (McNemar $p = 1.0000$ for all pairs; 6/96 overall, 95% cluster-bootstrap CI [1.04%, 12.50%]). Given small sample sizes, this reflects limited statistical power rather than equivalence.
+Across 32 primary tasks, resolution shows identical marginal counts at 2/32 (6.25%, 95% Wilson CI [1.73%, 20.15%]) across `flat_starter`, `flat_controlled`, and `sfd` (McNemar $p = 1.0000$ for all pairs; 6/96 overall, 95% cluster-bootstrap CI [1.04%, 12.50%]). Given small sample size, this reflects limited statistical power rather than equivalence.
 
-In contrast, SFD achieves significant token reductions over flat baselines (exploratory paired comparisons without multiplicity adjustment):
+In contrast, SFD achieves significant token reductions over flat baselines (exploratory paired comparisons):
 - **Cumulative Prompt Tokens**: vs `flat_controlled`: **-37,797.4 (-32.0%)** (95% CI [-52,214.6, -23,755.2], Wilcoxon $p < 0.0001$; lower in 25/32); vs `flat_starter`: **-25,441.9 (-24.0%)** (95% CI [-42,485.1, -9,031.4], $p = 0.0061$; lower in 24/32).
 - **Peak Prompt Tokens**: vs `flat_controlled`: **-3,051.6 (-21.9%)** (95% CI [-4,142.9, -1,968.2], $p < 0.0001$; lower in 28/32); vs `flat_starter`: **-2,452.2 (-18.4%)** (95% CI [-3,795.9, -1,111.8], $p = 0.0008$; lower in 26/32).
 - **Cumulative Total Tokens**: vs `flat_controlled`: **-36,786.3 (-29.7%)** (95% CI [-51,715.4, -22,346.4], $p < 0.0001$); vs `flat_starter`: **-24,585.3 (-22.0%)** (95% CI [-41,948.3, -8,026.9], $p = 0.0073$).
-- **Duration**: Not statistically significant (vs `flat_controlled`: -4.2s, -4.7%, $p = 0.4540$; vs `flat_starter`: -7.7s, -8.1%, $p = 0.4429$).
+- **Duration**: Non-significant (vs `flat_controlled`: -4.2s, -4.7%, $p = 0.4540$; vs `flat_starter`: -7.7s, -8.1%, $p = 0.4429$).
 
 ### 5.2 Rerun Reproducibility & Determinism Audit
 Cohort 1 was re-executed across 8 tasks $\times$ 2 configs (16 paired runs; `analysis/statistical_tests.py`):
 - **Exit Code Agreement**: 12/16 runs (75.0%) matched exit codes (4 flips: `rich_4077` ctrl 1->0; `fastapi_15588` sfd 1->2; `fastapi_15589` ctrl 1->2; `fastapi_15589` sfd -1->1).
 - **Patch Presence Agreement**: 14/16 runs (87.5%) agreed on patch presence (8/8 `flat_controlled`, 6/8 `sfd`; discordant on `fastapi_15589`, `requests_7502`).
-- **Recorded Edit Payload Hash Agreement**: Serialized sequences of recorded `write_file`, `edit_file`, and `submit_patch` payloads matched in 0/16 rerun pairs (0.0%). This measures agreement between recorded tool payloads, not final repository patches. Manual diff analysis identified semantic convergence in selected cases (`rich_4077`), despite differences in recorded operations and context.
+- **Recorded Edit Payload Hash Agreement**: Serialized sequences of recorded `write_file`, `edit_file`, and `submit_patch` payloads matched in 0/16 rerun pairs (0.0%). This measures recorded tool payloads, not final repository patches. Manual diff analysis identified semantic convergence in selected cases (`rich_4077`), despite differences in recorded operations and context.
 - **Concordance Observations**:
   1. *Target-File Localization*: 10/16 pairs (62.5%) touched the same source files.
   2. *Comment-Stripped Replacement Logic*: 1/16 pairs (6.3%; `requests_7505` `flat_controlled`, applying identical single-line logic `elif isinstance(fp, _SupportsRead): fdata = fp.read()`, differing only by comments; companion SFD evaluated SFD's distinct edit).
@@ -138,7 +138,7 @@ In `flat_starter`, root wraps `code_analyzer` as an `AgentTool`. Across 32 trace
 *Figure 3: Sub-agent delegation in `flat_starter`: 81.2% bypassed delegation; 2.1% calls delegated.*
 
 ### 5.4 Cross-Stage Prompt Resets
-In `sfd`, `include_contents: "none"` resets entry prompts from a mean TriageAgent peak of 10,473.9 tokens ($n=32$ primary runs, median 9,863.0; vs 10,922.1 for $n=16$ in SFD) to 1,536.9 tokens at PatchAgent entry, yielding an 81.95% mean reset (median 87.43%, IQR [75.72%, 89.46%]) and driving 32.0% prompt reduction over flat baselines ($p < 0.0001$).
+In `sfd`, `include_contents: "none"` resets entry prompts from a mean TriageAgent peak of 10,473.9 tokens ($n=32$ primary runs, median 9,863.0; vs 10,922.1 for $n=16$ in SFD) to 1,536.9 tokens at PatchAgent entry. Across 32 primary runs, the mean of per-run percentage resets was 81.95% (median 87.43%, IQR [75.72%, 89.46%]); the ratio of aggregate means corresponds to an 85.3% reduction (a different summary statistic). This drives the 32.0% prompt reduction over flat baselines ($p < 0.0001$).
 
 ![Figure 2: Prompt Token Expansion & Stage Resets](figures/fig2_prompt_resets.png)
 *Figure 2: Prompt trajectories across steps $t$ (mean with 95% bootstrap bands). Flat runs expand monotonically; SFD resets prompt tokens by 87.43% median.*
@@ -155,10 +155,10 @@ Diagnostic classifications suggest actionable engineering patterns:
 | **Edit Failures** | 100 errors (64 NotFound, 36 Malformed) | Validate edit targets against buffer; handle errors explicitly. |
 | **Syntax Corruption** | 13/112 (11.6%) | Mandate `py_compile` gate before `submit_patch` with self-repair. |
 | **Wrong-File Localization** | 15/112 (13.4% overall) | Two-way symbol verification loop (untested) prior to edit. |
-| **Unbounded Context** | 64/64 flat runs (100% monotonic) | Stage context pruning (`include_contents: "none"`), resetting context 81.9% mean (reduces tokens; no resolution gain). |
+| **Unbounded Context** | 64/64 flat runs (100% monotonic) | Stage context pruning (`include_contents: "none"`), resetting context 81.95% mean (reduces tokens; no resolution gain). |
 
 ### 6.1 Post-Hoc Diagnostic Evaluation (Non-Official Harness)
-Offline diagnostic checks (`analysis/remediation_eval.py`, `results/remediation_eval.json`) do not alter official benchmarks:
+Offline diagnostic checks (`analysis/remediation_eval.py`) do not alter official benchmarks:
 1. **Pre-Submission `py_compile` Gate**: Catches 100% (13/13) of syntax-corrupted patches before `submit_patch` by construction; recovery without repair turns was 0/13.
 2. **`PYTHONPATH` Priority**: Prepending source paths (`PYTHONPATH=/workspace/src:/workspace`) is predicted to avoid collection crashes across all 10 path-shadowed runs (`httpx_3672`, `fastapi_15661`); evaluation requires container execution (no speculative gains claimed).
 
@@ -168,7 +168,7 @@ Offline diagnostic checks (`analysis/remediation_eval.py`, `results/remediation_
 
 We release the standalone Python package `atif-gemma`:
 ```bash
-pip install git+https://github.com/KarandeepSinghSodhi/gemma-sfd-agent.git
+pip install git+https://github.com/KarandeepSinghSodhi/gemma-sfd-agent.git@v1.0.1-camera-ready
 ```
 Modules provide trajectory auditing (`audit`), deterministic exit-code and localization classification (`taxonomy`), and remediations (`remediation`). CLI: `python -m atif_gemma.cli audit traces/` and `python -m atif_gemma.cli playbook`.
 
@@ -176,18 +176,18 @@ Modules provide trajectory auditing (`audit`), deterministic exit-code and local
 
 ## 8. Limitations & Threats to Validity
 
-1. **Task Sample ($n = 32$)**: Covers ~25% of the benchmark split (evaluating all 129 tasks across 3 configurations requires ~13 hours on 4x L4, or ~52 GPU-hours, exceeding remaining competition quota).
+1. **Task Sample ($n = 32$)**: Covers ~25% of the benchmark split (evaluating all 129 tasks across 3 configurations requires ~13 hours on 4x L4, or ~52 GPU-hours, exceeding remaining quota).
 2. **Model & Quantization**: Specific to `gemma-4-e4b-it-qat-w4a16-ct` (INT4); larger models may differ.
 3. **Repository Scope**: Evaluates 4 Python repos; runs sharing tasks are paired and clustered.
-4. **Non-Determinism**: Under $T=0.0$, 12/16 exit codes matched on rerun, but edit hashes diverged (mean drift: 18,571 tokens).
-5. **Structural Proxy**: File overlap ($F_\text{agent} \cap F_\text{gold}$) is an automated proxy; valid alternative patches exist.
-6. **Sandbox Sensitivity (`env_suspected=True`)**: 20 runs exhibited collection failures consistent with container constraints (missing wheels, path shadowing); confirming these requires offline container controls (future work).
+4. **Non-Determinism**: Under $T=0.0$, 12/16 exit codes matched on rerun; edit hashes diverged (mean drift: 18,571 tokens).
+5. **Structural Proxy**: File overlap ($F_\text{agent} \cap F_\text{gold}$) is a proxy; alternative valid patches exist.
+6. **Sandbox Sensitivity (`env_suspected=True`)**: 20 runs exhibited collection failures consistent with container constraints (missing wheels, path shadowing); confirmation requires offline container controls (future work).
 
 ---
 
 ## 9. Conclusion & Resource Availability
 
-ATIF-Gemma shows raw resolution rates mask critical execution bottlenecks (50.0% assertion failures, 32.1% collection crashes). All 112 traces, metadata, and analysis tools are open-sourced:
+ATIF-Gemma shows raw resolution rates mask critical execution bottlenecks (50.0% assertion failures, 32.1% collection crashes). All 112 traces, metadata, and tools are open-sourced:
 - **GitHub Repository**: [gemma-sfd-agent, tag `v1.0.1-camera-ready`](https://github.com/KarandeepSinghSodhi/gemma-sfd-agent/tree/v1.0.1-camera-ready)
 - **Kaggle Dataset**: [ATIF-Gemma: Diagnostic Traces for SWE Agents](https://www.kaggle.com/datasets/karandeepsinghsodhi/atif-gemma-swe-agent-traces)
 - **Kaggle Notebook**: [ATIF-Gemma: Diagnostic Exploration](https://www.kaggle.com/code/karandeepsinghsodhi/atif-gemma-diagnostic-exploration)
