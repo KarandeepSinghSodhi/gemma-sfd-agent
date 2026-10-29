@@ -333,3 +333,16 @@ eferences_gemma.bib, nalysis/gold_patch_control.py.
 - **Context-Growth Table Note**: Updated candidate remediation table to note that stage context pruning reduces tokens without observed resolution gain.
 - **Stale String Purge**: Verified zero occurrences of `env_invalid`, `mislabeled`, `primary inferential result`, `14/16 identical`, `24 teams`, `28.7%`, or `MIT/Apache-2.0 only` across all manuscripts.
 - **Word Count**: Maintained strictly at **2,921 whitespace words** (title: **77 characters**).
+
+---
+
+## [Camera-Ready Final Freeze] 2026-10-29 14:38 UTC
+- **Task**: Final reviewer remediation and camera-ready freeze (Addressing r1 & r2).
+- **Cluster Bootstrap Publication**: Implemented and documented `task_cluster_bootstrap_resolution_ci` in `analysis/statistical_tests.py` using `seed=42` and `n_boot=10,000` resamples over task clusters. Pinned 95% CIs: Complete-case [1.28%, 15.38%]; Primary [1.04%, 12.50%].
+- **Deterministic Hashing & Semantic Concordance**: Explicitly distinguished normalized edit-operation hashes (0/16 matched, 0.0%) from semantic convergence. Published concrete diff analysis in `results/rich_4077_diffs.md` documenting identical 3-line logic (`def isatty(self) -> bool: return self.__file.isatty()`) across all 3 resolved runs. Documented `requests_7505` single-line guard concordance. Reported cohort-wide concordance: 10/16 (62.5%) identical files, 1/16 (6.3%) normalized code match, 0/16 bitwise patches.
+- **Harmonized Terminology**: Replaced `env_invalid` with `env_suspected` uniformly across `corpus_metadata.csv`, `failure_taxonomy_runs.csv`, `datasheet.md`, `analysis/statistical_tests.py`, `KAGGLE_WRITEUP_RESOURCE.md`, and `paper_resource.typ`.
+- **Verbatim Governance Quotes**: Added exact quotes from Rules 1.7, 2.4.a.1, 2.4.b.1, 2.2.b and Host Elan Markowitz forum confirmations (Topic 743255, Topic 749803).
+- **Cross-Paper Alignment**: Synchronized taxonomy labels with SFD paper (`resolved`, `test_verification_failed`, `timeout_or_budget_no_patch`) and clarified sample sizes ($n=16$ paired tasks in SFD vs $n=32$ in ATIF-Gemma).
+- **Integrity & Checksums**: Recomputed `dataset_resource/checksums.sha256` (120/120 files matched, 0 mismatches). Validated all 112 traces against ATIF v1.7 (100.0% PASS).
+- **Word Count**: Strictly **2,917 whitespace words** (< 3,000 max; 83-word safety margin).
+- **Manuscripts Compiled**: Both `paper_resource.pdf` and `paper.pdf` recompiled cleanly.

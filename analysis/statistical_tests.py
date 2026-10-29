@@ -203,7 +203,7 @@ def main():
         
     # --- 1b. Task-Level Cluster-Bootstrap CIs for Clustered Runs ---
     print("\n--- 1b. Task-Level Cluster Bootstrap (10,000 resamples over task clusters) ---")
-    task_env = p_df.groupby("instance_id")["env_invalid"].any()
+    task_env = p_df.groupby("instance_id")["env_suspected"].any()
     valid_tasks_26 = sorted(task_env[~task_env].index.tolist())
     all_tasks_32 = sorted(p_df["instance_id"].unique().tolist())
     
@@ -350,11 +350,11 @@ def main():
             "resolved_runs": n_res,
             "resolved_any": n_res > 0,
             "exit_codes": exit_codes,
-            "has_env_invalid": env_inv
+            "has_env_suspected": env_inv
         })
     task_df = pd.DataFrame(task_res)
     print(f"  Tasks with >=1 resolution: {task_df['resolved_any'].sum()} / {len(task_df)} ({task_df['resolved_any'].mean()*100:.1f}%)")
-    print(f"  Tasks with env_invalid runs: {task_df['has_env_invalid'].sum()} / {len(task_df)} ({task_df['has_env_invalid'].mean()*100:.1f}%)")
+    print(f"  Tasks with env_suspected runs: {task_df['has_env_suspected'].sum()} / {len(task_df)} ({task_df['has_env_suspected'].mean()*100:.1f}%)")
 
     # Save results
     stats_report = {
@@ -373,7 +373,7 @@ def main():
         "task_level_summary": {
             "total_tasks": len(task_df),
             "tasks_with_resolution": int(task_df["resolved_any"].sum()),
-            "tasks_with_env_invalid": int(task_df["has_env_invalid"].sum())
+            "tasks_with_env_suspected": int(task_df["has_env_suspected"].sum())
         }
     }
     (RESULTS_DIR / "stats_report.json").write_text(json.dumps(stats_report, indent=2), encoding="utf-8")

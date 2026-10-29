@@ -38,7 +38,7 @@ Following the *Datasheets for Datasets* standard (Gebru et al., 2021).
   4. `Cohort 3 (Stratified Disjoint)`: 24 traces (8 tasks x 3 configs)
   5. `Cohort 4 (Stratified Disjoint)`: 24 traces (8 tasks x 3 configs)
   
-  Additionally, a boolean flag `env_invalid` in `corpus_metadata.csv` identifies 20 runs where Phase 2 test collection crashed due to offline sandbox environment defects (virtual environment path shadowing or missing wheelhouse packages such as `inline_snapshot`). Resolution is 6/96 (6.25%) across all primary runs, and 6/80 (7.50%) across valid-environment primary runs.
+  Additionally, a boolean flag `env_suspected` in `corpus_metadata.csv` identifies 20 runs where Phase 2 test collection crashed due to offline sandbox environment defects (virtual environment path shadowing or missing wheelhouse packages such as `inline_snapshot`). Resolution is 6/96 (6.25%) across all primary runs, and 6/80 (7.50%) across valid-environment primary runs.
 
 - **Does the dataset contain sensitive or personally identifiable data?**  
   No. All code and test suites originate from open-source GitHub repositories under permissive licenses (`fastapi`, `rich`, `requests`, `httpx`). ATIF traces record the model's interaction history without disclosing confidential held-out competition test harnesses.

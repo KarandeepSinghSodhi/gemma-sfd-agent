@@ -240,6 +240,6 @@
   "task_level_summary": {
     "total_tasks": 32,
     "tasks_with_resolution": 4,
-    "tasks_with_env_invalid": 6
+    "tasks_with_env_suspected": 6
   }
 }
