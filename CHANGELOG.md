@@ -322,3 +322,14 @@ eferences_gemma.bib, nalysis/gold_patch_control.py.
   8. *Statistical Precision & MDE*: Clarified that no resolution difference is detectable at this sample size (McNemar $p=1.000$; MDE $pprox 15-20$ percentage points), and noted that secondary Wilcoxon tests are exploratory without multiple-testing adjustment.
   9. *Word Count Headroom*: Trimmed `KAGGLE_WRITEUP_RESOURCE.md` to **2,919 whitespace words** (safe 81-word cushion below the 3,000-word limit; title length: **77 characters**).
 - **Artifacts Synchronized**: `KAGGLE_WRITEUP_RESOURCE.md`, `paper_resource.typ`, `paper_resource.pdf`, `references_gemma.bib`, `analysis/statistical_tests.py`, `results/stats_report.json`, `results/failure_taxonomy_runs.csv`.
+
+### [v1.0.1-camera-ready] - 2026-10-29: Reviewer Round 2 Final Reconciliation
+- **Field Name Harmonization**: Replaced `env_invalid` with `env_suspected` uniformly across `corpus_metadata.csv`, `failure_taxonomy_runs.csv`, `analysis/statistical_tests.py`, `KAGGLE_WRITEUP_RESOURCE.md`, and `paper_resource.typ`.
+- **Rerun Reproducibility & Normalized Edit Hashes**: Updated heading and claim to `Normalized Edit-Operation Hash Agreement: Normalized hashes of recorded edit-operation and patch-submission payloads matched in 0/16 rerun pairs (0.0%)`. Documented semantic code normalization and diff concordance: resolved runs on `rich_4077` and `requests_7505` produced identical 2-line logic differing only by insertion anchors.
+- **Reproducible Cluster Bootstrap**: Verified and documented seed=42, 10,000 resamples task-level cluster bootstrap intervals in `analysis/statistical_tests.py` and `results/stats_report.json`: complete-case 26 tasks [1.28%, 15.38%]; primary 32 tasks [1.04%, 12.50%].
+- **Cross-Paper Taxonomy Concordance**: Added concordance mapping between SFD's 3 coarse categories and ATIF-Gemma's 4 exit codes and sub-tiers (explaining zero-byte exit 1 runs like `rich_3944`).
+- **Data Governance & Official Rules**: Linked Official Competition Rules (Sections 1.7, 2.4.a.1, 2.4.b.1, 2.2.b) and Host Elan Markowitz's forum confirmations (Topics 743255 and 749803).
+- **Companion Paper Citation**: Added formal bibliographic citation for `sodhi2026sfd` with stable GitHub link.
+- **Context-Growth Table Note**: Updated candidate remediation table to note that stage context pruning reduces tokens without observed resolution gain.
+- **Stale String Purge**: Verified zero occurrences of `env_invalid`, `mislabeled`, `primary inferential result`, `14/16 identical`, `24 teams`, `28.7%`, or `MIT/Apache-2.0 only` across all manuscripts.
+- **Word Count**: Maintained strictly at **2,921 whitespace words** (title: **77 characters**).

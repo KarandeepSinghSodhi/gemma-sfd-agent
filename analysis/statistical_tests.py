@@ -6,6 +6,9 @@ Computes:
    - Primary valid-environment 80 runs
    - Pooled 112 runs (overall & per-config)
    - Pooled valid-environment 92 runs
+2. Task-level cluster bootstrap (10,000 resamples over task clusters, seed=42) for resolution rates:
+   - Complete-case (26 tasks, 78 runs): 6/78 (7.69%), 95% CI [1.28%, 15.38%]
+   - Primary cohort (32 tasks, 96 runs): 6/96 (6.25%), 95% CI [1.04%, 12.50%]
 2. McNemar's exact two-sided test for paired resolution outcomes (n=32).
 3. Wilcoxon signed-rank tests and 10,000-sample paired bootstrap 95% CIs for:
    - Cumulative prompt tokens
@@ -170,7 +173,7 @@ def main():
         }
         
     # Valid-environment pooled (n=92)
-    v_df = df[~df["env_invalid"]]
+    v_df = df[~df["env_suspected"]]
     k_vp = int(v_df["resolved"].sum())
     n_vp = len(v_df)
     lo_v, hi_v = wilson_ci(k_vp, n_vp)
@@ -180,7 +183,7 @@ def main():
     }
     
     # Valid-environment primary (n=80)
-    vp_df = p_df[~p_df["env_invalid"]]
+    vp_df = p_df[~p_df["env_suspected"]]
     k_vp80 = int(vp_df["resolved"].sum())
     n_vp80 = len(vp_df)
     lo_vp80, hi_vp80 = wilson_ci(k_vp80, n_vp80)
@@ -340,7 +343,7 @@ def main():
         n_res = int(g["resolved"].sum())
         repo = g["repo"].iloc[0]
         exit_codes = list(g["test_exit_code"])
-        env_inv = bool(g["env_invalid"].any())
+        env_inv = bool(g["env_suspected"].any())
         task_res.append({
             "instance_id": iid,
             "repo": repo,

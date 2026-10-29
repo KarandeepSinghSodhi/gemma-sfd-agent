@@ -161,6 +161,10 @@ Following the *Datasheets for Datasets* standard (@gebru2021datasheets; full dat
 #v(0.3cm)
 = 4. Failure Taxonomy & Phase 2 Outcome Breakdown
 
+*Cross-Paper Taxonomy Concordance:* The companion SFD paper (Sodhi, 2026; @sodhi2026sfd) groups failures into three coarse execution states (`resolved`, `pytest_failure`, `timeout_or_budget_no_patch`). ATIF-Gemma decomposes these into granular container exit codes: coarse `timeout_or_budget_no_patch` maps to execution timeouts (exit -1, 9 runs), verification timeouts (exit 124, 3 runs), and Tier 1 zero-byte patches that ran under pytest without edits (exit 1, 6 runs; e.g. `rich_3944` flat_starter); coarse `pytest_failure` maps to collection crashes (exit 2, 36 runs) and substantive assertion failures (exit 1, Tiers 2–4, 50 runs).
+
+
+
 In SWE-bench, patch verification is executed in an isolated verification sandbox using `pytest`. In ATIF-Gemma, cross-referencing agent traces against Phase 2 test runner outputs reveals that treating unresolved runs as a monolithic failure category conceals fundamentally different failure mechanics. We define four principal failure mechanisms---patch/assertion failure, test-collection failure, pre-submission budget exhaustion, and verification timeout---and report successful resolution as a separate outcome:
 
 #figure(
@@ -192,7 +196,7 @@ A critical diagnostic finding enabled by ATIF-Gemma is that *nearly one-third of
    - *Syntactic & Indentation Corruption (13/36 = 36.1%)*: Across 7 tasks (e.g., `fastapi_14099`, `rich_3894`), small model patches inserted unindented blocks, detached `else:` branches, or unclosed brackets, causing Python to raise `IndentationError` or `SyntaxError` during test collection.
    - *Missing New Source Module (3/36 = 8.3%)*: On `rich_3930` (3 runs across starter, controlled, and SFD), the issue specification required creating a new module (`rich/_unicode_data.py`). Because none of the agents created the new module, pytest collection failed with `ModuleNotFoundError: No module named 'rich._unicode_data'`.
 
-2. *Environment-Attributable Collection Failures (20/36 = 55.6%; flagged `env_invalid=True`)*:
+2. *Environment-Attributable Collection Failures (20/36 = 55.6%; flagged `env_suspected=True`)*:
    - *Virtual Environment & Path Shadowing (10/36 = 27.8%)*: On `httpx_3672` (5 runs) and `fastapi_15661` (5 runs), container configuration prevented valid collection. In `httpx_3672`, system packages at `/usr/local/lib/python3.12/dist-packages/httpx` shadowed `/workspace/src/httpx`. In `fastapi_15661`, the test patch imported from `scripts.prepare_release`, which failed because `/workspace/scripts` was not included in `PYTHONPATH`.
    - *Missing Sandbox Dependencies (10/36 = 27.8%)*: On 4 tasks (`fastapi_14361`, `fastapi_14371`, `fastapi_14455`, `fastapi_14459`), held-out test patches imported external testing libraries (`inline_snapshot`, `dirty_equals`) absent from the offline wheelhouse, triggering `ModuleNotFoundError` across every evaluated architecture.
 
@@ -246,7 +250,8 @@ In contrast, the token reduction achieved by SFD's stage isolation is highly sta
 Cohort 1 was re-executed independently across 8 tasks x 2 configurations (16 paired runs; `analysis/statistical_tests.py`):
 - *Exit Code Agreement*: 12 of 16 runs (75.0%) matched exact Phase 2 exit codes.
 - *Patch Presence Agreement*: 14 of 16 runs (87.5%) agreed on patch generation presence (8/8 in `flat_controlled`, 6/8 in `sfd`). Discordances: `fastapi_15589` (sfd: timeout vs 590-char patch) and `requests_7502` (sfd: 581 chars vs 0 bytes from edit-tool exceptions).
-- *Normalized Edit-Operation Hashes*: Matched in 0 of 16 rerun pairs (0.0%), indicating substantial run-to-run divergence in recorded edit sequences despite greedy decoding ($T=0.0$). This divergence reflects differences in surrounding context anchors, step timing, and tool-call serialization rather than completely disjoint logic. For example, in `rich_4077`, the resolved runs across both configurations converged to the identical 2-line semantic fix (`def isatty(self) -> bool: return self.__file.isatty()`), differing only by insertion location (after `fileno()` vs before `write()`) and surrounding anchor context captured by `edit_file`; in `requests_7505`, both runs applied the same `isinstance(fp, _SupportsRead)` guard, differing only by inclusion of surrounding comment lines.
+- *Normalized Edit-Operation Hash Agreement*: Normalized hashes of recorded edit-operation and patch-submission payloads matched in 0 of 16 rerun pairs (0.0%), indicating substantial run-to-run divergence in recorded edit operations despite greedy decoding ($T=0.0$).
+- *Semantic Normalization & Concrete Diff Concordance*: Evaluating normalized diffs (stripping comments/blanks) reveals semantic convergence on resolved tasks despite diverging tool hashes. On `rich_4077`, all three resolved runs across both configurations (`flat_controlled_rerun`, `sfd_orig`, `sfd_rerun`) converged to the identical 2-line fix (`def isatty(self) -> bool: return self.__file.isatty()`), differing only by insertion anchor (after line 18 `fileno()` vs before line 23 `write()`). On `requests_7505`, both configurations applied the same `isinstance(fp, _SupportsRead)` guard. However, 0 of 16 pairs achieved bitwise patch identity due to differing context lines and insertion anchors.
 - *Exit-Code Flips*: The 4 discordant pairs: (1) `rich_4077` (ctrl: 1->0 resolved); (2) `fastapi_15588` (sfd: 1->2); (3) `fastapi_15589` (ctrl: 1->2); (4) `fastapi_15589` (sfd: -1->1).
 - *Token Drift*: Mean absolute token difference was 18,571.0 cumulative total tokens between paired runs ($|"tokens"_("rerun") - "tokens"_("orig")|$ across the 16 pairs), quantifying multi-turn trajectory divergence.
 
@@ -286,7 +291,7 @@ Converting diagnostic failure classifications into practical engineering pattern
     [Edit-Tool Failures], [100 errors (64 StringNotFound, 36 Malformed)], [Validate edit targets against buffer state and handle failed edits explicitly.],
     [Syntax / Indentation Corruption], [13/112 runs (11.6%)], [Mandate a strict `python -m py_compile <modified_file>` verification check before calling `submit_patch` with autonomous self-repair turns.],
     [Wrong-File Localization], [15/112 runs (13.4% overall; 26.8% of assertion failures)], [Candidate two-way validation loop (untested) where Stage 2 verifies that the localized symbol exists in the problem description before executing an edit.],
-    [Unbounded Context Growth], [64/64 flat runs (100% monotonic accumulation)], [Implement stage-isolated context pruning via `include_contents: "none"` in Google ADK, resetting prompt context by 81.9% mean across pipeline boundaries.]
+    [Unbounded Context Growth], [64/64 flat runs (100% monotonic accumulation)], [Implement stage-isolated context pruning via `include_contents: "none"` in Google ADK, resetting prompt context by 81.9% mean across pipeline boundaries (reduces tokens; no resolution gain observed).]
   ),
   caption: [Candidate developer agent remediation playbook derived from empirical ATIF-Gemma failure traces.]
 )
@@ -332,7 +337,7 @@ To ensure rigorous interpretation of our empirical findings, we explicitly ident
 3. *Repository Diversity & Clustered Runs*: The corpus is concentrated across four Python libraries (`fastapi`, `rich`, `requests`, `httpx`). Runs across configurations on the same task are paired and clustered, not independent samples.
 4. *Trajectory Non-Determinism & Token Drift*: Under greedy decoding ($T=0.0$, `seed=42`), 12/16 exit codes matched on rerun, but no paired workspace edit sequences were byte-identical across the 16 pairs (mean absolute token difference: 18,571.0 cumulative total tokens), reflecting serving-level trajectory divergence.
 5. *File-Level Structural Proxy*: Evaluates file overlap ($F_("agent") sect F_("gold")$); valid alternative patches modifying different helper abstractions remain possible.
-6. *Harness Environment Failures (`env_invalid=True`)*: 20 runs failed due to offline container constraints (missing wheels and site-package shadowing), demonstrating real-world benchmark friction.
+6. *Harness Environment Failures (`env_suspected=True`)*: 20 runs failed due to offline container constraints (missing wheels and site-package shadowing), demonstrating real-world benchmark friction.
 
 #v(0.3cm)
 = 9. Conclusion & Resource Availability

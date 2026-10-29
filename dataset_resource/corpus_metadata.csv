@@ -1,113 +1,113 @@
-cohort,instance_id,repo,config,resolved,test_exit_code,failure_bucket,patch_chars,tool_calls,llm_calls,duration_seconds,peak_prompt_tokens,cumulative_prompt_tokens,cumulative_completion_tokens,cumulative_total_tokens,dataset_trace_file,env_invalid
-Cohort 1 (Canonical),fastapi_15661,fastapi/fastapi,flat_starter,False,2,test_verification_failed,539,7,9,50.97,11099,71968,3412,75380,cohort_flat_starter_fastapi_15661.json,True
-Cohort 1 (Canonical),fastapi_15661,fastapi/fastapi,flat_controlled,False,2,test_verification_failed,1961,10,12,50.04,14445,112995,3865,116860,cohort_flat_controlled_fastapi_15661.json,True
-Cohort 1 (Canonical),fastapi_15661,fastapi/fastapi,sfd,False,2,test_verification_failed,660,12,16,97.76,7180,56299,9533,65832,cohort_sfd_fastapi_15661.json,True
-Cohort 1 (Canonical),fastapi_15588,fastapi/fastapi,flat_starter,False,1,test_verification_failed,1196,7,9,45.1,13083,80767,3270,84037,cohort_flat_starter_fastapi_15588.json,False
-Cohort 1 (Canonical),fastapi_15588,fastapi/fastapi,flat_controlled,False,1,test_verification_failed,1970,9,11,53.97,10785,92632,4485,97117,cohort_flat_controlled_fastapi_15588.json,False
-Cohort 1 (Canonical),fastapi_15588,fastapi/fastapi,sfd,False,1,test_verification_failed,1008,10,14,68.83,7291,59458,6025,65483,cohort_sfd_fastapi_15588.json,False
-Cohort 1 (Canonical),fastapi_15589,fastapi/fastapi,flat_starter,False,1,test_verification_failed,662,9,11,79.77,14711,104549,5421,109970,cohort_flat_starter_fastapi_15589.json,False
-Cohort 1 (Canonical),fastapi_15589,fastapi/fastapi,flat_controlled,False,1,test_verification_failed,2955,15,18,117.78,14912,158928,9193,168121,cohort_flat_controlled_fastapi_15589.json,False
-Cohort 1 (Canonical),fastapi_15589,fastapi/fastapi,sfd,False,-1,timeout_or_budget_no_patch,0,15,20,98.18,14454,160012,7461,167473,cohort_sfd_fastapi_15589.json,False
-Cohort 1 (Canonical),requests_7505,psf/requests,flat_starter,False,1,test_verification_failed,943,10,14,141.04,10800,92604,6036,98640,cohort_flat_starter_requests_7505.json,False
-Cohort 1 (Canonical),requests_7505,psf/requests,flat_controlled,False,1,test_verification_failed,608,11,13,174.33,12318,107928,3538,111466,cohort_flat_controlled_requests_7505.json,False
-Cohort 1 (Canonical),requests_7505,psf/requests,sfd,False,1,test_verification_failed,978,9,13,124.14,10659,52837,4462,57299,cohort_sfd_requests_7505.json,False
-Cohort 1 (Canonical),requests_7502,psf/requests,flat_starter,False,1,test_verification_failed,653,10,12,185.31,10436,85354,4755,90109,cohort_flat_starter_requests_7502.json,False
-Cohort 1 (Canonical),requests_7502,psf/requests,flat_controlled,False,1,test_verification_failed,523,5,7,106.43,11238,50423,2744,53167,cohort_flat_controlled_requests_7502.json,False
-Cohort 1 (Canonical),requests_7502,psf/requests,sfd,False,1,test_verification_failed,581,11,15,149.55,14446,88095,5670,93765,cohort_sfd_requests_7502.json,False
-Cohort 1 (Canonical),rich_4070,Textualize/rich,flat_starter,False,-1,timeout_or_budget_no_patch,0,3,3,152.5,13298,25863,8277,34140,cohort_flat_starter_rich_4070.json,False
-Cohort 1 (Canonical),rich_4070,Textualize/rich,flat_controlled,False,1,test_verification_failed,3063,15,18,112.24,14826,182498,8771,191269,cohort_flat_controlled_rich_4070.json,False
-Cohort 1 (Canonical),rich_4070,Textualize/rich,sfd,False,1,test_verification_failed,967,10,14,67.54,8499,70775,4921,75696,cohort_sfd_rich_4070.json,False
-Cohort 1 (Canonical),rich_4077,Textualize/rich,flat_starter,False,-1,timeout_or_budget_no_patch,0,15,17,84.82,14679,130923,6373,137296,cohort_flat_starter_rich_4077.json,False
-Cohort 1 (Canonical),rich_4077,Textualize/rich,flat_controlled,False,1,test_verification_failed,454,6,8,34.07,8117,48222,2814,51036,cohort_flat_controlled_rich_4077.json,False
-Cohort 1 (Canonical),rich_4077,Textualize/rich,sfd,True,0,resolved,323,5,9,40.3,3716,19007,3688,22695,cohort_sfd_rich_4077.json,False
-Cohort 1 (Canonical),httpx_3672,encode/httpx,flat_starter,False,2,test_verification_failed,1764,10,12,85.99,14736,112127,6380,118507,cohort_flat_starter_httpx_3672.json,True
-Cohort 1 (Canonical),httpx_3672,encode/httpx,flat_controlled,False,2,test_verification_failed,1343,7,9,62.76,13010,81656,5365,87021,cohort_flat_controlled_httpx_3672.json,True
-Cohort 1 (Canonical),httpx_3672,encode/httpx,sfd,False,2,test_verification_failed,630,15,20,95.55,8140,89371,8713,98084,cohort_sfd_httpx_3672.json,True
-Cohort 2 (Stratified Random),rich_3043,Textualize/rich,flat_starter,False,1,test_verification_failed,3118,15,17,132.09,14789,139924,9837,149761,cohort_flat_starter_rich_3043.json,False
-Cohort 2 (Stratified Random),rich_3043,Textualize/rich,flat_controlled,False,1,test_verification_failed,4963,12,14,91.26,14820,119389,7111,126500,cohort_flat_controlled_rich_3043.json,False
-Cohort 2 (Stratified Random),rich_3043,Textualize/rich,sfd,False,1,timeout_or_budget_no_patch,0,14,18,111.53,14384,105903,9270,115173,cohort_sfd_rich_3043.json,False
-Cohort 2 (Stratified Random),rich_3944,Textualize/rich,flat_starter,False,1,timeout_or_budget_no_patch,0,14,16,82.28,15175,137690,5905,143595,cohort_flat_starter_rich_3944.json,False
-Cohort 2 (Stratified Random),rich_3944,Textualize/rich,flat_controlled,False,1,test_verification_failed,778,11,13,102.0,15031,124450,5856,130306,cohort_flat_controlled_rich_3944.json,False
-Cohort 2 (Stratified Random),rich_3944,Textualize/rich,sfd,False,1,test_verification_failed,474,12,16,80.31,14528,100401,5946,106347,cohort_sfd_rich_3944.json,False
-Cohort 2 (Stratified Random),rich_4076,Textualize/rich,flat_starter,False,1,test_verification_failed,741,8,10,76.26,14577,87653,5135,92788,cohort_flat_starter_rich_4076.json,False
-Cohort 2 (Stratified Random),rich_4076,Textualize/rich,flat_controlled,False,1,test_verification_failed,937,9,11,109.5,15083,103272,7156,110428,cohort_flat_controlled_rich_4076.json,False
-Cohort 2 (Stratified Random),rich_4076,Textualize/rich,sfd,False,1,test_verification_failed,467,12,16,80.4,16146,99515,5897,105412,cohort_sfd_rich_4076.json,False
-Cohort 2 (Stratified Random),fastapi_14361,fastapi/fastapi,flat_starter,False,2,test_verification_failed,598,7,9,52.72,10191,67483,3761,71244,cohort_flat_starter_fastapi_14361.json,True
-Cohort 2 (Stratified Random),fastapi_14361,fastapi/fastapi,flat_controlled,False,2,test_verification_failed,530,15,18,85.05,15010,170512,4717,175229,cohort_flat_controlled_fastapi_14361.json,True
-Cohort 2 (Stratified Random),fastapi_14361,fastapi/fastapi,sfd,False,2,test_verification_failed,383,9,13,86.02,9831,53997,7889,61886,cohort_sfd_fastapi_14361.json,True
-Cohort 2 (Stratified Random),fastapi_9753,fastapi/fastapi,flat_starter,True,0,resolved,702,7,9,46.14,11047,68768,3471,72239,cohort_flat_starter_fastapi_9753.json,False
-Cohort 2 (Stratified Random),fastapi_9753,fastapi/fastapi,flat_controlled,False,1,test_verification_failed,661,8,10,49.01,11743,89486,3842,93328,cohort_flat_controlled_fastapi_9753.json,False
-Cohort 2 (Stratified Random),fastapi_9753,fastapi/fastapi,sfd,False,1,test_verification_failed,349,7,11,52.93,6469,38605,4341,42946,cohort_sfd_fastapi_9753.json,False
-Cohort 2 (Stratified Random),fastapi_14459,fastapi/fastapi,flat_starter,False,2,test_verification_failed,573,8,10,65.85,14820,87774,3966,91740,cohort_flat_starter_fastapi_14459.json,True
-Cohort 2 (Stratified Random),fastapi_14459,fastapi/fastapi,flat_controlled,False,-1,timeout_or_budget_no_patch,0,12,13,151.44,16154,121435,10779,132214,cohort_flat_controlled_fastapi_14459.json,False
-Cohort 2 (Stratified Random),fastapi_14459,fastapi/fastapi,sfd,False,2,test_verification_failed,783,13,18,84.66,15605,116093,6179,122272,cohort_sfd_fastapi_14459.json,True
-Cohort 2 (Stratified Random),fastapi_14099,fastapi/fastapi,flat_starter,False,2,test_verification_failed,1108,15,18,122.9,15281,172206,9224,181430,cohort_flat_starter_fastapi_14099.json,False
-Cohort 2 (Stratified Random),fastapi_14099,fastapi/fastapi,flat_controlled,False,2,timeout_or_budget_no_patch,0,9,12,79.74,13933,110188,6827,117015,cohort_flat_controlled_fastapi_14099.json,False
-Cohort 2 (Stratified Random),fastapi_14099,fastapi/fastapi,sfd,False,2,test_verification_failed,588,15,20,114.99,15961,134816,9128,143944,cohort_sfd_fastapi_14099.json,False
-Cohort 2 (Stratified Random),requests_7427,psf/requests,flat_starter,False,1,test_verification_failed,583,13,17,153.63,9747,93539,9187,102726,cohort_flat_starter_requests_7427.json,False
-Cohort 2 (Stratified Random),requests_7427,psf/requests,flat_controlled,False,1,test_verification_failed,789,14,16,95.36,15387,147664,5890,153554,cohort_flat_controlled_requests_7427.json,False
-Cohort 2 (Stratified Random),requests_7427,psf/requests,sfd,False,1,test_verification_failed,471,10,14,77.21,13362,71302,6943,78245,cohort_sfd_requests_7427.json,False
-Cohort 1 Rerun (Reproducibility),fastapi_15661,fastapi/fastapi,flat_controlled_rerun,False,2,test_verification_failed,938,14,16,69.6,10082,106318,4908,111226,cohort_rerun_flat_controlled_rerun_fastapi_15661.json,True
-Cohort 1 Rerun (Reproducibility),fastapi_15661,fastapi/fastapi,sfd_rerun,False,2,test_verification_failed,655,10,14,81.95,7502,52083,7700,59783,cohort_rerun_sfd_rerun_fastapi_15661.json,True
-Cohort 1 Rerun (Reproducibility),fastapi_15588,fastapi/fastapi,flat_controlled_rerun,False,1,test_verification_failed,909,6,8,67.33,13144,69911,4220,74131,cohort_rerun_flat_controlled_rerun_fastapi_15588.json,False
-Cohort 1 Rerun (Reproducibility),fastapi_15588,fastapi/fastapi,sfd_rerun,False,2,test_verification_failed,864,15,20,100.14,9079,102172,9192,111364,cohort_rerun_sfd_rerun_fastapi_15588.json,False
-Cohort 1 Rerun (Reproducibility),fastapi_15589,fastapi/fastapi,flat_controlled_rerun,False,2,test_verification_failed,23711,12,12,161.95,14666,113513,9381,122894,cohort_rerun_flat_controlled_rerun_fastapi_15589.json,False
-Cohort 1 Rerun (Reproducibility),fastapi_15589,fastapi/fastapi,sfd_rerun,False,1,test_verification_failed,590,12,16,103.9,14268,98279,9081,107360,cohort_rerun_sfd_rerun_fastapi_15589.json,False
-Cohort 1 Rerun (Reproducibility),requests_7505,psf/requests,flat_controlled_rerun,False,1,test_verification_failed,608,9,11,172.54,12099,87919,3189,91108,cohort_rerun_flat_controlled_rerun_requests_7505.json,False
-Cohort 1 Rerun (Reproducibility),requests_7505,psf/requests,sfd_rerun,False,1,test_verification_failed,598,7,11,136.6,7828,39724,5907,45631,cohort_rerun_sfd_rerun_requests_7505.json,False
-Cohort 1 Rerun (Reproducibility),requests_7502,psf/requests,flat_controlled_rerun,False,1,test_verification_failed,506,4,6,121.02,10295,41805,4078,45883,cohort_rerun_flat_controlled_rerun_requests_7502.json,False
-Cohort 1 Rerun (Reproducibility),requests_7502,psf/requests,sfd_rerun,False,1,timeout_or_budget_no_patch,0,15,19,157.42,9154,84756,7596,92352,cohort_rerun_sfd_rerun_requests_7502.json,False
-Cohort 1 Rerun (Reproducibility),rich_4070,Textualize/rich,flat_controlled_rerun,False,1,test_verification_failed,2410,15,18,137.69,15604,192415,8930,201345,cohort_rerun_flat_controlled_rerun_rich_4070.json,False
-Cohort 1 Rerun (Reproducibility),rich_4070,Textualize/rich,sfd_rerun,False,1,test_verification_failed,733,5,9,50.52,7132,39736,4134,43870,cohort_rerun_sfd_rerun_rich_4070.json,False
-Cohort 1 Rerun (Reproducibility),rich_4077,Textualize/rich,flat_controlled_rerun,True,0,resolved,323,5,7,49.24,12574,56386,3030,59416,cohort_rerun_flat_controlled_rerun_rich_4077.json,False
-Cohort 1 Rerun (Reproducibility),rich_4077,Textualize/rich,sfd_rerun,True,0,resolved,513,6,10,41.81,6490,27731,3710,31441,cohort_rerun_sfd_rerun_rich_4077.json,False
-Cohort 1 Rerun (Reproducibility),httpx_3672,encode/httpx,flat_controlled_rerun,False,2,test_verification_failed,1564,6,9,80.0,11996,76818,6880,83698,cohort_rerun_flat_controlled_rerun_httpx_3672.json,True
-Cohort 1 Rerun (Reproducibility),httpx_3672,encode/httpx,sfd_rerun,False,2,test_verification_failed,1115,14,18,98.58,12998,97200,9056,106256,cohort_rerun_sfd_rerun_httpx_3672.json,True
-Cohort 3 (Stratified Disjoint),fastapi_15280,fastapi/fastapi,flat_starter,False,2,test_verification_failed,186459,10,12,100.78,14348,103247,6640,109887,cohort_flat_starter_fastapi_15280.json,False
-Cohort 3 (Stratified Disjoint),fastapi_15280,fastapi/fastapi,flat_controlled,False,2,test_verification_failed,3028,15,17,115.9,15171,156080,9152,165232,cohort_flat_controlled_fastapi_15280.json,False
-Cohort 3 (Stratified Disjoint),fastapi_15280,fastapi/fastapi,sfd,False,2,test_verification_failed,86847,15,19,81.54,10090,87357,7136,94493,cohort_sfd_fastapi_15280.json,False
-Cohort 3 (Stratified Disjoint),fastapi_14372,fastapi/fastapi,flat_starter,False,1,timeout_or_budget_no_patch,0,15,20,121.57,15085,165398,8873,174271,cohort_flat_starter_fastapi_14372.json,False
-Cohort 3 (Stratified Disjoint),fastapi_14372,fastapi/fastapi,flat_controlled,False,-1,timeout_or_budget_no_patch,0,15,20,102.57,16011,215118,6492,221610,cohort_flat_controlled_fastapi_14372.json,False
-Cohort 3 (Stratified Disjoint),fastapi_14372,fastapi/fastapi,sfd,False,-1,timeout_or_budget_no_patch,0,15,20,87.4,13667,141212,7834,149046,cohort_sfd_fastapi_14372.json,False
-Cohort 3 (Stratified Disjoint),fastapi_14077,fastapi/fastapi,flat_starter,False,2,test_verification_failed,1898,15,19,86.67,14846,171092,5640,176732,cohort_flat_starter_fastapi_14077.json,False
-Cohort 3 (Stratified Disjoint),fastapi_14077,fastapi/fastapi,flat_controlled,True,0,resolved,0,12,15,67.49,14336,136954,4421,141375,cohort_flat_controlled_fastapi_14077.json,False
-Cohort 3 (Stratified Disjoint),fastapi_14077,fastapi/fastapi,sfd,True,0,resolved,0,6,10,43.86,5711,27488,3857,31345,cohort_sfd_fastapi_14077.json,False
-Cohort 3 (Stratified Disjoint),fastapi_14371,fastapi/fastapi,flat_starter,False,-1,timeout_or_budget_no_patch,0,15,15,153.77,15164,136666,7734,144400,cohort_flat_starter_fastapi_14371.json,False
-Cohort 3 (Stratified Disjoint),fastapi_14371,fastapi/fastapi,flat_controlled,False,2,test_verification_failed,477,12,15,94.39,15090,119704,7095,126799,cohort_flat_controlled_fastapi_14371.json,True
-Cohort 3 (Stratified Disjoint),fastapi_14371,fastapi/fastapi,sfd,False,2,timeout_or_budget_no_patch,0,15,20,80.23,9431,81313,7381,88694,cohort_sfd_fastapi_14371.json,True
-Cohort 3 (Stratified Disjoint),rich_3894,Textualize/rich,flat_starter,True,0,resolved,513,3,5,26.0,8015,33251,1949,35200,cohort_flat_starter_rich_3894.json,False
-Cohort 3 (Stratified Disjoint),rich_3894,Textualize/rich,flat_controlled,True,0,resolved,1439,5,7,30.66,9767,53695,2509,56204,cohort_flat_controlled_rich_3894.json,False
-Cohort 3 (Stratified Disjoint),rich_3894,Textualize/rich,sfd,False,2,test_verification_failed,621,4,8,43.59,5500,24276,3879,28155,cohort_sfd_rich_3894.json,False
-Cohort 3 (Stratified Disjoint),rich_3471,Textualize/rich,flat_starter,False,1,test_verification_failed,454,9,11,45.05,12193,98809,3429,102238,cohort_flat_starter_rich_3471.json,False
-Cohort 3 (Stratified Disjoint),rich_3471,Textualize/rich,flat_controlled,False,1,test_verification_failed,470,13,15,89.93,14371,154758,6364,161122,cohort_flat_controlled_rich_3471.json,False
-Cohort 3 (Stratified Disjoint),rich_3471,Textualize/rich,sfd,False,1,test_verification_failed,414,13,17,72.53,9895,79877,6548,86425,cohort_sfd_rich_3471.json,False
-Cohort 3 (Stratified Disjoint),rich_3535,Textualize/rich,flat_starter,False,-1,timeout_or_budget_no_patch,0,15,17,61.6,17526,128381,5252,133633,cohort_flat_starter_rich_3535.json,False
-Cohort 3 (Stratified Disjoint),rich_3535,Textualize/rich,flat_controlled,False,1,test_verification_failed,690,5,7,39.42,11701,57783,3151,60934,cohort_flat_controlled_rich_3535.json,False
-Cohort 3 (Stratified Disjoint),rich_3535,Textualize/rich,sfd,False,1,test_verification_failed,295,9,14,104.45,13964,88323,9590,97913,cohort_sfd_rich_3535.json,False
-Cohort 3 (Stratified Disjoint),requests_7315,psf/requests,flat_starter,False,1,test_verification_failed,327,7,11,53.24,12650,83850,4337,88187,cohort_flat_starter_requests_7315.json,False
-Cohort 3 (Stratified Disjoint),requests_7315,psf/requests,flat_controlled,False,1,timeout_or_budget_no_patch,0,15,19,128.99,15890,195976,9079,205055,cohort_flat_controlled_requests_7315.json,False
-Cohort 3 (Stratified Disjoint),requests_7315,psf/requests,sfd,False,1,test_verification_failed,521,12,16,61.88,11552,87745,5265,93010,cohort_sfd_requests_7315.json,False
-Cohort 4 (Stratified Disjoint),fastapi_14455,fastapi/fastapi,flat_starter,False,2,test_verification_failed,490,11,13,74.87,14670,106926,4191,111117,cohort_flat_starter_fastapi_14455.json,True
-Cohort 4 (Stratified Disjoint),fastapi_14455,fastapi/fastapi,flat_controlled,False,2,test_verification_failed,490,9,11,58.44,13333,102697,4794,107491,cohort_flat_controlled_fastapi_14455.json,True
-Cohort 4 (Stratified Disjoint),fastapi_14455,fastapi/fastapi,sfd,False,2,test_verification_failed,592,11,15,57.41,10834,68383,4802,73185,cohort_sfd_fastapi_14455.json,True
-Cohort 4 (Stratified Disjoint),fastapi_5624,fastapi/fastapi,flat_starter,False,1,test_verification_failed,710,7,9,33.65,8709,54039,2292,56331,cohort_flat_starter_fastapi_5624.json,False
-Cohort 4 (Stratified Disjoint),fastapi_5624,fastapi/fastapi,flat_controlled,False,1,timeout_or_budget_no_patch,0,15,19,79.67,14797,170922,5610,176532,cohort_flat_controlled_fastapi_5624.json,False
-Cohort 4 (Stratified Disjoint),fastapi_5624,fastapi/fastapi,sfd,False,-1,timeout_or_budget_no_patch,0,15,20,85.11,14702,123781,7052,130833,cohort_sfd_fastapi_5624.json,False
-Cohort 4 (Stratified Disjoint),fastapi_14419,fastapi/fastapi,flat_starter,False,1,test_verification_failed,788,5,7,34.6,7829,43190,2435,45625,cohort_flat_starter_fastapi_14419.json,False
-Cohort 4 (Stratified Disjoint),fastapi_14419,fastapi/fastapi,flat_controlled,False,1,test_verification_failed,670,6,8,32.38,9968,59257,2266,61523,cohort_flat_controlled_fastapi_14419.json,False
-Cohort 4 (Stratified Disjoint),fastapi_14419,fastapi/fastapi,sfd,False,1,test_verification_failed,837,8,12,58.85,5914,41200,5065,46265,cohort_sfd_fastapi_14419.json,False
-Cohort 4 (Stratified Disjoint),fastapi_15785,fastapi/fastapi,flat_starter,False,2,timeout_or_budget_no_patch,0,15,19,115.06,14563,151124,9265,160389,cohort_flat_starter_fastapi_15785.json,False
-Cohort 4 (Stratified Disjoint),fastapi_15785,fastapi/fastapi,flat_controlled,False,2,test_verification_failed,887,9,12,76.15,16036,111411,5034,116445,cohort_flat_controlled_fastapi_15785.json,False
-Cohort 4 (Stratified Disjoint),fastapi_15785,fastapi/fastapi,sfd,False,2,test_verification_failed,788,15,19,111.14,13869,123012,9555,132567,cohort_sfd_fastapi_15785.json,False
-Cohort 4 (Stratified Disjoint),rich_3938,Textualize/rich,flat_starter,False,1,test_verification_failed,1553,15,18,95.88,15120,175932,6444,182376,cohort_flat_starter_rich_3938.json,False
-Cohort 4 (Stratified Disjoint),rich_3938,Textualize/rich,flat_controlled,False,1,test_verification_failed,680,5,7,60.1,14316,63475,4194,67669,cohort_flat_controlled_rich_3938.json,False
-Cohort 4 (Stratified Disjoint),rich_3938,Textualize/rich,sfd,False,1,test_verification_failed,833,6,10,76.58,8543,36744,7009,43753,cohort_sfd_rich_3938.json,False
-Cohort 4 (Stratified Disjoint),rich_3930,Textualize/rich,flat_starter,False,2,test_verification_failed,10573,8,8,156.25,16371,87891,9867,97758,cohort_flat_starter_rich_3930.json,False
-Cohort 4 (Stratified Disjoint),rich_3930,Textualize/rich,flat_controlled,False,2,test_verification_failed,3435,15,18,145.94,16751,177996,9810,187806,cohort_flat_controlled_rich_3930.json,False
-Cohort 4 (Stratified Disjoint),rich_3930,Textualize/rich,sfd,False,2,timeout_or_budget_no_patch,0,14,18,110.52,14255,112302,10142,122444,cohort_sfd_rich_3930.json,False
-Cohort 4 (Stratified Disjoint),rich_3480,Textualize/rich,flat_starter,False,124,test_verification_failed,877,14,16,219.94,16327,147089,7112,154201,cohort_flat_starter_rich_3480.json,False
-Cohort 4 (Stratified Disjoint),rich_3480,Textualize/rich,flat_controlled,False,124,test_verification_failed,484,7,9,191.48,16785,84125,3983,88108,cohort_flat_controlled_rich_3480.json,False
-Cohort 4 (Stratified Disjoint),rich_3480,Textualize/rich,sfd,False,124,test_verification_failed,476,5,9,165.74,6096,32016,3899,35915,cohort_sfd_rich_3480.json,False
-Cohort 4 (Stratified Disjoint),requests_7205,psf/requests,flat_starter,False,1,test_verification_failed,809,14,16,78.18,15624,140086,5539,145625,cohort_flat_starter_requests_7205.json,False
-Cohort 4 (Stratified Disjoint),requests_7205,psf/requests,flat_controlled,False,1,test_verification_failed,513,10,12,116.48,15554,99908,3561,103469,cohort_flat_controlled_requests_7205.json,False
-Cohort 4 (Stratified Disjoint),requests_7205,psf/requests,sfd,False,1,test_verification_failed,491,13,17,98.97,14345,100506,7742,108248,cohort_sfd_requests_7205.json,False
+cohort,instance_id,repo,config,resolved,test_exit_code,failure_bucket,patch_chars,tool_calls,llm_calls,duration_seconds,peak_prompt_tokens,cumulative_prompt_tokens,cumulative_completion_tokens,cumulative_total_tokens,dataset_trace_file,env_suspected,env_invalid
+Cohort 1 (Canonical),fastapi_15661,fastapi/fastapi,flat_starter,False,2,test_verification_failed,539,7,9,50.97,11099,71968,3412,75380,cohort_flat_starter_fastapi_15661.json,True,True
+Cohort 1 (Canonical),fastapi_15661,fastapi/fastapi,flat_controlled,False,2,test_verification_failed,1961,10,12,50.04,14445,112995,3865,116860,cohort_flat_controlled_fastapi_15661.json,True,True
+Cohort 1 (Canonical),fastapi_15661,fastapi/fastapi,sfd,False,2,test_verification_failed,660,12,16,97.76,7180,56299,9533,65832,cohort_sfd_fastapi_15661.json,True,True
+Cohort 1 (Canonical),fastapi_15588,fastapi/fastapi,flat_starter,False,1,test_verification_failed,1196,7,9,45.1,13083,80767,3270,84037,cohort_flat_starter_fastapi_15588.json,False,False
+Cohort 1 (Canonical),fastapi_15588,fastapi/fastapi,flat_controlled,False,1,test_verification_failed,1970,9,11,53.97,10785,92632,4485,97117,cohort_flat_controlled_fastapi_15588.json,False,False
+Cohort 1 (Canonical),fastapi_15588,fastapi/fastapi,sfd,False,1,test_verification_failed,1008,10,14,68.83,7291,59458,6025,65483,cohort_sfd_fastapi_15588.json,False,False
+Cohort 1 (Canonical),fastapi_15589,fastapi/fastapi,flat_starter,False,1,test_verification_failed,662,9,11,79.77,14711,104549,5421,109970,cohort_flat_starter_fastapi_15589.json,False,False
+Cohort 1 (Canonical),fastapi_15589,fastapi/fastapi,flat_controlled,False,1,test_verification_failed,2955,15,18,117.78,14912,158928,9193,168121,cohort_flat_controlled_fastapi_15589.json,False,False
+Cohort 1 (Canonical),fastapi_15589,fastapi/fastapi,sfd,False,-1,timeout_or_budget_no_patch,0,15,20,98.18,14454,160012,7461,167473,cohort_sfd_fastapi_15589.json,False,False
+Cohort 1 (Canonical),requests_7505,psf/requests,flat_starter,False,1,test_verification_failed,943,10,14,141.04,10800,92604,6036,98640,cohort_flat_starter_requests_7505.json,False,False
+Cohort 1 (Canonical),requests_7505,psf/requests,flat_controlled,False,1,test_verification_failed,608,11,13,174.33,12318,107928,3538,111466,cohort_flat_controlled_requests_7505.json,False,False
+Cohort 1 (Canonical),requests_7505,psf/requests,sfd,False,1,test_verification_failed,978,9,13,124.14,10659,52837,4462,57299,cohort_sfd_requests_7505.json,False,False
+Cohort 1 (Canonical),requests_7502,psf/requests,flat_starter,False,1,test_verification_failed,653,10,12,185.31,10436,85354,4755,90109,cohort_flat_starter_requests_7502.json,False,False
+Cohort 1 (Canonical),requests_7502,psf/requests,flat_controlled,False,1,test_verification_failed,523,5,7,106.43,11238,50423,2744,53167,cohort_flat_controlled_requests_7502.json,False,False
+Cohort 1 (Canonical),requests_7502,psf/requests,sfd,False,1,test_verification_failed,581,11,15,149.55,14446,88095,5670,93765,cohort_sfd_requests_7502.json,False,False
+Cohort 1 (Canonical),rich_4070,Textualize/rich,flat_starter,False,-1,timeout_or_budget_no_patch,0,3,3,152.5,13298,25863,8277,34140,cohort_flat_starter_rich_4070.json,False,False
+Cohort 1 (Canonical),rich_4070,Textualize/rich,flat_controlled,False,1,test_verification_failed,3063,15,18,112.24,14826,182498,8771,191269,cohort_flat_controlled_rich_4070.json,False,False
+Cohort 1 (Canonical),rich_4070,Textualize/rich,sfd,False,1,test_verification_failed,967,10,14,67.54,8499,70775,4921,75696,cohort_sfd_rich_4070.json,False,False
+Cohort 1 (Canonical),rich_4077,Textualize/rich,flat_starter,False,-1,timeout_or_budget_no_patch,0,15,17,84.82,14679,130923,6373,137296,cohort_flat_starter_rich_4077.json,False,False
+Cohort 1 (Canonical),rich_4077,Textualize/rich,flat_controlled,False,1,test_verification_failed,454,6,8,34.07,8117,48222,2814,51036,cohort_flat_controlled_rich_4077.json,False,False
+Cohort 1 (Canonical),rich_4077,Textualize/rich,sfd,True,0,resolved,323,5,9,40.3,3716,19007,3688,22695,cohort_sfd_rich_4077.json,False,False
+Cohort 1 (Canonical),httpx_3672,encode/httpx,flat_starter,False,2,test_verification_failed,1764,10,12,85.99,14736,112127,6380,118507,cohort_flat_starter_httpx_3672.json,True,True
+Cohort 1 (Canonical),httpx_3672,encode/httpx,flat_controlled,False,2,test_verification_failed,1343,7,9,62.76,13010,81656,5365,87021,cohort_flat_controlled_httpx_3672.json,True,True
+Cohort 1 (Canonical),httpx_3672,encode/httpx,sfd,False,2,test_verification_failed,630,15,20,95.55,8140,89371,8713,98084,cohort_sfd_httpx_3672.json,True,True
+Cohort 2 (Stratified Random),rich_3043,Textualize/rich,flat_starter,False,1,test_verification_failed,3118,15,17,132.09,14789,139924,9837,149761,cohort_flat_starter_rich_3043.json,False,False
+Cohort 2 (Stratified Random),rich_3043,Textualize/rich,flat_controlled,False,1,test_verification_failed,4963,12,14,91.26,14820,119389,7111,126500,cohort_flat_controlled_rich_3043.json,False,False
+Cohort 2 (Stratified Random),rich_3043,Textualize/rich,sfd,False,1,timeout_or_budget_no_patch,0,14,18,111.53,14384,105903,9270,115173,cohort_sfd_rich_3043.json,False,False
+Cohort 2 (Stratified Random),rich_3944,Textualize/rich,flat_starter,False,1,timeout_or_budget_no_patch,0,14,16,82.28,15175,137690,5905,143595,cohort_flat_starter_rich_3944.json,False,False
+Cohort 2 (Stratified Random),rich_3944,Textualize/rich,flat_controlled,False,1,test_verification_failed,778,11,13,102.0,15031,124450,5856,130306,cohort_flat_controlled_rich_3944.json,False,False
+Cohort 2 (Stratified Random),rich_3944,Textualize/rich,sfd,False,1,test_verification_failed,474,12,16,80.31,14528,100401,5946,106347,cohort_sfd_rich_3944.json,False,False
+Cohort 2 (Stratified Random),rich_4076,Textualize/rich,flat_starter,False,1,test_verification_failed,741,8,10,76.26,14577,87653,5135,92788,cohort_flat_starter_rich_4076.json,False,False
+Cohort 2 (Stratified Random),rich_4076,Textualize/rich,flat_controlled,False,1,test_verification_failed,937,9,11,109.5,15083,103272,7156,110428,cohort_flat_controlled_rich_4076.json,False,False
+Cohort 2 (Stratified Random),rich_4076,Textualize/rich,sfd,False,1,test_verification_failed,467,12,16,80.4,16146,99515,5897,105412,cohort_sfd_rich_4076.json,False,False
+Cohort 2 (Stratified Random),fastapi_14361,fastapi/fastapi,flat_starter,False,2,test_verification_failed,598,7,9,52.72,10191,67483,3761,71244,cohort_flat_starter_fastapi_14361.json,True,True
+Cohort 2 (Stratified Random),fastapi_14361,fastapi/fastapi,flat_controlled,False,2,test_verification_failed,530,15,18,85.05,15010,170512,4717,175229,cohort_flat_controlled_fastapi_14361.json,True,True
+Cohort 2 (Stratified Random),fastapi_14361,fastapi/fastapi,sfd,False,2,test_verification_failed,383,9,13,86.02,9831,53997,7889,61886,cohort_sfd_fastapi_14361.json,True,True
+Cohort 2 (Stratified Random),fastapi_9753,fastapi/fastapi,flat_starter,True,0,resolved,702,7,9,46.14,11047,68768,3471,72239,cohort_flat_starter_fastapi_9753.json,False,False
+Cohort 2 (Stratified Random),fastapi_9753,fastapi/fastapi,flat_controlled,False,1,test_verification_failed,661,8,10,49.01,11743,89486,3842,93328,cohort_flat_controlled_fastapi_9753.json,False,False
+Cohort 2 (Stratified Random),fastapi_9753,fastapi/fastapi,sfd,False,1,test_verification_failed,349,7,11,52.93,6469,38605,4341,42946,cohort_sfd_fastapi_9753.json,False,False
+Cohort 2 (Stratified Random),fastapi_14459,fastapi/fastapi,flat_starter,False,2,test_verification_failed,573,8,10,65.85,14820,87774,3966,91740,cohort_flat_starter_fastapi_14459.json,True,True
+Cohort 2 (Stratified Random),fastapi_14459,fastapi/fastapi,flat_controlled,False,-1,timeout_or_budget_no_patch,0,12,13,151.44,16154,121435,10779,132214,cohort_flat_controlled_fastapi_14459.json,False,False
+Cohort 2 (Stratified Random),fastapi_14459,fastapi/fastapi,sfd,False,2,test_verification_failed,783,13,18,84.66,15605,116093,6179,122272,cohort_sfd_fastapi_14459.json,True,True
+Cohort 2 (Stratified Random),fastapi_14099,fastapi/fastapi,flat_starter,False,2,test_verification_failed,1108,15,18,122.9,15281,172206,9224,181430,cohort_flat_starter_fastapi_14099.json,False,False
+Cohort 2 (Stratified Random),fastapi_14099,fastapi/fastapi,flat_controlled,False,2,timeout_or_budget_no_patch,0,9,12,79.74,13933,110188,6827,117015,cohort_flat_controlled_fastapi_14099.json,False,False
+Cohort 2 (Stratified Random),fastapi_14099,fastapi/fastapi,sfd,False,2,test_verification_failed,588,15,20,114.99,15961,134816,9128,143944,cohort_sfd_fastapi_14099.json,False,False
+Cohort 2 (Stratified Random),requests_7427,psf/requests,flat_starter,False,1,test_verification_failed,583,13,17,153.63,9747,93539,9187,102726,cohort_flat_starter_requests_7427.json,False,False
+Cohort 2 (Stratified Random),requests_7427,psf/requests,flat_controlled,False,1,test_verification_failed,789,14,16,95.36,15387,147664,5890,153554,cohort_flat_controlled_requests_7427.json,False,False
+Cohort 2 (Stratified Random),requests_7427,psf/requests,sfd,False,1,test_verification_failed,471,10,14,77.21,13362,71302,6943,78245,cohort_sfd_requests_7427.json,False,False
+Cohort 1 Rerun (Reproducibility),fastapi_15661,fastapi/fastapi,flat_controlled_rerun,False,2,test_verification_failed,938,14,16,69.6,10082,106318,4908,111226,cohort_rerun_flat_controlled_rerun_fastapi_15661.json,True,True
+Cohort 1 Rerun (Reproducibility),fastapi_15661,fastapi/fastapi,sfd_rerun,False,2,test_verification_failed,655,10,14,81.95,7502,52083,7700,59783,cohort_rerun_sfd_rerun_fastapi_15661.json,True,True
+Cohort 1 Rerun (Reproducibility),fastapi_15588,fastapi/fastapi,flat_controlled_rerun,False,1,test_verification_failed,909,6,8,67.33,13144,69911,4220,74131,cohort_rerun_flat_controlled_rerun_fastapi_15588.json,False,False
+Cohort 1 Rerun (Reproducibility),fastapi_15588,fastapi/fastapi,sfd_rerun,False,2,test_verification_failed,864,15,20,100.14,9079,102172,9192,111364,cohort_rerun_sfd_rerun_fastapi_15588.json,False,False
+Cohort 1 Rerun (Reproducibility),fastapi_15589,fastapi/fastapi,flat_controlled_rerun,False,2,test_verification_failed,23711,12,12,161.95,14666,113513,9381,122894,cohort_rerun_flat_controlled_rerun_fastapi_15589.json,False,False
+Cohort 1 Rerun (Reproducibility),fastapi_15589,fastapi/fastapi,sfd_rerun,False,1,test_verification_failed,590,12,16,103.9,14268,98279,9081,107360,cohort_rerun_sfd_rerun_fastapi_15589.json,False,False
+Cohort 1 Rerun (Reproducibility),requests_7505,psf/requests,flat_controlled_rerun,False,1,test_verification_failed,608,9,11,172.54,12099,87919,3189,91108,cohort_rerun_flat_controlled_rerun_requests_7505.json,False,False
+Cohort 1 Rerun (Reproducibility),requests_7505,psf/requests,sfd_rerun,False,1,test_verification_failed,598,7,11,136.6,7828,39724,5907,45631,cohort_rerun_sfd_rerun_requests_7505.json,False,False
+Cohort 1 Rerun (Reproducibility),requests_7502,psf/requests,flat_controlled_rerun,False,1,test_verification_failed,506,4,6,121.02,10295,41805,4078,45883,cohort_rerun_flat_controlled_rerun_requests_7502.json,False,False
+Cohort 1 Rerun (Reproducibility),requests_7502,psf/requests,sfd_rerun,False,1,timeout_or_budget_no_patch,0,15,19,157.42,9154,84756,7596,92352,cohort_rerun_sfd_rerun_requests_7502.json,False,False
+Cohort 1 Rerun (Reproducibility),rich_4070,Textualize/rich,flat_controlled_rerun,False,1,test_verification_failed,2410,15,18,137.69,15604,192415,8930,201345,cohort_rerun_flat_controlled_rerun_rich_4070.json,False,False
+Cohort 1 Rerun (Reproducibility),rich_4070,Textualize/rich,sfd_rerun,False,1,test_verification_failed,733,5,9,50.52,7132,39736,4134,43870,cohort_rerun_sfd_rerun_rich_4070.json,False,False
+Cohort 1 Rerun (Reproducibility),rich_4077,Textualize/rich,flat_controlled_rerun,True,0,resolved,323,5,7,49.24,12574,56386,3030,59416,cohort_rerun_flat_controlled_rerun_rich_4077.json,False,False
+Cohort 1 Rerun (Reproducibility),rich_4077,Textualize/rich,sfd_rerun,True,0,resolved,513,6,10,41.81,6490,27731,3710,31441,cohort_rerun_sfd_rerun_rich_4077.json,False,False
+Cohort 1 Rerun (Reproducibility),httpx_3672,encode/httpx,flat_controlled_rerun,False,2,test_verification_failed,1564,6,9,80.0,11996,76818,6880,83698,cohort_rerun_flat_controlled_rerun_httpx_3672.json,True,True
+Cohort 1 Rerun (Reproducibility),httpx_3672,encode/httpx,sfd_rerun,False,2,test_verification_failed,1115,14,18,98.58,12998,97200,9056,106256,cohort_rerun_sfd_rerun_httpx_3672.json,True,True
+Cohort 3 (Stratified Disjoint),fastapi_15280,fastapi/fastapi,flat_starter,False,2,test_verification_failed,186459,10,12,100.78,14348,103247,6640,109887,cohort_flat_starter_fastapi_15280.json,False,False
+Cohort 3 (Stratified Disjoint),fastapi_15280,fastapi/fastapi,flat_controlled,False,2,test_verification_failed,3028,15,17,115.9,15171,156080,9152,165232,cohort_flat_controlled_fastapi_15280.json,False,False
+Cohort 3 (Stratified Disjoint),fastapi_15280,fastapi/fastapi,sfd,False,2,test_verification_failed,86847,15,19,81.54,10090,87357,7136,94493,cohort_sfd_fastapi_15280.json,False,False
+Cohort 3 (Stratified Disjoint),fastapi_14372,fastapi/fastapi,flat_starter,False,1,timeout_or_budget_no_patch,0,15,20,121.57,15085,165398,8873,174271,cohort_flat_starter_fastapi_14372.json,False,False
+Cohort 3 (Stratified Disjoint),fastapi_14372,fastapi/fastapi,flat_controlled,False,-1,timeout_or_budget_no_patch,0,15,20,102.57,16011,215118,6492,221610,cohort_flat_controlled_fastapi_14372.json,False,False
+Cohort 3 (Stratified Disjoint),fastapi_14372,fastapi/fastapi,sfd,False,-1,timeout_or_budget_no_patch,0,15,20,87.4,13667,141212,7834,149046,cohort_sfd_fastapi_14372.json,False,False
+Cohort 3 (Stratified Disjoint),fastapi_14077,fastapi/fastapi,flat_starter,False,2,test_verification_failed,1898,15,19,86.67,14846,171092,5640,176732,cohort_flat_starter_fastapi_14077.json,False,False
+Cohort 3 (Stratified Disjoint),fastapi_14077,fastapi/fastapi,flat_controlled,True,0,resolved,0,12,15,67.49,14336,136954,4421,141375,cohort_flat_controlled_fastapi_14077.json,False,False
+Cohort 3 (Stratified Disjoint),fastapi_14077,fastapi/fastapi,sfd,True,0,resolved,0,6,10,43.86,5711,27488,3857,31345,cohort_sfd_fastapi_14077.json,False,False
+Cohort 3 (Stratified Disjoint),fastapi_14371,fastapi/fastapi,flat_starter,False,-1,timeout_or_budget_no_patch,0,15,15,153.77,15164,136666,7734,144400,cohort_flat_starter_fastapi_14371.json,False,False
+Cohort 3 (Stratified Disjoint),fastapi_14371,fastapi/fastapi,flat_controlled,False,2,test_verification_failed,477,12,15,94.39,15090,119704,7095,126799,cohort_flat_controlled_fastapi_14371.json,True,True
+Cohort 3 (Stratified Disjoint),fastapi_14371,fastapi/fastapi,sfd,False,2,timeout_or_budget_no_patch,0,15,20,80.23,9431,81313,7381,88694,cohort_sfd_fastapi_14371.json,True,True
+Cohort 3 (Stratified Disjoint),rich_3894,Textualize/rich,flat_starter,True,0,resolved,513,3,5,26.0,8015,33251,1949,35200,cohort_flat_starter_rich_3894.json,False,False
+Cohort 3 (Stratified Disjoint),rich_3894,Textualize/rich,flat_controlled,True,0,resolved,1439,5,7,30.66,9767,53695,2509,56204,cohort_flat_controlled_rich_3894.json,False,False
+Cohort 3 (Stratified Disjoint),rich_3894,Textualize/rich,sfd,False,2,test_verification_failed,621,4,8,43.59,5500,24276,3879,28155,cohort_sfd_rich_3894.json,False,False
+Cohort 3 (Stratified Disjoint),rich_3471,Textualize/rich,flat_starter,False,1,test_verification_failed,454,9,11,45.05,12193,98809,3429,102238,cohort_flat_starter_rich_3471.json,False,False
+Cohort 3 (Stratified Disjoint),rich_3471,Textualize/rich,flat_controlled,False,1,test_verification_failed,470,13,15,89.93,14371,154758,6364,161122,cohort_flat_controlled_rich_3471.json,False,False
+Cohort 3 (Stratified Disjoint),rich_3471,Textualize/rich,sfd,False,1,test_verification_failed,414,13,17,72.53,9895,79877,6548,86425,cohort_sfd_rich_3471.json,False,False
+Cohort 3 (Stratified Disjoint),rich_3535,Textualize/rich,flat_starter,False,-1,timeout_or_budget_no_patch,0,15,17,61.6,17526,128381,5252,133633,cohort_flat_starter_rich_3535.json,False,False
+Cohort 3 (Stratified Disjoint),rich_3535,Textualize/rich,flat_controlled,False,1,test_verification_failed,690,5,7,39.42,11701,57783,3151,60934,cohort_flat_controlled_rich_3535.json,False,False
+Cohort 3 (Stratified Disjoint),rich_3535,Textualize/rich,sfd,False,1,test_verification_failed,295,9,14,104.45,13964,88323,9590,97913,cohort_sfd_rich_3535.json,False,False
+Cohort 3 (Stratified Disjoint),requests_7315,psf/requests,flat_starter,False,1,test_verification_failed,327,7,11,53.24,12650,83850,4337,88187,cohort_flat_starter_requests_7315.json,False,False
+Cohort 3 (Stratified Disjoint),requests_7315,psf/requests,flat_controlled,False,1,timeout_or_budget_no_patch,0,15,19,128.99,15890,195976,9079,205055,cohort_flat_controlled_requests_7315.json,False,False
+Cohort 3 (Stratified Disjoint),requests_7315,psf/requests,sfd,False,1,test_verification_failed,521,12,16,61.88,11552,87745,5265,93010,cohort_sfd_requests_7315.json,False,False
+Cohort 4 (Stratified Disjoint),fastapi_14455,fastapi/fastapi,flat_starter,False,2,test_verification_failed,490,11,13,74.87,14670,106926,4191,111117,cohort_flat_starter_fastapi_14455.json,True,True
+Cohort 4 (Stratified Disjoint),fastapi_14455,fastapi/fastapi,flat_controlled,False,2,test_verification_failed,490,9,11,58.44,13333,102697,4794,107491,cohort_flat_controlled_fastapi_14455.json,True,True
+Cohort 4 (Stratified Disjoint),fastapi_14455,fastapi/fastapi,sfd,False,2,test_verification_failed,592,11,15,57.41,10834,68383,4802,73185,cohort_sfd_fastapi_14455.json,True,True
+Cohort 4 (Stratified Disjoint),fastapi_5624,fastapi/fastapi,flat_starter,False,1,test_verification_failed,710,7,9,33.65,8709,54039,2292,56331,cohort_flat_starter_fastapi_5624.json,False,False
+Cohort 4 (Stratified Disjoint),fastapi_5624,fastapi/fastapi,flat_controlled,False,1,timeout_or_budget_no_patch,0,15,19,79.67,14797,170922,5610,176532,cohort_flat_controlled_fastapi_5624.json,False,False
+Cohort 4 (Stratified Disjoint),fastapi_5624,fastapi/fastapi,sfd,False,-1,timeout_or_budget_no_patch,0,15,20,85.11,14702,123781,7052,130833,cohort_sfd_fastapi_5624.json,False,False
+Cohort 4 (Stratified Disjoint),fastapi_14419,fastapi/fastapi,flat_starter,False,1,test_verification_failed,788,5,7,34.6,7829,43190,2435,45625,cohort_flat_starter_fastapi_14419.json,False,False
+Cohort 4 (Stratified Disjoint),fastapi_14419,fastapi/fastapi,flat_controlled,False,1,test_verification_failed,670,6,8,32.38,9968,59257,2266,61523,cohort_flat_controlled_fastapi_14419.json,False,False
+Cohort 4 (Stratified Disjoint),fastapi_14419,fastapi/fastapi,sfd,False,1,test_verification_failed,837,8,12,58.85,5914,41200,5065,46265,cohort_sfd_fastapi_14419.json,False,False
+Cohort 4 (Stratified Disjoint),fastapi_15785,fastapi/fastapi,flat_starter,False,2,timeout_or_budget_no_patch,0,15,19,115.06,14563,151124,9265,160389,cohort_flat_starter_fastapi_15785.json,False,False
+Cohort 4 (Stratified Disjoint),fastapi_15785,fastapi/fastapi,flat_controlled,False,2,test_verification_failed,887,9,12,76.15,16036,111411,5034,116445,cohort_flat_controlled_fastapi_15785.json,False,False
+Cohort 4 (Stratified Disjoint),fastapi_15785,fastapi/fastapi,sfd,False,2,test_verification_failed,788,15,19,111.14,13869,123012,9555,132567,cohort_sfd_fastapi_15785.json,False,False
+Cohort 4 (Stratified Disjoint),rich_3938,Textualize/rich,flat_starter,False,1,test_verification_failed,1553,15,18,95.88,15120,175932,6444,182376,cohort_flat_starter_rich_3938.json,False,False
+Cohort 4 (Stratified Disjoint),rich_3938,Textualize/rich,flat_controlled,False,1,test_verification_failed,680,5,7,60.1,14316,63475,4194,67669,cohort_flat_controlled_rich_3938.json,False,False
+Cohort 4 (Stratified Disjoint),rich_3938,Textualize/rich,sfd,False,1,test_verification_failed,833,6,10,76.58,8543,36744,7009,43753,cohort_sfd_rich_3938.json,False,False
+Cohort 4 (Stratified Disjoint),rich_3930,Textualize/rich,flat_starter,False,2,test_verification_failed,10573,8,8,156.25,16371,87891,9867,97758,cohort_flat_starter_rich_3930.json,False,False
+Cohort 4 (Stratified Disjoint),rich_3930,Textualize/rich,flat_controlled,False,2,test_verification_failed,3435,15,18,145.94,16751,177996,9810,187806,cohort_flat_controlled_rich_3930.json,False,False
+Cohort 4 (Stratified Disjoint),rich_3930,Textualize/rich,sfd,False,2,timeout_or_budget_no_patch,0,14,18,110.52,14255,112302,10142,122444,cohort_sfd_rich_3930.json,False,False
+Cohort 4 (Stratified Disjoint),rich_3480,Textualize/rich,flat_starter,False,124,test_verification_failed,877,14,16,219.94,16327,147089,7112,154201,cohort_flat_starter_rich_3480.json,False,False
+Cohort 4 (Stratified Disjoint),rich_3480,Textualize/rich,flat_controlled,False,124,test_verification_failed,484,7,9,191.48,16785,84125,3983,88108,cohort_flat_controlled_rich_3480.json,False,False
+Cohort 4 (Stratified Disjoint),rich_3480,Textualize/rich,sfd,False,124,test_verification_failed,476,5,9,165.74,6096,32016,3899,35915,cohort_sfd_rich_3480.json,False,False
+Cohort 4 (Stratified Disjoint),requests_7205,psf/requests,flat_starter,False,1,test_verification_failed,809,14,16,78.18,15624,140086,5539,145625,cohort_flat_starter_requests_7205.json,False,False
+Cohort 4 (Stratified Disjoint),requests_7205,psf/requests,flat_controlled,False,1,test_verification_failed,513,10,12,116.48,15554,99908,3561,103469,cohort_flat_controlled_requests_7205.json,False,False
+Cohort 4 (Stratified Disjoint),requests_7205,psf/requests,sfd,False,1,test_verification_failed,491,13,17,98.97,14345,100506,7742,108248,cohort_sfd_requests_7205.json,False,False
